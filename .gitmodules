@@ -1,4 +1,0 @@
-[submodule "Matlab-Toolbox"]
-	path = Matlab-Toolbox
-	url = https://github.com/Open-Systems-Pharmacology/Matlab-Toolbox/
-	branch = master
