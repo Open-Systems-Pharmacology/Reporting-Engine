@@ -32,7 +32,7 @@ build_script:
   - rake "create_setup[%APPVEYOR_BUILD_VERSION%]"
 
 artifacts:
-  - path: '%APPVEYOR_BUILD_FOLDER%\setup\deploy\*.msi'  
+  - path: 'setup\deploy\*.msi'  
     name: 'package'
 
 notifications:
