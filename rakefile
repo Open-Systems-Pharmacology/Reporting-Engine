@@ -8,8 +8,8 @@ MANUFACTURER = 'Open Systems Pharmacology'
 PRODUCT_ID = Utils.uuid.to_s
 
 WIX = {
-  CODE: 'CODE_DIR', 
-  MATLAB_TOOL_BOX: 'MATLAB_TOOL_BOX_DIR', 
+  code: 'CODE_DIR', 
+  matlab_toolbox: 'MATLAB_TOOLBOX_DIR', 
   lib: 'LIB_DIR'
 }
 
@@ -77,6 +77,16 @@ task :copy_lib do
   copy_to_lib_dir src_lib_dir  
 end
 
+desc "restore all nuget packages in the packages folder"
+task :restore_nuget_packages do
+  command_line = %W[restore -PackagesDirectory packages]
+  Utils.run_cmd 'nuget', command_line
+end
+
+task :restore_nuget_and_copy_to_lib => [:restore_nuget_packages] do
+  Rake::Task['copy_lib'].invoke
+end
+
 private
 
 def copy_setup_files
@@ -98,7 +108,6 @@ def copy_to_lib_dir(target_lib_dir)
   packages_dir =  File.join(solution_dir, 'packages')
 
   copy_depdencies packages_dir, target_lib_dir do
-    copy_files 'OSPSuite.Core', 'xml'
     copy_files 'OSPSuite.SimModel', 'xsd'
     copy_files 'OSPSuite.SimModelComp', 'xml'
     copy_files "OSPSuite.SimModelComp#{architecture}", 'dll'

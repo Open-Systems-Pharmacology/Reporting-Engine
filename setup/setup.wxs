@@ -23,7 +23,8 @@
         <Directory Id="TARGETDIR" Name="SourceDir">
             <Directory Id="OSP_SUITE" Name="$(var.Manufacturer)">
                 <Directory Id="INSTALLDIR" Name="$(var.ProductFullName)">
-                    <Directory Id="SRC_DIR" Name="src"/>
+                    <Directory Id="CODE_DIR" Name="code"/>
+                    <Directory Id="MATLAB_TOOLBOX_DIR" Name="matlab_toolbox"/>
                     <Directory Id="LIB_DIR" Name="lib"/>
                 </Directory>
             </Directory>            
@@ -36,7 +37,8 @@
 
 
         <Feature Id="Main" Title="$(var.ProductName)" Level="1" Absent="disallow" AllowAdvertise="no">
-            <ComponentGroupRef Id="src"/>
+            <ComponentGroupRef Id="code"/>
+            <ComponentGroupRef Id="matlab_toolbox"/>
             <ComponentGroupRef Id="lib"/>
         </Feature>
 
