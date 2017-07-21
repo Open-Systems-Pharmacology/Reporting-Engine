@@ -1,4 +1,12 @@
-[submodule "Matlab-Toolbox"]
-	path = Matlab-Toolbox
-	url = https://github.com/Open-Systems-Pharmacology/Matlab-Toolbox/
-	branch = master
+[submodule "scripts"]
+	path = scripts
+	url = https://github.com/Open-Systems-Pharmacology/build-scripts.git
+[submodule "lib/DCI"]
+	path = lib/DCI
+	url = https://github.com/Open-Systems-Pharmacology/DCI.git
+[submodule "lib/Dimensions"]
+	path = lib/Dimensions
+	url = https://github.com/Open-Systems-Pharmacology/OSPSuite.Dimensions.git
+[submodule "src/matlab_toolbox"]
+	path = src/matlab_toolbox
+	url = https://github.com/Open-Systems-Pharmacology/Matlab-Toolbox-Core.git
