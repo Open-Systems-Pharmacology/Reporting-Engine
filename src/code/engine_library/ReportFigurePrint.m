@@ -1,8 +1,7 @@
 classdef ReportFigurePrint
 %REPORTFIGUREPRINT class which manages the print of figures
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 27-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
     
     
@@ -11,16 +10,17 @@ classdef ReportFigurePrint
         EMF = false;
         FIG = false;
         CSV = true;
+        PNG = false;
         
         % Ps Format
-        PS_Orientation='portrait';
+        PsOrientation='portrait';
         PaperPosition=[0 0 20 27];
 
         % filing directory for figures
         figureDir='';
         
         % figure handle
-        figure_handle=nan;
+        figureHandle=nan;
         
         % Position of figure
         Position = [];
@@ -51,19 +51,19 @@ classdef ReportFigurePrint
             if exist('format','var')
                 switch upper(format)
                     case 'PORTRAIT'
-                        obj.PS_Orientation='Portrait';
+                        obj.PsOrientation='Portrait';
                         obj.PaperPosition=[2 2 20 27];
                     case 'SQUARE'
-                        obj.PS_Orientation='Portrait';
+                        obj.PsOrientation='Portrait';
                         obj.PaperPosition=[2 2 20 20];
                     case 'LANDSCAPE'
-                        obj.PS_Orientation='Landscape';
+                        obj.PsOrientation='Landscape';
                         obj.PaperPosition=[0 0 27 20];
                 end
             end
 
             
-            obj.figure_handle=figure;
+            obj.figureHandle=figure;
             
         end
         
@@ -72,27 +72,26 @@ classdef ReportFigurePrint
             % prints figure in selected format
             
             figureName = sprintf('S%d_%s',obj.CaptiontextSheetNo,figureName);
-            obj.CaptiontextSheetNo
             
-            if isa(obj.figure_handle,'matlab.ui.Figure')
-                iFig = ['-f' num2str(obj.figure_handle.Number)];
+            if isa(obj.figureHandle,'matlab.ui.Figure')
+                iFig = ['-f' num2str(obj.figureHandle.Number)];
             else
-                iFig = ['-f' num2str(obj.figure_handle)];
+                iFig = ['-f' num2str(obj.figureHandle)];
             end
             
                         
             if ~isempty(obj.Position)
-                set(obj.figure_handle,'position',obj.Position);
+                set(obj.figureHandle,'position',obj.Position);
                 pause(0.1);
             end
 
             % change figure format
-            set(obj.figure_handle,'PaperType','a4');
-            set(obj.figure_handle, 'PaperPositionMode', 'manual');
-            set(obj.figure_handle, 'PaperOrientation',obj.PS_Orientation);
-            old_PaperPosition=get(obj.figure_handle, 'PaperPosition');
-            set(obj.figure_handle, 'PaperUnits', 'centimeters');
-            set(obj.figure_handle, 'PaperPosition', obj.PaperPosition);
+            set(obj.figureHandle,'PaperType','a4');
+            set(obj.figureHandle, 'PaperPositionMode', 'manual');
+            set(obj.figureHandle, 'PaperOrientation',obj.PsOrientation);
+            old_PaperPosition=get(obj.figureHandle, 'PaperPosition');
+            set(obj.figureHandle, 'PaperUnits', 'centimeters');
+            set(obj.figureHandle, 'PaperPosition', obj.PaperPosition);
            
             
             % emf
@@ -102,18 +101,22 @@ classdef ReportFigurePrint
             
             %fig
             if  obj.FIG
-                saveas(obj.figure_handle,fullfile(obj.figureDir, [figureName '.fig']))
+                saveas(obj.figureHandle,fullfile(obj.figureDir, [figureName '.fig']))
+            end
+            
+            if  obj.PNG
+                saveas(obj.figureHandle,fullfile(obj.figureDir, figureName),'png');
             end
             
             % reset figure format
-            set(obj.figure_handle, 'PaperPosition', old_PaperPosition);
+            set(obj.figureHandle, 'PaperPosition', old_PaperPosition);
  
             % add to captiontext    
             obj.CaptiontextFigtextArray{end+1,1}=figureName;
             obj.CaptiontextFigtextArray{end,2}=figtxt;
  
             % write figure as table
-            if ~isempty(csv)
+            if exist('csv','var') && ~isempty(csv)
                 
                 % add header to table
                 csv = [repmat({''},2,size(csv,2));csv];

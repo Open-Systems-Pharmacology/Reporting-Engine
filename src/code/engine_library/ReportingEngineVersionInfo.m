@@ -1,15 +1,17 @@
 function Info = ReportingEngineVersionInfo
 % configuration function, here properties of the reporting engine are listed
 %
+% Info = ReportingEngineVersionInfo
+%
 % Outputs:
 %   Info (structure) with following fields
 %       ReportingEngineVersion (string)  current version of the reporting engine package
-%       Settings (structure)  see GETDEFAULTWORKFLOWSETTINGS
-%
+%       ListOfValidatedComputers (cellarray of strings) list of computer
+%               names which are validated
 %
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 19-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 % version is still under construction
 Info.ReportingEngineVersion = 0.1; 

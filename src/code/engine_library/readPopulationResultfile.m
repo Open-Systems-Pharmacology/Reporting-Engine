@@ -15,11 +15,11 @@ function SimResult = readPopulationResultfile(simulationName)
 %       outputUnit (cellarray):  the ith entry contains a string with the
 %          unit of the ith quantity ( modeloutput)
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 14-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 % getName of the csvfile
-csvfile = fullfile('Simulations',[simulationName '-Results.csv']); 
+csvfile = fullfile('simulations',[simulationName '-Results.csv']); 
 
 
 % read data
@@ -58,6 +58,9 @@ SimResult.values = values;
 SimResult.individualIdVector = individualIdVector;
 SimResult.outputPathList = outputPathList;
 SimResult.outputUnit = outputUnit;
+
+% save as temporary file
+save(fullfile('tmp',simulationName,'simResult.mat'),'SimResult');
 
 
 return

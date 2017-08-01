@@ -1,8 +1,10 @@
-function [success,X,filter,dict] = readNonmemFile(Settings,dataFile,dataType,filterList) 
+function [success,X,filter,Dict] = readNonmemFile(WSettings,dataFile,dataType,filterList) 
 %READNONMEMFILE reads nonmemfile and executes filter,
 %
+% [success,X,filter,dict] = readNonmemFile(WSettings,dataFile,dataType,filterList) 
+% 
 % Inputs:
-%       Settings (structure)    definition of properties used in all
+%       WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %       dataFile (string) name of nonmemfile
 %       dataType (string) type of data, known are 'timeprofile', % toDo:
@@ -11,16 +13,16 @@ function [success,X,filter,dict] = readNonmemFile(Settings,dataFile,dataType,fil
 % Outputs:
 %       success (boolean) if false read in did not work
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 21-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 % initialize return values
 X=[];
 filter = [];
-dict = {};
+Dict = [];
 
 % readtable
-[content,header,success] = readtable(Settings,dataFile{1});
+[content,header,success] = readtable(WSettings,dataFile{1});
 if ~success
     return
 end
@@ -35,7 +37,7 @@ for iCol = 1:nCol
     
     % less string then numrich values
     if sum(jj) < nRow/2
-        tmp = contentnum;
+        tmp = contentnum; %#ok<NASGU>
     else
         tmp = content(:,iCol); %#ok<NASGU>
     end
@@ -47,15 +49,15 @@ clear content;
 clear tmp;
 
 % get dictionary
-dict = readDictionary(dataFile{2});
+Dict = readDictionary(dataFile{2});
 
 % get mandatory fields and field list for datatype
-manadatoryfields = getMandatoryFieldsbyType(dict,dataType);
+manadatoryfields = getMandatoryFieldsbyType(Dict,dataType);
 
 % check if necessary filed are available
 for iM = 1:size(manadatoryfields,2)
     if ~exist(manadatoryfields{2,iM},'var')
-        writeToLog(sprintf('%s column is missing in %s',manadatoryfields{2,iM},dataFile{1}),Settings.logfile,true,false);
+        writeToLog(sprintf('%s column is missing in %s',manadatoryfields{2,iM},dataFile{1}),WSettings.logfile,true,false);
         success = false;
     end
 end
@@ -77,19 +79,19 @@ filter = filter(jj,:);
 
     
 % transfer needed variables to structure
-for iF = 1:length(dict)
+for iF = 1:length(Dict)
 
-    if ~exist(dict(iF).nonmenColumn,'var')
-        writeToLog(sprintf('%s column is missing in %s, but wanted by Dictionary',dict(iF).nonmenColumn,dataFile),Settings.logfile,true,false);
+    if ~exist(Dict(iF).nonmenColumn,'var')
+        writeToLog(sprintf('%s column is missing in %s, but wanted by Dictionary',Dict(iF).nonmenColumn,dataFile{1}),WSettings.logfile,true,false);
     else
-        eval(sprintf('X.(dict(iF).matlabID) =  %s(jj);',dict(iF).nonmenColumn));
+        eval(sprintf('X.(Dict(iF).matlabID) =  %s(jj);',Dict(iF).nonmenColumn));
     end
 end
 
 return
 
 
-function [content,header,success] = readtable(Settings,dataFile)
+function [content,header,success] = readtable(WSettings,dataFile)
 
 success = true;
 
@@ -140,7 +142,7 @@ for  iLine =1:lcount
         ncol=ncoltmp;
     else
         if ncoltmp~=ncol
-            writeToLog(sprintf('Line %d: inconsistent number of columns in %s',iLine,dataFile),Settings.logfile,true,false);
+            writeToLog(sprintf('Line %d: inconsistent number of columns in %s',iLine,dataFile),WSettings.logfile,true,false);
             success = false;
             return
         end
@@ -157,7 +159,7 @@ end
 
 fclose(fid);
 
-writeToLog(sprintf('Read  file %s with %d rows',dataFile,lcount),Settings.logfile,true,false);
+writeToLog(sprintf('Read  file %s with %d rows',dataFile,lcount),WSettings.logfile,true,false);
 
 return
 

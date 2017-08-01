@@ -13,8 +13,8 @@ function [ TaskList ] = getDefaultTaskListPopulationWorkflow
 %       doVPC (boolean) if true the VPC plots are generated  (default true)
 %       doSensitivityAnalysis (boolean) if true a sensitivity analysis is done  (default true)
 
-% Open Systems Pharmacol ogy Suite;  http://forum.open-systems-pharmacology.org
-% Date: 14-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 % decides if the population has to be simulated or ob previously generated
 % results should be used.

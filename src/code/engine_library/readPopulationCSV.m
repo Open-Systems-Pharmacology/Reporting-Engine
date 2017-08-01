@@ -7,8 +7,8 @@ function [parPaths,parValues] = readPopulationCSV(csvfile)
 %   - parPaths (cellarray):  pathnames of the exported parameters
 %   - parValues (double matrix):  values of the exported parameters and individuals
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 14-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 if ~exist(csvfile,'file')
     error('This file does no exist: %s')

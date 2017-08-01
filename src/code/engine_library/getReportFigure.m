@@ -1,23 +1,23 @@
-function [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,varargin)
+function [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,varargin)
 %GETREPORTFIGURE creates new figure with and set watermark if not on validated system.
 %
-%   Settings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
+%   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols)
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols)
 %       - nRows number of rows for creation of new axes 
 %       - nCols number of rows for creation of new axes 
 %       returns:
 %       - ax_handles: array of axes handles
-%       - figure_handle: figure handle
+%       - figureHandle: figure handle
 %
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle)
-%       - figure_handle: figure handle of an existing figure, which will be
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle)
+%       - figureHandle: figure handle of an existing figure, which will be
 %           cleared and reused.
-%           If figure_handle is empty or an invalid handle, a new figure is created.
+%           If figureHandle is empty or an invalid handle, a new figure is created.
 %
 % Options:
 %   figureFormat:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,...
 %           'figureFormat',figureFormat_value)
 %           Figure format of the figure, possible values for figureFormat_value are
 %               -'square'
@@ -26,7 +26,7 @@ function [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_
 %           Default is 'square'.
 %
 %   paperOrientation:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,...
 %           'paperOrientation',paperOrientation_value)
 %           paper orientation of the figure, possible values for paperOrientation_value are
 %               -'landscape',
@@ -34,20 +34,20 @@ function [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_
 %           Default orientation depends on the figure format.
 %           
 %   paperPosition:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,...
 %           'paperPosition',paperPosition_value)
 %           paperPosition of the figure (4x1 vector) 
 %           of form [left bottom width height]
 %           Default position depends on the figure format.
 %
 %   fontsize:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,,...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,,...
 %           'fontsize',fontsize_value)
 %           fontsize of legend, xlabel, ylabel and title
 %           Default fontsize depends on the number of figures
 %
 %   axes_position:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_handle,,...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,,...
 %           'axes_position',axes_position_value)
 %           Position array for axes, unit is normalized
 %           Each row (as 4x1 vector) defines one axis
@@ -55,14 +55,14 @@ function [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_
 %
 %
 % Example Call:
-%   [ax_handles,figure_handle]=getReportFigure(Settings,1,1,[],'paperposition',[0 0 30 30],...
+%   [ax_handles,figureHandle]=getReportFigure(WSettings,1,1,[],'paperposition',[0 0 30 30],...
 %           'paperOrientation','landscape','fontsize',5,'figureFormat','landscape');
-%   [ax_handles,f]=getReportFigure(Settings,2,3,figure_handle);
-%   [ax_handles,f]=getReportFigure(Settings,2,3,figure_handle,'axes_position',[0.6 0.1 0.3 0.8;0.1 0.1 0.3 0.8]);
+%   [ax_handles,f]=getReportFigure(WSettings,2,3,figureHandle);
+%   [ax_handles,f]=getReportFigure(WSettings,2,3,figureHandle,'axes_position',[0.6 0.1 0.3 0.8;0.1 0.1 0.3 0.8]);
 %
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 26-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 
 %% check Inputs --------------------------------------------------------------
@@ -70,8 +70,8 @@ function [ax_handles,figure_handle]=getReportFigure(Settings,nRows,nCols,figure_
 % Check input options
 [figureFormat,paperOrientation, paperPosition ,fontsize,axes_position] = ...
     checkInputOptions(varargin,{...
-    'figureFormat',{'square','portrait','landscape'},'square',...
-    'paperOrientation',{'landscape','portrait','default'},'default',...
+    'figureFormat',{'square','portrait','landscape'},'landscape',...
+    'paperOrientation',{'landscape','portrait','default'},'landscape',...
     'PaperPosition',nan,'default',...
     'fontsize',nan,nan,...
     'axes_position',nan,nan,...
@@ -86,7 +86,7 @@ if ~exist('nCols','var')
 end
 
 % set watermark
-if Settings.isValidatedSystem
+if WSettings.isValidatedSystem
     timestamp = false;
     watermark = '';
 else
@@ -110,53 +110,53 @@ if isnan(fontsize)
 end
     
 %% Create  the figure;
-if exist('figure_handle','var') && ~isempty(figure_handle) && ishandle(figure_handle)
-    clf(figure_handle);
+if exist('figureHandle','var') && ~isempty(figureHandle) && ishandle(figureHandle)
+    clf(figureHandle);
 else
-    figure_handle=figure;
+    figureHandle=figure;
 end
 
-set(0, 'CurrentFigure', figure_handle);
+set(0, 'CurrentFigure', figureHandle);
 
 % set Figure Format
 screensize = get(0,'ScreenSize');
 scaleVector=min([screensize(1,3)/1280 screensize(1,4)/1024]);
 switch figureFormat
     case 'square'
-        set(figure_handle,'Position',[300 300 600 504].*scaleVector)
+        set(figureHandle,'Position',[300 300 600 504].*scaleVector)
         if strcmp(paperOrientation,'default')
-            set(figure_handle, 'PaperOrientation', 'landscape');
+            set(figureHandle, 'PaperOrientation', 'landscape');
         else
-            set(figure_handle, 'PaperOrientation', paperOrientation);
+            set(figureHandle, 'PaperOrientation', paperOrientation);
         end
         if isnan(paperPosition)
-            set(figure_handle, 'PaperPosition',[0 0 20 20]);
+            set(figureHandle, 'PaperPosition',[0 0 20 20]);
         else
-            set(figure_handle, 'PaperPosition',paperPosition);
+            set(figureHandle, 'PaperPosition',paperPosition);
         end
     case 'portrait'
-        set(figure_handle,'position',[300 150 600 650].*scaleVector)
+        set(figureHandle,'position',[300 150 600 650].*scaleVector)
         if strcmp(paperOrientation,'default')
-            set(figure_handle, 'PaperOrientation', 'portrait');
+            set(figureHandle, 'PaperOrientation', 'portrait');
         else
-            set(figure_handle, 'PaperOrientation', paperOrientation);
+            set(figureHandle, 'PaperOrientation', paperOrientation);
         end
         if isnan(paperPosition)
-            set(figure_handle, 'PaperPosition',[0 0 20 27]);
+            set(figureHandle, 'PaperPosition',[0 0 20 27]);
         else
-            set(figure_handle, 'PaperPosition',paperPosition);
+            set(figureHandle, 'PaperPosition',paperPosition);
         end
     case 'landscape'
-        set(figure_handle,'position',[193 273 921 530].*scaleVector)
+        set(figureHandle,'position',[193 273 921 530].*scaleVector)
         if strcmp(paperOrientation,'default')
-            set(figure_handle, 'PaperOrientation', 'landscape');
+            set(figureHandle, 'PaperOrientation', 'landscape');
         else
-            set(figure_handle, 'PaperOrientation', paperOrientation);
+            set(figureHandle, 'PaperOrientation', paperOrientation);
         end
         if isnan(paperPosition)
-            set(figure_handle, 'PaperPosition',[0 0 27 20]);
+            set(figureHandle, 'PaperPosition',[0 0 27 20]);
         else
-            set(figure_handle, 'PaperPosition',paperPosition);
+            set(figureHandle, 'PaperPosition',paperPosition);
         end
     otherwise
         error('unkown Figure Format: %s',figureFormat);
@@ -166,7 +166,7 @@ end
 
 % Create textbox
 if ~isempty(watermark)
-    annotation(figure_handle,'textbox',[0.01 0.45 0.99 0.1],...
+    annotation(figureHandle,'textbox',[0.01 0.45 0.99 0.1],...
     'String',{watermark},...
     'FontSize',24,...
     'FitBoxToText','off',...
@@ -186,7 +186,7 @@ if timestamp
             sprintf('created with: %s, created by: %s on %s',st(end).file,getenv('username'),datestr(now));
     end
     
-    annotation(figure_handle,'textbox',[0.001 0.001 1 0.1],...
+    annotation(figureHandle,'textbox',[0.001 0.001 1 0.1],...
     'String',{creation_txt},...
     'FontSize',8,...
     'FitBoxToText','off',...
@@ -217,14 +217,14 @@ if isnan(axes_position)
 else
     ax_handles=nan(size(axes_position,1),1);
     for iAx=1:size(axes_position,1)
-        ax_handles(iAx)=axes('position',axes_position(iAx,:));
+        ax_handles(iAx)=axes('position',axes_position(iAx,:)); %#ok<LAXES>
     end
     
 end
 
 % set axes Properties
 for iAx=1:length(ax_handles)
-    % Schriftgrössen
+    % fontsize:
     % Set Title
     t=get(ax_handles(iAx),'Title');
     set(t,'FontSize',fontsize);

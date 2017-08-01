@@ -1,89 +1,164 @@
-function VPC = getDefaultVPCPopulationSettings(Settings,PopRunSet,flag)
-%GETDEFAULTVPCPOPULATIONSETTINGS get Settings for visual predicitve check
+function VPC = getDefaultVPCPopulationSettings(WSettings,PopRunSet,flag) %#ok<INUSL>
+%GETDEFAULTVPCPOPULATIONSETTINGS get WSettings for visual predicitve check
+%
+%  VPC = getDefaultVPCPopulationSettings(WSettings,PopRunSet,flag)
 %
 % Inputs:
-%       Settings (structure)    definition of properties used in all
+%       WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%       PopRunSet (structure)   list of population simulations see GETDEFAULTPOPRUNSET
-%       flag (string)  [optional] defines type of population, default = 'default'
+%       PopRunSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
+%       flag (string)  defines type of population, default = 'paralellComparison'
 %                               other possibilities are 'pediatric';
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 26-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-% check inputs
-if ~exist('flag','var')
-    flag = 'default';
-end
 
-% demographic
-VPC.demographic = addVPCDemographic(PopRunSet,flag);
+% add function handle for figure and legend text
+VPC.textFunctionHandle = @textVPCPopulation;
 
+% add default structure for demographi plots
+VPC.PhysProperties = addVPCPhysProperties(PopRunSet,flag);
+
+% add default structure for timeprofile plots
+VPC.Timeprofile = addVPCTimeprofile(PopRunSet,flag);
+
+% add default structure for PK-Parameter plots
+VPC.PKParameter = addVPCPKParameter(PopRunSet,flag);
 
 return
 
-function demographic = addVPCDemographic(PopRunSet,flag)
+
+function timeprofile = addVPCTimeprofile(PopRunSet,~)
+
+% list indices of popSet for that the VPC should be done
+jj_ref = [PopRunSet.isReference];
+timeprofile.ixOfPopRunSets =  find(~jj_ref);
+
+% name of Reference Population
+timeprofile.ixPopRunSetRef = find(jj_ref,1);
+
+% display Unit for tim
+timeprofile.timeDisplayUnit = 'h';
+
+% zoom int time axes
+timeprofile.timelimit = [];
+
+return
+
+function PhysProperties = addVPCPhysProperties(PopRunSet,flag)
 
 switch flag
     
-    case 'default'
+    case 'parallelComparison'
         
-        demographic.name = 'demographic';
-        demographic.reportName = '';
+        PhysProperties.name = '';
+        PhysProperties.reportName = '';
         
         % list demographic properties which should be plotted
-        % pathID, reortname, display unit
-        demographic.yList = {'Organism|Age', 'Age', 'year(s)';...
-            'Organism|Weight', 'Body weight', 'kg';...
-            'Organism|Height', 'Height', 'cm';...
-            'Organism|BMI', 'BMI', 'kg/m²'};
+        % pathID, reortname, display unit,categorial text
+        PhysProperties.yList = {'Organism|Age', 'Age', 'year(s)',{};...
+            'Organism|Weight', 'Body weight', 'kg',{};...
+            'Organism|Height', 'Height', 'cm',{};...
+            'Organism|BMI', 'BMI', 'kg/m²',{};...
+            'Gender', '', '',{'Male','Female'}};
         
         % list propety which shall be displayed on the x-axes, if empty a
         % histogramm will be created
-        demographic.xList = {};
+        PhysProperties.xList = {};
         
         % list indices of popSet for that the VPC should be done
         [~,ix] = unique({PopRunSet.popcsv},'stable');
-        demographic.ixOfPopRunSets =  ix;
+        PhysProperties.ixOfPopRunSets =  ix;
         
         % how to handle PopRunSets:
         % merged populations are merged,
         % serial, for each PopRunSet an extra plot is generated
-        demographic.popRunSetMerger =  'serial';
+        PhysProperties.popRunSetMerger =  'serial';
         
         % name of Reference Population
-        demographic.ixPopRunSetRef = [];
+        PhysProperties.ixPopRunSetRef = [];
         
     case 'pediatric'
 
-        demographic.name = 'pediatricPopulation';
-        demographic.reportName = 'virtual pediatric population';
+        PhysProperties.name = 'pediatricPopulation';
+        PhysProperties.reportName = 'virtual pediatric population';
 
         
         % list demographic properties which should be plotted
         % pathID, reortname, display unit
-        demographic.yList = {'Organism|Weight', 'Body weight', 'kg';...
-            'Organism|Height', 'Height', 'cm';...
-            'Organism|BMI', 'BMI', 'kg/m²'};
+        PhysProperties.yList = {...
+            'Organism|Weight', 'Body weight', 'kg',{};...
+            'Organism|Height', 'Height', 'cm',{};...
+            'Organism|BMI', 'BMI', 'kg/m²',{};...
+            'Gender', '', '',{'Male','Female'};...
+            '<addOntogenyFactor>','','',{}};
         
         % list propety which shall be displayed on the x-axes, if empty a
         % histogramm will be created
-        demographic.xList = {'Organism|Age', 'age', 'year(s)'};
+        PhysProperties.xList = {'Organism|Age', 'age', 'year(s)'};
         
         % list popset for that the VPC should be done
         jj_ref = [PopRunSet.isReference];
         [~,ix_unique] = unique({PopRunSet.popcsv},'stable');
         ix = intersect(find(~jj_ref),ix_unique);
-        demographic.ixOfPopRunSets = ix ;
+        PhysProperties.ixOfPopRunSets = ix ;
         
         % how to handle PopRunSets:
         % merged populations are merged,
         % serial, for each PopRunSet an extra plot is generated
-        demographic.popRunSetMerger =  'merged';
+        PhysProperties.popRunSetMerger =  'merged';
         
         % name of Reference Population
         ix = intersect(find(jj_ref),ix_unique);
-        demographic.ixPopRunSetRef = ix(1);
+        PhysProperties.ixPopRunSetRef = ix(1);
+        
+end
+
+
+
+return
+
+
+
+function PKParameter = addVPCPKParameter(PopRunSet,flag)
+
+switch flag
+    
+    case 'parallelComparison'
+        
+        PKParameter.name = '';
+        PKParameter.reportName = '';
+                
+        % list propety which shall be displayed on the x-axes, if empty a
+        % histogramm will be created
+        PKParameter.xList = {};
+        
+        % list indices of popSet for that the VPC should be done
+        [~,ix] = unique({PopRunSet.popcsv},'stable');
+        PKParameter.ixOfPopRunSets =  ix;
+                
+        % name of Reference Population
+        PKParameter.ixPopRunSetRef = [];
+                
+    case 'pediatric'
+
+        PKParameter.name = 'pediatricPopulation';
+        PKParameter.reportName = 'virtual pediatric population';
+
+        % list propety which shall be displayed on the x-axes, if empty a
+        % histogramm will be created
+        PKParameter.xList = {'Organism|Age', 'age', 'year(s)';...
+            'Organism|Weight', 'weigth', 'kg'};
+        
+        % list popset for that the VPC should be done
+        jj_ref = [PopRunSet.isReference];
+        [~,ix_unique] = unique({PopRunSet.popcsv},'stable');
+        ix = intersect(find(~jj_ref),ix_unique);
+        PKParameter.ixOfPopRunSets = ix ;
+                
+        % name of Reference Population
+        ix = intersect(find(jj_ref),ix_unique);
+        PKParameter.ixPopRunSetRef = ix(1);
         
 end
 

@@ -1,53 +1,31 @@
-% script which describes the pediatric workflow for a test example
-% this script has to be filed in your working directory, and has to be
-% started from the working directory, file all your other inputfiles also in
-% this working directory, pathes will be set relative to this directory
+% script to start the population workflow on the reporting engine
+%
+% DESCRIPTION
+% a simulation is processed, PK Parameter are calculated for the selected
+% timeprofiles and default plot for the simulations and population are
+% generated
+% simulated timeprofiles and PK Parmater are filed in the directory
+% simulation, the format is suitable for an import to PK-sim
+% the figures and tables in the directory figures
+%
+% HOW TO USE
+% this script has to be filed in your working directory together with your input files like the simulation xml
+% and the poulation csv
+% adjust description for your purpose
+% set the matlab director to your working directory
+% start the script
+%
+% ! SPM reporting engine runs with Matlab 2013b (linux cluster)
+%
 
-
-%% List all inputs files used for the workflow
-% they should be content of your working directory
-
-% for a population workflow you can generat the input files by exporting a
-% populationsimulation "Export for Cluster Computations"
-% list of all xml files, defineing the simulations
-xmlList = {'Children_OralSingle_IV_Multi.xml'};
-% list of all population csv, 
-% first column name of csv file, second column description for reporting
-popList = {'Children_OralSingle_IV_Multi.csv','virtual population for test scripts'};
-
-% list of all outputs defined as structure
-OutputList(1) = getDefaultOutput('Organism|PeripheralVenousBlood|Hydroxy_Itraconazole|Plasma (Peripheral Venous Blood)_withTypo',...
-    'Hydroxy Itraconazole','µg/l');
-OutputList(2) = getDefaultOutput('Organism|PeripheralVenousBlood|Itraconazole|Plasma (Peripheral Venous Blood)',...
-    'Itraconazole','cm');
-OutputList(3) = getDefaultOutput('Organism|PeripheralVenousBlood|Midazolam|Plasma (Peripheral Venous Blood)',...
-    'Midazolam','Typo');
-
-
-% list of study design, like a dose table or application protocol
-studyDesignList = {};
-
-% name of nonmemfile containing the timeprofile data, 
-%set to '', if no data available
-dataTpFile = '';
-
-%% define the sets of population runs
-% with a set you define which combinations of xml,population, outputs and
-% study design you want to simulate, 
-% this name is used as directory or file name for the outputs, please avoid special signs like /
-simulationName = 'OralSingle_IV_Multi';
-PopRunSet(1)  =  getDefaultPopRunSet(simulationName,xmlList{1},popList(1,:),OutputList(1:end)) ;
-
-
-%% a population workflow can be started with different tasks
-% speciy here which tasks should be executed in your case
-TaskList = getDefaultTaskListPopulationWorkflow;
-
-%% global settings 
-% there are glbale settings e.g. fieldnames selected out of nonmemfile or graphical properties, like colors which are
+% global settings 
+% there are globale settings e.g. graphical properties, like colors which are
 % used in all functions and can be customized
-Settings = getDefaultWorkflowSettings;
+WSettings = getDefaultWorkflowSettings;
+
+% generate workflowInput
+[PopRunSet,TaskList,VPC] = generateWorkflowInputForPopulationSimulation(WSettings,'WorkflowInput.csv');
 
 
 %% start the execution
-runPopulationWorkflow(TaskList,Settings,PopRunSet);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC);

@@ -1,28 +1,33 @@
-function SimResult = runPopulationSimulation(Settings,PopRunSet)
+function SimResult = runPopulationSimulation(WSettings,PopRunSet)
 % RUNPOPULATIONSIMULATION  runs a population simulation defined within a PopRunSet 
-% see GETDEFAULTPOPRUNSET
 %
+% SimResult = runPopulationSimulation(WSettings,PopRunSet)
+% 
 % Inputs:
-%   Settings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
+%   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %   PopRunSet  defines properties and corresponding files of a simulation
-%           see GETDEFAULTPOPRUNSET
+%           see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
 
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 14-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-writeToLog(sprintf('Start Simulation of %s',PopRunSet.name),Settings.logfile,true,false);
+
+writeToLog(sprintf('Start Simulation of %s',PopRunSet.name),WSettings.logfile,true,false);
 
 % read population 
 load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
+
+% load OutpulList
+load(fullfile('tmp',PopRunSet.name,'outputList.mat'),'OutputList');
 
 % get individual ids
 nInd = size(parValues,1); %#ok<NODEF>
 individualIdVector = parValues(:,strcmp(parPaths,'IndividualId')); 
 
 % do the simulation
-[SimResult] = doIndividualsimulation(Settings,PopRunSet.name,PopRunSet.xml,parPaths,parValues,{PopRunSet.OutputList.pathID},nInd,individualIdVector);
+[SimResult] = doIndividualsimulation(WSettings,PopRunSet.name,PopRunSet.xml,parPaths,parValues,...
+    {OutputList.pathID},nInd,individualIdVector);
 
 % export results to  new result file
 exportResult(SimResult);
@@ -30,17 +35,17 @@ exportResult(SimResult);
 % save as temporary file
 save(fullfile('tmp',PopRunSet.name,'simResult.mat'),'SimResult');
 
-writeToLog(sprintf('Simulation finished \n'),Settings.logfile,true,false);
+writeToLog(sprintf('Simulation finished \n'),WSettings.logfile,true,false);
 
 return
 
 function exportResult(SimResult)
 
 % get name of resultfile
-resultfile =fullfile('Simulations',[SimResult.name '-Results.csv']); 
+resultfile =fullfile('simulations',[SimResult.name '-Results.csv']); 
 % check if siluation directory already exist
-if ~exist('Simulations','dir')
-    mkdir('Simulations')
+if ~exist('simulations','dir')
+    mkdir('simulations')
 end
 
 
@@ -70,7 +75,7 @@ writetab(resultfile,csvResult,';',0,0,1,0);
 
 return
 
-function SimResult = doIndividualsimulation(Settings,name,xml,parPaths,parValues,outputPathList,nInd,individualIdVector)
+function SimResult = doIndividualsimulation(WSettings,name,xml,parPaths,parValues,outputPathList,nInd,individualIdVector)
 
 % initialize model
 initStruct=[];
@@ -84,14 +89,13 @@ simulationIndex = 1;
 
 % getSimulationTime For the import all results must have the same
 % timepoints, which happens to be not the case for simulations outside
-% PK-Sim (???), but the differences are only small % todo @Juri discuss
-% this comment with Juri
+% PK-Sim (???), but the differences are only small
 simTimeNorm = getSimulationTime(simulationIndex);
 
 % initialize rowindex of parameter for speedy setting
 rowIndex = [];
 % initialize rowindex of output for speedy fetching
-rowIndex_S = nan(size(outputPathList));
+rowIndexS = nan(size(outputPathList));
 
 % initialize result array
 SimResult.name = name;
@@ -123,7 +127,7 @@ for iInd=1:nInd
                 if length(tmp)>1
                     
                     writeToLog(sprintf('WARNING %s is a parameter of the population csv, which correspond to more then one simulation parameter',...
-                        parPaths{iPar}),Settings.logfile,true,false);
+                        parPaths{iPar}),WSettings.logfile,true,false);
                     
                     for iTmp = 2:length(tmp)
                         indx = length(rowIndex)+1;
@@ -137,7 +141,7 @@ for iInd=1:nInd
                 % parameter, otherwise,  set a warning
                 if ~ismember(parPaths{iPar},{'IndividualId','Gender','RaceIndex','Population Name','Organism|Weight','Organism|BMI'})                
                     writeToLog(sprintf('WARNING %s is parameter of the population csv, but not available as parameter in the xml', ...
-                        parPaths{iPar}),Settings.logfile,true,false);
+                        parPaths{iPar}),WSettings.logfile,true,false);
                 end
             end                
         end
@@ -155,7 +159,7 @@ for iInd=1:nInd
     if success
         % get result
         for iO=1:length(outputPathList)
-            [simTime,tmpValues,rowIndex_S(iO)] = getSimulationResult(['*|' outputPathList{iO}],simulationIndex,'rowindex',rowIndex_S(iO));
+            [simTime,tmpValues,rowIndexS(iO)] = getSimulationResult(['*|' outputPathList{iO}],simulationIndex,'rowindex',rowIndexS(iO));
             % map outputs to defined time raster
             if ~all(simTime - simTimeNorm==0)
                 SimResult.values{iO}(iInd,:) = interp1(simTime,tmpValues,simTimeNorm,'linear','extrap');
@@ -164,7 +168,7 @@ for iInd=1:nInd
             end
         end
     else
-        writeToLog(sprintf('WARNING solver error, at individual %d',iInd),Settings.logfile,true,false);
+        writeToLog(sprintf('WARNING solver error, at individual %d',iInd),WSettings.logfile,true,false);
     end
     
 end

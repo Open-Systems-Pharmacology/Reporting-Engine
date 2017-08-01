@@ -1,10 +1,11 @@
-function [parPaths,parValues,ixChanged] = readStudyDesign(Settings,studyDesignCsv,parPaths,parValues)
+function [parPaths,parValues,ixChanged] = readStudyDesign(WSettings,studyDesignCsv,parPaths,parValues)
 %READSTUDYDESIGN read the study design description and adds this to the population
 %
+% [parPaths,parValues,ixChanged] = readStudyDesign(WSettings,studyDesignCsv,parPaths,parValues)
+% 
 % Inputs:
-%   - Settings       (structure) containing global settings see GETDEFAULTWORKFLOWSETTINGS
-%   - studyDesignCsv (string)     name of csv, which contains the information of the study
-%                           design (ToDo documentations or templates)
+%   - WSettings       (structure) containing global settings see GETDEFAULTWORKFLOWSETTINGS
+%   - studyDesignCsv (string)     name of csv, which contains the information of the study design 
 %   - parPaths (cellarray):  pathnames of the population parameters
 %   - parValues (double matrix):  values of the population parameters and individuals
 %
@@ -15,8 +16,8 @@ function [parPaths,parValues,ixChanged] = readStudyDesign(Settings,studyDesignCs
 %                   individuals, changed acoording to study desing
 %   - ixChanged (double vector) index of changed or added parameter
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 18-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 
 % chekc if file exist
@@ -50,7 +51,7 @@ header = regexp(C{3},';','split');
 SplitCondition = cell2struct(num2cell(M),header,2);
 
 % get Values for targetParameters
-targetParameterValues  = feval(functionHandle,Settings,targetParameterList,parPaths,parValues,SplitCondition);
+targetParameterValues  = feval(functionHandle,WSettings,targetParameterList,parPaths,parValues,SplitCondition);
 
 % add new path to parValues
 % check if path already exist
