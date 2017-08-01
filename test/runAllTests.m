@@ -10,12 +10,12 @@ mkdir(testDir);
 
 logfile = fullfile(maindir,testDir,'logfile.txt');
         
-
+% loop on tests
 for iTest = 1:length(testList)
 
     try
 
-        writeToLog(sprintf('Start Test %d',iTest),logfile,true,false);
+        writeToLog(sprintf('Start %s',testList(iTest).name),logfile,true,false);
         
         logfile = fullfile(maindir,testDir,'logfile.txt');
 
@@ -27,14 +27,19 @@ for iTest = 1:length(testList)
         cd(targetDir);
         workflow;
         if exist('checkTestResult.m','file')
-            checkTestResult;
+            success = checkTestResult;
+            if success
+                writeToLog(sprintf('%s was successful',testList(iTest).name),logfile,true,false);
+            else
+                writeToLog(sprintf('%s automatic test failed',testList(iTest).name),logfile,true,false);
+            end
         else
-            writeToLog(sprintf('No automatic test available for test %d',iTest),logfile,true,false);
+            writeToLog(sprintf('No automatic test available for %s',testList(iTest).name),logfile,true,false);
         end
         
         
     catch exception
-        writeToLog(sprintf('Test %d failed: %s',iTest,exception.message),logfile,true,false);
+        writeToLog(sprintf('%s crashed: %s',testList(iTest).name,iTest,exception.message),logfile,true,false);
     end
     
     cd(maindir);

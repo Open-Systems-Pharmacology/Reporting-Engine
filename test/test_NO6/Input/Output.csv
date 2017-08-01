@@ -1,0 +1,17 @@
+simulation path ID;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Organism|Bone|Intracellular|C1|Concentration in container
+label for report;C1 plasma;C1 bone intracellular
+time profile display unit;µg/l;µg/l
+C_max;µmol/l;µg/l
+C_max_norm;µg/l;mg/l
+t_max;h;h
+C_tEnd;µg/l;µg/l
+AUC;µmol*min/l;µmol*min/l
+AUC_norm;µg*min/l;µg*min/l
+AUC_inf;µmol*min/l;µmol*min/l
+AUC_inf_norm;µg*min/l;µg*min/l
+MRT;h;h
+Thalf;h;h
+FractionAucLastToInf;;
+CL;ml/min/kg;ml/min/kg
+Vss;ml/kg;ml/kg
+Vd;ml/kg;ml/kg

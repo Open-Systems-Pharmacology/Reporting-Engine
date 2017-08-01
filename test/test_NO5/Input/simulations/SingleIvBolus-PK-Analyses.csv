@@ -1,0 +1,281 @@
+IndividualId;Quantity Path;Parameter;Value;Unit
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;65.333331538975457;µmol/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;66.06135256159456;µmol/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;47.156108275520481;µmol/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;61.199139967483667;µmol/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;50.200113304180491;µmol/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;28.234777325070727;µmol/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;60.623926557307612;µmol/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;56.215600392128763;µmol/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;48.649632794715579;µmol/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max;48.807855537220746;µmol/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2613333.2615590184;mg/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2642454.1024637823;mg/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;1886244.3310208193;mg/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2447965.5986993467;mg/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2008004.53216722;mg/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;1129391.093002829;mg/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2424957.0622923044;mg/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;2248624.0156851504;mg/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;1945985.3117886232;mg/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_max_norm;1952314.2214888299;mg/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);t_max;0.050000000000000003;h
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.4670191533174528;µmol/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.0866280439971083;µmol/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.5166814824886288;µmol/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.2950090069500821;µmol/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.5402807553433246;µmol/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.1291737676470228;µmol/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;0.83633923991486581;µmol/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.0400590634801976;µmol/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;1.1028136032661013;µmol/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);C_tEnd;0.96134576673570116;µmol/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;4288.9088683946193;µmol*min/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3444.2596019555922;µmol*min/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3827.1841566884605;µmol*min/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3878.363918497339;µmol*min/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3739.2508750701004;µmol*min/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;2797.299875123218;µmol*min/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;2676.0513612269665;µmol*min/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3145.4037135727549;µmol*min/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;3213.3917277222463;µmol*min/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC;2975.4018869227725;µmol*min/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;171556354735.78476;µg*min/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;137770384078.22369;µg*min/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;153087366267.53842;µg*min/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;155134556739.89355;µg*min/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;149570035002.80405;µg*min/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;111891995004.92873;µg*min/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;107042054449.07866;µg*min/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;125816148542.9102;µg*min/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;128535669108.88985;µg*min/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_norm;119016075476.9109;µg*min/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;15093.80861526716;µmol*min/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;12861.746891002429;µmol*min/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;21755.029157039735;µmol*min/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;13900.016017368129;µmol*min/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;32453.630314621598;µmol*min/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;14501.080711227361;µmol*min/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;10230.323305081269;µmol*min/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;12687.783649960817;µmol*min/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;13228.6839058076;µmol*min/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf;11194.117286303494;µmol*min/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;603752344610.6864;µg*min/l
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;514469875640.09717;µg*min/l
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;870201166281.58936;µg*min/l
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;556000640694.7251;µg*min/l
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;1298145212584.8643;µg*min/l
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;580043228449.09448;µg*min/l
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;409212932203.25073;µg*min/l
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;507511345998.43268;µg*min/l
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;529147356232.30402;µg*min/l
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);AUC_inf_norm;447764691452.13977;µg*min/l
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;107.14079424360216;h
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;125.17975158917963;h
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;183.56351482931444;h
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;112.31208346898224;h
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;297.10113932779524;h
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;160.36059497829913;h
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;130.5982311239332;h
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;134.76964611798618;h
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;134.5022529474243;h
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);MRT;124.06949913660389;h
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;85.106446362328995;h
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;100.14664765522305;h
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;136.58249525862871;h
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;89.422874756559168;h
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;215.39232204395009;h
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;119.76750628318935;h
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;104.36929425350559;h
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;106.01551467561087;h
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;104.93756882832801;h
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Thalf;98.787882606760263;h
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.71584979128087978;
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.73220903574419882;
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.82407818766586138;
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.72098133457894553;
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.8847817381655011;
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.80709714463161164;
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.73841966852623264;
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.75209194920481881;
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.75708908379680029;
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);FractionAucLastToInf;0.73419950757856445;
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.6563082676636616;ml/min/kg
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.9437484046190501;ml/min/kg
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.1491595722320704;ml/min/kg
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.7985590785479952;ml/min/kg
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;0.77032984469341614;ml/min/kg
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.7240094374927464;ml/min/kg
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;2.4437155361045946;ml/min/kg
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.9703992982318237;ml/min/kg
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;1.8898327436053262;ml/min/kg
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);CL;2.2333158891044165;ml/min/kg
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;10647.490998583771;ml/kg
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;14599.076546524615;ml/kg
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;12656.626210720218;ml/kg
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;12119.995041226694;ml/kg
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;13731.952470997052;ml/kg
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;16587.790748672378;ml/kg
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;19148.69558312005;ml/kg
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;15933.000968029874;ml/kg
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;15251.205702523706;ml/kg
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vss;16625.18302650025;ml/kg
+0;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;12201.954911872455;ml/kg
+1;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;16850.091184143643;ml/kg
+2;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;13586.299091543719;ml/kg
+3;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;13921.919707731735;ml/kg
+4;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;14362.588954417959;ml/kg
+5;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;17873.287255130075;ml/kg
+6;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;22077.464037596812;ml/kg
+7;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;18082.124683801721;ml/kg
+8;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;17166.436725248524;ml/kg
+9;Organism|PeripheralVenousBlood|C1|Plasma (Peripheral Venous Blood);Vd;19097.636467201584;ml/kg
+0;Organism|Bone|Intracellular|C1|Concentration in container;C_max;72.233948383738706;µmol/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;C_max;62.85388755191741;µmol/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;C_max;70.826709091618667;µmol/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;C_max;64.766534050469602;µmol/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;C_max;64.074551434155168;µmol/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;C_max;65.605250185963072;µmol/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;C_max;51.83375427542687;µmol/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;C_max;57.224113533979441;µmol/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;C_max;58.852163412757264;µmol/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;C_max;58.39582099146326;µmol/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2889357.9353495482;mg/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2514155.5020766966;mg/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2833068.3636647468;mg/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2590661.362018784;mg/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2562982.0573662072;mg/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2624210.0074385228;mg/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2073350.1710170747;mg/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2288964.5413591778;mg/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2354086.5365102906;mg/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;C_max_norm;2335832.8396585304;mg/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;t_max;7;h
+1;Organism|Bone|Intracellular|C1|Concentration in container;t_max;6;h
+2;Organism|Bone|Intracellular|C1|Concentration in container;t_max;7;h
+3;Organism|Bone|Intracellular|C1|Concentration in container;t_max;6.75;h
+4;Organism|Bone|Intracellular|C1|Concentration in container;t_max;6.25;h
+5;Organism|Bone|Intracellular|C1|Concentration in container;t_max;4.5;h
+6;Organism|Bone|Intracellular|C1|Concentration in container;t_max;4.25;h
+7;Organism|Bone|Intracellular|C1|Concentration in container;t_max;4.5;h
+8;Organism|Bone|Intracellular|C1|Concentration in container;t_max;5;h
+9;Organism|Bone|Intracellular|C1|Concentration in container;t_max;5;h
+0;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;57.282702819195222;µmol/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;45.827984380374687;µmol/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;57.934510980575659;µmol/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;49.975670003487323;µmol/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;52.853821957109503;µmol/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;45.836601742376367;µmol/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;34.219659526656429;µmol/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;38.013348791243374;µmol/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;41.048487222242748;µmol/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;C_tEnd;39.040189298948256;µmol/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;AUC;91820.444090581892;µmol*min/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;AUC;77772.127499879294;µmol*min/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;AUC;90843.621862330096;µmol*min/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;AUC;81582.653828305338;µmol*min/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;AUC;82529.270459473366;µmol*min/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;AUC;79179.995770872949;µmol*min/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;AUC;61713.585558094637;µmol*min/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;AUC;68292.489638016108;µmol*min/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;AUC;71531.100645620405;µmol*min/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;AUC;69818.241150529837;µmol*min/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3672817763623.2759;µg*min/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3110885099995.1719;µg*min/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3633744874493.2036;µg*min/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3263306153132.2134;µg*min/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3301170818378.9351;µg*min/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;3167199830834.918;µg*min/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;2468543422323.7856;µg*min/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;2731699585520.6445;µg*min/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;2861244025824.8164;µg*min/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;AUC_norm;2792729646021.1934;µg*min/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;336373.41360343271;µmol*min/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;240073.53398788226;µmol*min/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;403183.7362289466;µmol*min/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;280692.90222451882;µmol*min/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;425388.25087904098;µmol*min/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;277641.92672129686;µmol*min/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;174640.31254814778;µmol*min/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;195428.70894723161;µmol*min/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;220983.86163989812;µmol*min/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf;195064.04620002734;µmol*min/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;13454936544137.309;µg*min/l
+1;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;9602941359515.291;µg*min/l
+2;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;16127349449157.863;µg*min/l
+3;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;11227716088980.754;µg*min/l
+4;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;17015530035161.643;µg*min/l
+5;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;11105677068851.875;µg*min/l
+6;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;6985612501925.9111;µg*min/l
+7;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;7817148357889.2646;µg*min/l
+8;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;8839354465595.9258;µg*min/l
+9;Organism|Bone|Intracellular|C1|Concentration in container;AUC_inf_norm;7802561848001.0937;µg*min/l
+0;Organism|Bone|Intracellular|C1|Concentration in container;MRT;72.475354466416135;h
+1;Organism|Bone|Intracellular|C1|Concentration in container;MRT;59.953116161092652;h
+2;Organism|Bone|Intracellular|C1|Concentration in container;MRT;90.941295178373792;h
+3;Organism|Bone|Intracellular|C1|Concentration in container;MRT;67.613209326700087;h
+4;Organism|Bone|Intracellular|C1|Concentration in container;MRT;108.83981424540889;h
+5;Organism|Bone|Intracellular|C1|Concentration in container;MRT;72.041654922991569;h
+6;Organism|Bone|Intracellular|C1|Concentration in container;MRT;55.112342538287606;h
+7;Organism|Bone|Intracellular|C1|Concentration in container;MRT;55.874453653914827;h
+8;Organism|Bone|Intracellular|C1|Concentration in container;MRT;61.025013433608493;h
+9;Organism|Bone|Intracellular|C1|Concentration in container;MRT;53.86494036632989;h
+0;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;49.331080680469938;h
+1;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;40.927984626142063;h
+2;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;62.29999976316418;h
+3;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;46.038979181470268;h
+4;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;74.961985677777633;h
+5;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;50.043917105645242;h
+6;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;38.140304000050016;h
+7;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;38.655978565977186;h
+8;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;42.079246992928603;h
+9;Organism|Bone|Intracellular|C1|Concentration in container;Thalf;37.079417901598298;h
+0;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.72702823595079513;
+1;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.67604872470530286;
+2;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.77468430965988977;
+3;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.70935262993201909;
+4;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.80599071486123264;
+5;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.71481254036118402;
+6;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.64662462716859614;
+7;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.65055037202105259;
+8;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.67630622383555261;
+9;Organism|Bone|Intracellular|C1|Concentration in container;FractionAucLastToInf;0.64207529521388529;
+0;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.074322163967077789;ml/min/kg
+1;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.10413476064905128;ml/min/kg
+2;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.06200646939241574;ml/min/kg
+3;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.089065308748003752;ml/min/kg
+4;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.058769841311646247;ml/min/kg
+5;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.090044037279339142;ml/min/kg
+6;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.14315137000861458;ml/min/kg
+7;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.12792388659104501;ml/min/kg
+8;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.11313043321117486;ml/min/kg
+9;Organism|Bone|Intracellular|C1|Concentration in container;CL;0.12816303407530003;ml/min/kg
+0;Organism|Bone|Intracellular|C1|Concentration in container;Vss;323.1915106935038;ml/kg
+1;Organism|Bone|Intracellular|C1|Concentration in container;Vss;374.59220409600908;ml/kg
+2;Organism|Bone|Intracellular|C1|Concentration in container;Vss;338.33691815906883;ml/kg
+3;Organism|Bone|Intracellular|C1|Concentration in container;Vss;361.31948184755697;ml/kg
+4;Organism|Bone|Intracellular|C1|Concentration in container;Vss;383.78991669550413;ml/kg
+5;Organism|Bone|Intracellular|C1|Concentration in container;Vss;389.21528769306832;ml/kg
+6;Organism|Bone|Intracellular|C1|Concentration in container;Vss;473.36444032439505;ml/kg
+7;Organism|Bone|Intracellular|C1|Concentration in container;Vss;428.86063635360006;ml/kg
+8;Organism|Bone|Intracellular|C1|Concentration in container;Vss;414.22717238771361;ml/kg
+9;Organism|Bone|Intracellular|C1|Concentration in container;Vss;414.2096512580365;ml/kg
+0;Organism|Bone|Intracellular|C1|Concentration in container;Vd;317.36919111856224;ml/kg
+1;Organism|Bone|Intracellular|C1|Concentration in container;Vd;368.92821632326581;ml/kg
+2;Organism|Bone|Intracellular|C1|Concentration in container;Vd;334.38811872608335;ml/kg
+3;Organism|Bone|Intracellular|C1|Concentration in container;Vd;354.94417436089788;ml/kg
+4;Organism|Bone|Intracellular|C1|Concentration in container;Vd;381.34792663774448;ml/kg
+5;Organism|Bone|Intracellular|C1|Concentration in container;Vd;390.06056409185715;ml/kg
+6;Organism|Bone|Intracellular|C1|Concentration in container;Vd;472.61276594170789;ml/kg
+7;Organism|Bone|Intracellular|C1|Concentration in container;Vd;428.04961112113529;ml/kg
+8;Organism|Bone|Intracellular|C1|Concentration in container;Vd;412.07208872993544;ml/kg
+9;Organism|Bone|Intracellular|C1|Concentration in container;Vd;411.35944861025206;ml/kg
