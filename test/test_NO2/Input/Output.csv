@@ -1,0 +1,25 @@
+simulation path ID;Organism|PeripheralVenousBlood|Hydroxy_Itraconazole|Plasma (Peripheral Venous Blood) with Typo;Organism|PeripheralVenousBlood|Itraconazole|Plasma (Peripheral Venous Blood);Organism|PeripheralVenousBlood|Midazolam|Plasma (Peripheral Venous Blood);Organism|Bone|Intracellular|Itraconazole|Concentration in container;Organism|Bone|Intracellular|Hydroxy_Itraconazole|Concentration in container
+label for report;Hydroxy Itraconazole;Itraconazole;Midazolam;Itraconazole Bone;Hydroxy Itraconazole Bone
+time profile display unit;µg/l;cm;typo;µg/l;µg/l
+C_max;µmol/l;µmol/l;µmol/l;µmol/l;h
+C_max_norm;mg/l;mg/l;mg/l;typo2;mg/l
+C_max_t1_t2;µmol/l;µmol/l;µmol/l;µmol/l;µmol/l
+C_max_t1_t2_norm;mg/l;mg/l;mg/l;mg/l;mg/l
+C_max_tLast_tEnd;µmol/l;µmol/l;µmol/l;µmol/l;µmol/l
+C_max_tLast_tEnd_norm;mg/l;mg/l;mg/l;mg/l;mg/l
+t_max;h;h;h;h;h
+t_max_t1_t2;h;h;h;h;h
+t_max_tLast_tEnd;h;h;h;h;h
+C_trough_t2;µmol/l;µmol/l;µmol/l;µmol/l;µmol/l
+C_trough_tLast;µmol/l;µmol/l;µmol/l;µmol/l;µmol/l
+AUC_t1_t2;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l
+AUC_t1_t2_norm;µg*min/l;µg*min/l;µg*min/l;µg*min/l;µg*min/l
+AUC_tLast_minus_1_tLast;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l
+AUC_tLast_minus_1_tLast_norm;µg*min/l;µg*min/l;µg*min/l;µg*min/l;µg*min/l
+AUC_inf_t1;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l
+AUC_inf_t1_norm;µg*min/l;µg*min/l;µg*min/l;µg*min/l;µg*min/l
+AUC_inf_tLast;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l;µmol*min/l
+AUC_inf_tLast_norm;µg*min/l;µg*min/l;µg*min/l;µg*min/l;µg*min/l
+MRT;h;h;h;h;h
+Thalf;h;h;h;h;h
+Thalf_tLast_tEnd;h;h;h;h;h

@@ -1,0 +1,145 @@
+classdef ReportFigurePrint
+%REPORTFIGUREPRINT class which manages the print of figures
+
+% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
+% Date: 27-July-2017
+
+    
+    
+    properties
+        % formats
+        EMF = false;
+        FIG = false;
+        CSV = true;
+        
+        % Ps Format
+        PS_Orientation='portrait';
+        PaperPosition=[0 0 20 27];
+
+        % filing directory for figures
+        figureDir='';
+        
+        % figure handle
+        figure_handle=nan;
+        
+        % Position of figure
+        Position = [];
+        
+        % Structure to manage captiontext xls, used for word macro
+        CaptiontextFigtextArray = {'header'}
+        CaptiontextSheet = 'sheet';
+        CaptiontextSheetNo = 0;
+    end
+    
+    methods
+        function obj=ReportFigurePrint(resultDir,printFormatList,format)
+            
+            % set figur directory and create it
+            obj.figureDir=resultDir;
+            if ~exist(obj.figureDir,'dir')
+                mkdir(obj.figureDir);
+            else
+                delete(fullfile(obj.figureDir,'*'));
+            end
+            
+            % set print format
+            for iP = 1:length(printFormatList)
+                obj.(printFormatList{iP}) = true;
+            end
+            
+
+            if exist('format','var')
+                switch upper(format)
+                    case 'PORTRAIT'
+                        obj.PS_Orientation='Portrait';
+                        obj.PaperPosition=[2 2 20 27];
+                    case 'SQUARE'
+                        obj.PS_Orientation='Portrait';
+                        obj.PaperPosition=[2 2 20 20];
+                    case 'LANDSCAPE'
+                        obj.PS_Orientation='Landscape';
+                        obj.PaperPosition=[0 0 27 20];
+                end
+            end
+
+            
+            obj.figure_handle=figure;
+            
+        end
+        
+        
+        function obj=printFigure(obj,figureName,figtxt,csv,figtxt_csv)
+            % prints figure in selected format
+            
+            figureName = sprintf('S%d_%s',obj.CaptiontextSheetNo,figureName);
+            obj.CaptiontextSheetNo
+            
+            if isa(obj.figure_handle,'matlab.ui.Figure')
+                iFig = ['-f' num2str(obj.figure_handle.Number)];
+            else
+                iFig = ['-f' num2str(obj.figure_handle)];
+            end
+            
+                        
+            if ~isempty(obj.Position)
+                set(obj.figure_handle,'position',obj.Position);
+                pause(0.1);
+            end
+
+            % change figure format
+            set(obj.figure_handle,'PaperType','a4');
+            set(obj.figure_handle, 'PaperPositionMode', 'manual');
+            set(obj.figure_handle, 'PaperOrientation',obj.PS_Orientation);
+            old_PaperPosition=get(obj.figure_handle, 'PaperPosition');
+            set(obj.figure_handle, 'PaperUnits', 'centimeters');
+            set(obj.figure_handle, 'PaperPosition', obj.PaperPosition);
+           
+            
+            % emf
+            if  obj.EMF
+                print('-dmeta', iFig, fullfile(obj.figureDir, [figureName '.emf']));
+            end
+            
+            %fig
+            if  obj.FIG
+                saveas(obj.figure_handle,fullfile(obj.figureDir, [figureName '.fig']))
+            end
+            
+            % reset figure format
+            set(obj.figure_handle, 'PaperPosition', old_PaperPosition);
+ 
+            % add to captiontext    
+            obj.CaptiontextFigtextArray{end+1,1}=figureName;
+            obj.CaptiontextFigtextArray{end,2}=figtxt;
+ 
+            % write figure as table
+            if ~isempty(csv)
+                
+                % add header to table
+                csv = [repmat({''},2,size(csv,2));csv];
+                csv{1,1} = strrep(figtxt_csv,';',',');
+                writeTabCellArray(csv,fullfile(obj.figureDir, [figureName '.csv']));
+            end
+        end
+        
+        function obj = iniCaptiontextFigtextArray(obj,outline,sheet)
+            % Initialize Structure to manage captiontext xls, used for word macro
+            
+            obj.CaptiontextFigtextArray = {outline};            
+            obj.CaptiontextSheetNo = obj.CaptiontextSheetNo+1;
+            obj.CaptiontextSheet = sprintf('S%d__%s.csv',obj.CaptiontextSheetNo,sheet);
+            
+        end
+        
+        
+        
+        function saveCaptiontextArray(obj)
+            
+            % Save the Caption text  used for word macro
+            writeTabCellArray(obj.CaptiontextFigtextArray,fullfile(obj.figureDir,obj.CaptiontextSheet));
+
+        end
+    end
+    
+end
+
