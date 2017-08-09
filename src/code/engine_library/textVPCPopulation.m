@@ -86,8 +86,8 @@ legendEntries = {sprintf('%s: n=%d',population,nInd(1)),sprintf('%s: n=%d',refer
 
 return
 
-function [figtxt,figtxtTable,legendEntries] = textVPCPopulationTpShadedArea(output,simulation,pop,...
-    simulationRef,popRef,popData,scale,lloq,nData)
+function [figtxt,figtxtTable,legendEntries] = textVPCPopulationTpShadedArea(output,simulation,...
+    nameData,scale,lloq,nData,pop,simulationRef,popRef)
 
             
 % get name and figure description
@@ -101,10 +101,10 @@ else
         popRef);
 end
 if nData>0
-    figtxt = sprintf('%s Data source: %s.',figtxt,popData);
+    figtxt = sprintf('%s Data source: %s.',figtxt,nameData);
 end    
 if ~isnan(lloq)
-    figtxt = sprintf('%s Data below lower limit of quantification (lloq) are plotted as open symbols as lloq/2.',figtxt,popData);
+    figtxt = sprintf('%s Data below lower limit of quantification (lloq) are plotted as open symbols as lloq/2.',figtxt,nameData);
 end
 
 switch scale
@@ -122,7 +122,7 @@ else
     legendEntries = {pop,popRef};
 end
 if nData>0
-    legendEntries{3} = popData;
+    legendEntries{3} = nameData;
 end
 if ~isnan(lloq)
      legendEntries{end+1} = 'lower limit of quantification';

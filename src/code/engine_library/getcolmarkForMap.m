@@ -1,5 +1,5 @@
 function [col,mark] = getcolmarkForMap(map,nData)
-% GETCOLMARKFORMAP -- get colormatrix and marker-vector for a specified colormap
+%GETCOLMARKFORMAP get colormatrix and marker-vector for a specified colormap
 % 
 % [col,mark] = getcolmarkForMap(map,nData)
 % 	

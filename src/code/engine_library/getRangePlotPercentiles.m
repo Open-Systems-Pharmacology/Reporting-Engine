@@ -14,12 +14,12 @@ function [yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getRangePlotPerce
 %   rangeTxt (string) description how upper and lower limits are calculated
 %   csvHeader (cellarray of string) dscription of all outputs {min,mean,max}
 
-if size(y,1) == 2 % only one individual
+if size(y,1) == 1 % only one individual
     yMin = nan;
     yMax = nan;
     yMean = y;
-    legendTextMean = '';
-    
+    legendTextMean = 'simulated individual';
+    rangeTxt = '';
     csvHeader = {};
 else
     % exclude non processable individuals

@@ -40,9 +40,11 @@ PKPList = cell(length(OutputList) ,1);
 if ~isempty(PopRunSet.calculatePKParameterFh)
     
     for iO = 1:length(OutputList)
-        tmp = feval(PopRunSet.calculatePKParameterFh,WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO},parPaths,parValues);
-        [ix,jj] = ismember(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
-        PKPList{iO} = tmp(ix(jj));
+        if ~isempty(OutputList(iO).pKParameterList)
+            tmp = feval(PopRunSet.calculatePKParameterFh,WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO},parPaths,parValues);
+            [ix,jj] = ismember(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
+            PKPList{iO} = tmp(ix(jj));
+        end
         
     end
     
@@ -54,9 +56,10 @@ elseif isValid
     height =  parValues(:,jj);
     
     for iO = 1:length(OutputList)
-        tmp = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO},weight,height);
 
         if ~isempty(OutputList(iO).pKParameterList)
+            tmp = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO},weight,height);
+
             [jj,ix] = ismember(OutputList(iO).pKParameterList(1,:),{PKParameterTemplate.name});
             PKPList{iO} = tmp(ix(jj));
         else

@@ -30,7 +30,7 @@ end
 FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
 
 for iD = 1:length(VPC.Timeprofile)
-    FP = plotLoopPopulationVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),PopRunSet,FP);
+    FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),PopRunSet,FP);
 end
 
 

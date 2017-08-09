@@ -11,6 +11,7 @@ function Output = getDefaultOutput(pathID,reportName,displayUnit)
 %       - pathID    (string)    path to identify simulation parameter
 %       - reportName   (string)    used for graphics (please start with upper case)
 %       - displayUnit (string)  unit used for graphical display (must be a unit, known in PK-Sim) 
+%       - residualScale (string) for lin residuals are calculated as data - simulation for log as log(data) - log(simulation)
 %       - unitFactor (double) factor to convert internal unit to target
 %           unit is calculated during initialisation
 %       - dataTpFilter (string) this is an optional input, it may be empty
@@ -39,7 +40,10 @@ Output.reportName = reportName;
 Output.displayUnit = displayUnit;
 
 % timeprofile filter for nonmem data file
-Output.dataTpFilter = '';
+Output.dataTpFilter = {};
+
+% scale to calculate the residuals
+Output.residualScale = 'log';
 
 % factor to convert interanl unit to target unit
 Output.unitFactor = nan;

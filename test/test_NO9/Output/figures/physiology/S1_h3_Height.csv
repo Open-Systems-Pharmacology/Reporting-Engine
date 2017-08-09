@@ -1,0 +1,7 @@
+Percentile of Height for virtual adult population.;
+;
+Height [cm];adult: n=10
+154 <= Height < 158;2
+158 <= Height < 165;4
+165 <= Height < 173;2
+173 <= Height < 176;2

@@ -1,0 +1,5 @@
+Percentile of AUC_{inf} norm of C1 bone intracellular.;;;;;
+;;;;;
+AUC_{inf} norm [µg*min/l];;;;;
+;5^{th} precentile;25^{th} precentile;50^{th} precentile;75^{th} precentile;95^{th} precentile
+;4247234581892.694;6335504779066.364;7815078952990.828;12308973182301.74;13966763916887.21

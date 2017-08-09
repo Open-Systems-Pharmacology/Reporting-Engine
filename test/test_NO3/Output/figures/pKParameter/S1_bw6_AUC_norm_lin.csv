@@ -1,0 +1,5 @@
+Percentile of AUC_{last} of C1 plasma.;;;;;
+;;;;;
+AUC_{last} [µg*min/l];;;;;
+;5^{th} precentile;25^{th} precentile;50^{th} precentile;75^{th} precentile;95^{th} precentile
+;42791739886.9283;96637912614.5568;113484849280.2918;132576421382.0944;156945033444.5641

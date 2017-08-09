@@ -21,8 +21,11 @@ function FP = plotLoopPopulationVPCPKparameter(WSettings,textFunctionHandle,Def,
 
 if isempty(Def.xList)
     
-    FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP);
+    FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP,'absolute');
 
+    if ~isempty(Def.ixPopRunSetRef)
+        FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP,'ratio');
+    end
 else
     
     FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP);
@@ -30,10 +33,19 @@ end
 
 return
 
-function FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP)
+function FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP,flag)
 
 % collect all simulated PK Parameter of interst
 o = collectPK(PopRunSet(Def.ixOfPopRunSets),'matrix');
+
+% get Reference simulation
+if ~isempty(Def.ixPopRunSetRef)
+    oRef = collectPK(PopRunSet(Def.ixPopRunSetRef),'matrix');
+    reportNameRef = PopRunSet(Def.ixPopRunSetRef).reportName;
+else
+    oRef = [];
+    reportNameRef = '';
+end
 
 reportNames = {PopRunSet(Def.ixOfPopRunSets).reportName};
 popReportNames = {PopRunSet(Def.ixOfPopRunSets).popReportName};
@@ -50,26 +62,51 @@ for iO = 1:length(o)
     
     for iPK = 1:size(o(iO).pKParameterList,2)
          
-        y = squeeze(o(iO).values(:,:,iPK));
-        yLabel = o(iO).pKParameterList{4,iPK};
-        yUnit = o(iO).pKParameterList{2,iPK};
+        switch flag
+            case 'absolute'
+                y = squeeze(o(iO).values(:,:,iPK));
+                yLabel = o(iO).pKParameterList{4,iPK};
+                yUnit = o(iO).pKParameterList{2,iPK};
+            case 'ratio'
+                
+                jPKref = strcmp(o(iO).pKParameterList{1,iPK},oRef(iO).pKParameterList{1,iPK});
+                
+                if any(jPKref)
+                    y = squeeze(o(iO).values(:,:,iPK))./squeeze(oRef(iO).values(:,:,jPKref));
+                    yLabel = o(iO).pKParameterList{4,iPK};
+                    yUnit = o(iO).pKParameterList{2,iPK};
+                else
+                    y=[];
+                end
+        end
         
-        % loop on scale
-        for iScale = 1:length(yscale)
-            
-            % get name and figure description
-            figureName = sprintf('bw%d_%s_%s',iPK,removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
-            [figtxt,figtxtTable] = feval(textFunctionHandle,WSettings,'pkBW',...
-                {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale}});
-            
-            % do figure
-            [csv] = plotReportBoxwhisker(WSettings,FP.figureHandle,y,yLabel,yUnit,yscale{iScale},xLabels);
-            
-            % save figure
-            if iScale ==1
-                FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
-            else
-                FP = FP.printFigure(figureName,figtxt);
+        if ~isempty(y)
+            % loop on scale
+            for iScale = 1:length(yscale)
+                
+                switch flag
+                    case 'absolute'
+                        % get name and figure description
+                        figureName = sprintf('bw%d_%s_%s',iPK,removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
+                        [figtxt,figtxtTable] = feval(textFunctionHandle,WSettings,'pkBW',...
+                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale}});
+                        
+                    case 'ratio'
+                        % get name and figure description
+                        figureName = sprintf('bwRatio%d_%s_%s',iPK,removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
+                        [figtxt,figtxtTable] = feval(textFunctionHandle,WSettings,'pkBWRatio',...
+                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale}});
+                end
+                
+                % do figure
+                [csv] = plotReportBoxwhisker(WSettings,FP.figureHandle,y,yLabel,yUnit,yscale{iScale},xLabels);
+                
+                % save figure
+                if iScale ==1
+                    FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
+                else
+                    FP = FP.printFigure(figureName,figtxt);
+                end
             end
         end
     end
@@ -144,7 +181,7 @@ for iO = 1:length(o)
             for iScale = 1:length(yscale)
 
                 % get name and figure description
-                figureName = sprintf('shA%d_%d_%d_%s_%s',iX,iPK,removeForbiddenLetters(Def.xList{iX,2}),...
+                figureName = sprintf('shA%d_%d_%s_%s_%s',iX,iPK,removeForbiddenLetters(Def.xList{iX,2}),...
                     removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
                 [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'pkShA',...
                     {Def.xList{iX,2},yLabel,o(iO).reportName,Def.reportName,reportNameRef,yscale{iScale}});

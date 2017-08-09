@@ -132,7 +132,7 @@ end
 
 % Plot LLOQ
 if ~isnan(lloq)
-    plot([time(1) time(end)],[1 1]*lloq,'k:','linewidth',2,'displayname',legendEntries{end});
+    plot([time(1) time(end)],[1 1]*lloq,'k:','linewidth',1,'displayname',legendEntries{end});
 end
 
 % set legend
@@ -188,7 +188,7 @@ else
     csv(2:1+length(time),1) = num2cell(time);
 
     % description
-    csv{1,2} = getLabelWithUnit(ylabel,yUnit);    
+    csv{1,2} = getLabelWithUnit(yLabel,yUnit);    
     csv(2:1+length(time),2) = num2cell(yMean);
     
 end

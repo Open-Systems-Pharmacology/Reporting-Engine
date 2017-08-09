@@ -1,4 +1,4 @@
-27-Jul-2017 08:09:56 Start Workflow of type Population Simulation 
+09-Aug-2017 16:05:43 Start Workflow of type Population Simulation 
  System is NOT validated 
  Computer BY0LBF (PCWIN) 
  Reporting Engine version: 0.1 
@@ -7,6 +7,8 @@
  SimModelCompName: OSPSuite_SimModelComp.xml 
  Matlab version: 8.2.0.701 (R2013b) 
 
-27-Jul-2017 08:09:56 Start input checks
-27-Jul-2017 08:09:57 ERROR: "Children_OralSingle_IV_Multi_withTypo.xml" does not exist
-27-Jul-2017 08:09:57 ERROR: "Children_OralSingle_IV_Multi_withTypo.csv" does not exist
+09-Aug-2017 16:05:43 Start input checks
+09-Aug-2017 16:05:43 ERROR: "Children_OralSingle_IV_Multi_withTypo.xml" does not exist
+09-Aug-2017 16:05:43 ERROR: "Children_OralSingle_IV_Multi_withTypo.csv" does not exist
+09-Aug-2017 16:05:43 ERROR: Datafile data.nmdat does not exist
+09-Aug-2017 16:05:43 ERROR: Dictionary dict.csv for timeprofile datafile does not exist

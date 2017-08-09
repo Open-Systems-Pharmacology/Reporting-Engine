@@ -132,6 +132,7 @@ function PKParameterTemplate = iniPKParameterTemplateList(flag)
 % get PKParameter template corresponding to flag
 switch flag
     case 'singleDose'
+        % PK Parameter for concentrations
         PKParameterTemplate = iniPKParameterTemplate('C_max','C_{max}','µmol/l','1','cMax','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('C_max_norm','C_{max} norm','mg/l','1./dose_per_weight*1e6', 'cMax','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('t_max','t_{max}','h','1/60','tMax','total');
@@ -147,7 +148,13 @@ switch flag
         PKParameterTemplate(end+1) = iniPKParameterTemplate('Vss','Vss','ml/kg','1000./weight','VSS','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('Vd','Vd','ml/kg','1000./weight','Vd','total');
         
+        % PK Parameter for fractions
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_max','F_{max}','','1','cMax','total');
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_tEnd','F_{max}','','1','cend','total');
+        
+        
     case 'multiDose';
+        % PK Parameter for concentrations
         PKParameterTemplate = iniPKParameterTemplate('C_max','C_{max}','µmol/l','1','cMax','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('C_max_norm','C_{max} norm','mg/l','1./dose_per_weight*1e6', 'cMax','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('C_max_t1_t2','C_{max} (first dosing interval)','µmol/l','1','cMax','t1_t2');
@@ -179,6 +186,13 @@ switch flag
         PKParameterTemplate(end+1) = iniPKParameterTemplate('Thalf','t_{1/2} (first dosing interval)','h','1/60','tHalf','t1_t2');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('Thalf_tLast_tEnd','t_{1/2} (last dosing interval)','h','1/60','tHalf','tLast_tEnd');
         
+        % PK Parameter for fractions
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_max','F_{max}','','1','cMax','total');
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_max_t1_t2','F_{max} (first dosing interval)','','1','cMax','t1_t2');
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_max_tLast_tEnd','F_{max} (last dosing interval)','','1','cMax','tLast_tEnd');
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_at_t2','F_{t end} (first dosing interval)','','1','cend','t1_t2'); 
+        PKParameterTemplate(end+1) = iniPKParameterTemplate('F_at_tLast','F_{t end} (last dosing interval)','','1','cend','tLast_tEnd');
+
 end
 
 return

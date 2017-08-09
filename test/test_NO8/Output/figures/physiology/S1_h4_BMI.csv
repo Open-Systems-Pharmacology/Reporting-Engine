@@ -1,0 +1,7 @@
+Percentile of BMI for virtual test population.;
+;
+BMI [kg/m²];: n=10
+17.2 <= BMI < 18.7;2
+18.7 <= BMI < 21.8;1
+21.8 <= BMI < 24.8;4
+24.8 <= BMI < 26.4;3

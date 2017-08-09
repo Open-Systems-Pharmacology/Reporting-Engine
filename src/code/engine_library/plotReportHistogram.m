@@ -1,4 +1,4 @@
-function  [csvArray] = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,yData,xLabel,xUnit,xCategory,legendEntries)
+function  csvArray = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,yData,xLabel,xUnit,xCategory,legendEntries,flag)
 % PLOTREPORTHISTOGRAM creates histogramm 
 %
 % [csvArray] = plotReportHistogram(WSettings,figureHandle,y,yRef,xLabel,legendEntries)
@@ -13,6 +13,10 @@ function  [csvArray] = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,
 %       xUnit (string) name of unit
 %       legendEntries (cell array of strings) {name of population for
 %                       legend, name of reference population for legend}
+%       flag (string) default 'none';
+%                  'isResiduals' : histogram is shifted 0 is in the middle,
+%                               a normal distribution is plotted
+%
 % Output
 %   csv (cellarray) table with numeric information to the plot
 
@@ -20,6 +24,18 @@ function  [csvArray] = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,
 
 % Initialize outputs
 csvArray = {};
+
+if ~exist('flag','var')
+    flag = 'none';
+end
+switch flag
+    case 'isResiduals'
+        barType = 'stacked';
+        ylabeltxt = 'Number of residuals [%]';
+    otherwise
+        barType = 'grouped';
+        ylabeltxt = 'Number of individuals [%]';
+end
 
 % get min and max values
 minY = min([y;yData]);
@@ -68,11 +84,14 @@ end
 ax = getReportFigure(WSettings,1,1,figureHandle);
 
 if isempty(xCategory)
-    bar(mBins,lnorm(1:length(mBins),:));
+    lgh = bar(mBins,lnorm(1:length(mBins),:),barType);
     set(ax,'xlim',bins([1 end]));
 else
-    bar(1:length(mBins),lnorm(1:length(mBins),:));
+    lgh = bar(1:length(mBins),lnorm(1:length(mBins),:),barType);
     set(ax,'xlim',[0.5 length(mBins)+0.5]);
+end
+for iL = 1:length(lgh);
+    set(lgh(iL),'displayname',lgtxt{iL});
 end
 
 colormap(ax,colMap);
@@ -80,16 +99,42 @@ colormap(ax,colMap);
 % set labels 
 if isempty(xCategory)
     xlabel(getLabelWithUnit(xLabel,xUnit));
-    legend(lgtxt,'location','northoutside');
 else
     xt = mBins(1:length(bins)-1);
     set(ax,'xtick',1:length(mBins),'xticklabel',xCategory(xt));
 end
-ylabel('Number of individuals [%]');
+ylabel(ylabeltxt);
 
-legend(ax,lgtxt,'location','northoutside');
+% flag specific add ons
+switch flag
+    case 'isResiduals'
+        xl = get(ax,'xlim');
+        xl = max(abs(xl)).*[-1 1];
+        set(ax,'xlim',xl);
+        yl = get(ax,'ylim');
+        
+        xNormal = xl(1):range(xl)/100:xl(2);
+        yNormal = pdf('normal',xNormal,0,1);
+        
+        lgh(end+1) = plot(xNormal,yNormal.*max(sum(lnorm,2))/max(yNormal),'-k','linewidth',2,'displayname','normal distribution');
+        plot([0 0],yl,'-k','linewidth',2)
+        
 
-% construct csvArray
+    otherwise
+end
+legend(lgh,get(lgh,'displayname'),'location','northoutside');
+
+
+
+
+
+%% construct csvArray
+switch flag
+    case 'isResiduals'
+%         no csv
+        return
+end
+
 csvArray(1,:) = {getLabelWithUnit(xLabel,xUnit),legendEntries{1}};
 for iBin = 1:length(bins)-1
     if isempty(xCategory)
