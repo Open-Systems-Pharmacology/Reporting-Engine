@@ -95,7 +95,7 @@ if ~isnan(yMin)
     ij = find(~isinf(yMin) & ~isinf(yMax)); 
     
     
-    lgh(2) = patch([time(ij); time(ij(end:-1:1))],[yMin(ij), yMax(ij(end:-1:1))],WSettings.colorVector(1,:),'linestyle','none','FaceAlpha',0.5,...
+    lgh(2) = patch([time(ij), time(ij(end:-1:1))],[yMin(ij), yMax(ij(end:-1:1))],WSettings.colorVector(1,:),'linestyle','none','FaceAlpha',0.5,...
         'EdgeColor',WSettings.colorVector(1,:),'displayname',strtrim(sprintf('%s %s',legendEntries{1},rangeTxt)));
 end
 
@@ -105,7 +105,7 @@ if ~isnan(yMinRef)
     % exclude log(0)
      ij = find(~isinf(yMinRef) & ~isinf(yMaxRef)); 
 
-    lgh(4) = patch([timeRef(ij); timeRef(ij(end:-1:1))],[yMinRef(ij), yMaxRef(ij(end:-1:1))],WSettings.colorVector(2,:),'linestyle','none','FaceAlpha',0.5,...
+    lgh(4) = patch([timeRef(ij), timeRef(ij(end:-1:1))],[yMinRef(ij), yMaxRef(ij(end:-1:1))],WSettings.colorVector(2,:),'linestyle','none','FaceAlpha',0.5,...
         'EdgeColor',WSettings.colorVector(2,:),'displayname',strtrim(sprintf('%s %s',legendEntries{2},rangeTxt)));
 end
 

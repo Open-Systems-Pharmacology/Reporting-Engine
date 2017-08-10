@@ -106,8 +106,7 @@ end
 ylabel(ylabeltxt);
 
 % flag specific add ons
-switch flag
-    case 'isResiduals'
+if strcmp(flag,'isResiduals')
         xl = get(ax,'xlim');
         xl = max(abs(xl)).*[-1 1];
         set(ax,'xlim',xl);
@@ -119,8 +118,6 @@ switch flag
         lgh(end+1) = plot(xNormal,yNormal.*max(sum(lnorm,2))/max(yNormal),'-k','linewidth',2,'displayname','normal distribution');
         plot([0 0],yl,'-k','linewidth',2)
         
-
-    otherwise
 end
 legend(lgh,get(lgh,'displayname'),'location','northoutside');
 
@@ -129,8 +126,7 @@ legend(lgh,get(lgh,'displayname'),'location','northoutside');
 
 
 %% construct csvArray
-switch flag
-    case 'isResiduals'
+if strcmp(flag,'isResiduals')
 %         no csv
         return
 end

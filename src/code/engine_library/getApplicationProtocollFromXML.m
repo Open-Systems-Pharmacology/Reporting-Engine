@@ -147,8 +147,7 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
     ApplicationProtocol.(fieldNameStructure) = getParameter(pathID,simulationIndex,'parametertype','readonly');
 
     % check formulas
-    switch fieldNameStructure
-        case 'dose'
+    if strcmp(fieldNameStructure,'dose')
             formula = getParameter(pathID,simulationIndex,'parametertype','readonly','property','Formula');
             ApplicationProtocol.isDosePerBodyweight = ~isempty(strfind(formula,'DosePerBodyweight'));
             ApplicationProtocol.isDosePerBodySurfaceArea = ~isempty(strfind(formula,'DosePerBodySurfaceArea'));
@@ -172,6 +171,8 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
                     case 'drugMass'
                         % if drugmass is set individualized, dose ist absolute
                         ApplicationProtocol.isDosePerBodyweight = false;
+                    otherwise
+                        % no special action needed
                 end
             end
         end
@@ -179,8 +180,7 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
     end
 else
     % check if mandatory field are missing
-    switch fieldNameStructure
-        case {'startTime','dose','dosePerBodyWeight','drugMass'}
+    if ismember(fieldNameStructure,{'startTime','dose','dosePerBodyWeight','drugMass'})
                 writeToLog(sprintf('mandatory field %s is missing, applicationprotocol of xml is set to invalid',fieldNameStructure),...
                     WSettings.logfile,true,false);
                 isValid = false;

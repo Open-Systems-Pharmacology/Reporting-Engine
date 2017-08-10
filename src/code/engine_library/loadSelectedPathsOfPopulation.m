@@ -21,7 +21,7 @@ for iName = 1:length(listOfname)
     load(fullfile('tmp',listOfname{iName},'pop.mat'));
     [jj,ix] = ismember(parPathSelection(:,1),parPaths);
     
-    if sum(jj) < size(parPathSelection,2)
+    if sum(jj) < size(parPathSelection,1)
        error('Error path selection for population parameter, was not correct');
     end
 

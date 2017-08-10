@@ -53,6 +53,9 @@ if isempty(ixDim)
                 unitFactorMass = getUnitFactor(targetUnit,'µg*min/l','AUC (mass)');
                 unitFactorMolar = getUnitFactor('µmol*min/l',unit,'AUC (molar)');
                 unitFactor = unitFactorMolar./MW.*unitFactorMass;
+            otherwise
+                error('unknown dimension');
+
         end
         return
     end

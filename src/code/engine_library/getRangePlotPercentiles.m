@@ -36,6 +36,8 @@ else
         case 'mean'
             yMean=mean(y,1);
             legendTextMean='arith. mean';
+        otherwise
+            error('unknown flag')
     end
 
     % get text for range legend

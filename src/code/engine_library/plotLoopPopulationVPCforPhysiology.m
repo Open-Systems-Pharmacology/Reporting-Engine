@@ -49,6 +49,9 @@ switch Def.popRunSetMerger
         nInnerLoop = 1;
         sheetNameList = {PopRunSet(Def.ixOfPopRunSets).name};
         populationReportName = {PopRunSet(Def.ixOfPopRunSets).popReportName};
+    otherwise
+        error('flag');
+
 end
 
 % start Loop
@@ -73,7 +76,7 @@ for iSet = 1:nOuterLoop
     
     for iY = 1:size(Def.yList,1)
 
-        jY = strcmp(Def.yList{iY,1},parPathSelection);
+        jY = strcmp(Def.yList{iY,1},parPathSelection(:,1));
         y = parValues(:,jY);
         
         % reference
@@ -126,8 +129,8 @@ for iSet = 1:nOuterLoop
         
             
                 if warningflagRangePlots
-                   writeToLog(sprintf(['WARNING: you are creating Rangeplots with less than %d individual. ',...
-                       'Statistic might be not sufficient'],WSettings.rangePlotsMin),WSettings.logfile,true,false); 
+                   writeToLog(sprintf(['WARNING: you are creating Rangeplots with %d individuals, recommended are at least %d individual. ',...
+                       'Statistic might be not sufficient'],size(parValues,1),WSettings.rangePlotsMin),WSettings.logfile,true,false); 
                     warningflagRangePlots = false;
                 end
                 

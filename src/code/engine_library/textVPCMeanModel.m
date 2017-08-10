@@ -45,6 +45,9 @@ switch figureType
     case 'qqRes'
         [figtxt,legendEntries] = textVPCResidualsAsQQPlot(inputArray{1},inputArray{2});
 
+    otherwise
+        error('unknown figureType');
+
 end
 
 
@@ -72,6 +75,8 @@ switch scale
         figtxt = sprintf('%s Time profiles are plotted in a linear scale.',figtxt);
     case 'log'
         figtxt = sprintf('%s Time profiles are plotted in a logarithmic scale.',figtxt);
+    otherwise
+        error('unknown scale')
 end
 
 
@@ -100,6 +105,9 @@ switch scale
         figtxt = sprintf('%s Prediction and observations are plotted in a linear scale.',figtxt);
     case 'log'
         figtxt = sprintf('%s Prediction and observations are plotted in a logarithmic scale.',figtxt);
+    otherwise
+        error('unknown scale')
+
 end
 
 
@@ -120,6 +128,9 @@ switch scale
         figtxt = sprintf('Linear residuals of %s vs predicted values for %s. Data source: %s.',output,simulation,nameData);
     case 'log'
         figtxt = sprintf('Logarithmic resiudals vs predicted values of %s for %s. Data source: %s.',output,simulation,nameData);
+    otherwise
+        error('unknown scale')
+
 end
 
 if ~isnan(lloq)
@@ -139,6 +150,9 @@ switch scale
         figtxt = sprintf('Linear resiudals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
     case 'log'
         figtxt = sprintf('Logarithmic resiudals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
+    otherwise
+        error('unknown scale')
+
 end
 
 if ~isnan(lloq)

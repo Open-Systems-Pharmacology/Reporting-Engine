@@ -78,6 +78,9 @@ for iO = 1:length(o)
                 else
                     y=[];
                 end
+            otherwise
+                error('unknown flag');
+
         end
         
         if ~isempty(y)
@@ -95,7 +98,12 @@ for iO = 1:length(o)
                         % get name and figure description
                         figureName = sprintf('bwRatio%d_%s_%s',iPK,removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
                         [figtxt,figtxtTable] = feval(textFunctionHandle,WSettings,'pkBWRatio',...
-                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale}});
+                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale},reportNameRef});
+                        
+                    otherwise
+                        error('unknown flag');
+
+
                 end
                 
                 % do figure
@@ -172,8 +180,8 @@ for iO = 1:length(o)
             end
        
             if warningflagRangePlots
-                writeToLog(sprintf(['WARNING: you are creating Rangeplots with less than %d individual. ',...
-                    'Statistic might be not sufficient'],WSettings.rangePlotsMin),WSettings.logfile,true,false);
+                writeToLog(sprintf(['WARNING: you are creating Rangeplots with %d individuals, recommended are at least %d individuals. ',...
+                    'Statistic might be not sufficient'],length(y),WSettings.rangePlotsMin),WSettings.logfile,true,false);
                 warningflagRangePlots = false;
             end
 
@@ -236,6 +244,8 @@ for iSet = 1:length(PopRunSet)
                         case 'vector'
                             o(iO).values(1:length(PKPList{iO}(iPK).value),iPK) = ...
                                 PKPList{iO}(iPK).value.*OutputList(iO).pKParameterList{3,iPK}; %#ok<AGROW>
+                        otherwise
+                            error('unknown flag');
                     end
                 end
             end
@@ -265,8 +275,7 @@ for iSet = 1:length(PopRunSet)
                 % add values
                 nInd = length(PKPList{iO}(1).value);
                 nIndOld = size(o(iO).values,1);
-                switch flag
-                    case 'matrix'
+                if strcmp(flag,'matrix')
                         if nInd > nIndOld
                             o(iO).values(nIndOld+1:nInd,:,:) = nan; %#ok<AGROW>
                         end
@@ -282,6 +291,10 @@ for iSet = 1:length(PopRunSet)
                             o(iO).values(:,iSet,ixTarget(k)) = tmp; %#ok<AGROW>
                         case 'vector'
                             o(iO).values(nIndOld+[1:nInd],ixTarget(k)) = tmp; %#ok<AGROW>
+                            
+                        otherwise
+                            error('unknown flag');
+
                     end
                 end
             end

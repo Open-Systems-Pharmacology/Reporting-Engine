@@ -71,3 +71,6 @@
 %  configuration function
 %   ReportingEngineVersionInfo                 - configuration function, here properties of the reporting engine are listed
 %  
+%   calculatesPKParameterList                  - GENERATEPKPARAMETERLIST calculates the Pkparameter
+%   generateSimResult                          - processes given  simulation with differnet parameter values
+%   loadSimResult                              - load the simulated result for one sepcific output

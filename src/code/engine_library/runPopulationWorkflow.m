@@ -14,7 +14,7 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-try
+% try
     %% check optional inputs
     if ~exist('Datafiles','var')
         Datafiles = {};
@@ -39,7 +39,8 @@ try
     if TaskList.calculatePKParameter
         if ~ TaskList.simulatePopulation
             for iSet = 1:length(PopRunSet)
-                if ~exist(fullfile('simulations',[PopRunSet(iSet).name '-Results.csv']),'file')
+                tmp = dir(fullfile('simulations',[PopRunSet(iSet).name '*-Results.csv']));
+                if isempty(tmp)
                     writeToLog(sprintf('ERROR: results for "%s" does not exist, please set Task simulatePopulation to true',PopRunSet(iSet).name),WSettings.logfile,true,false);
                     successInputCheck = false;
                 end
@@ -137,13 +138,13 @@ try
     end
 
     
-catch exception
-    
-    save('exception.mat','exception')
-    writeToLog(exception.message,WSettings.logfile,true,false);
-    
-end
-
+% catch exception
+%     
+%     save('exception.mat','exception')
+%     writeToLog(exception.message,WSettings.logfile,true,false);
+%     
+% end
+% 
 
 
 return
@@ -168,6 +169,19 @@ end
 % read population csv
 [parPaths,parValues] = readPopulationCSV(PopRunSet.popcsv);
 
+
+% add BSA if not available
+if ~any(strcmp(parPaths,'Organism|BSA'))
+    parPaths{end+1} = 'Organism|BSA';
+    
+    jj = strcmp('Organism|Weight',parPaths);
+    weight =  parValues(:,jj);
+    jj = strcmp('Organism|Height',parPaths);
+    height =  parValues(:,jj);
+    parValues(:,end+1) = calculateBodySurfaceArea(WSettings,weight,height);
+end
+
+
 % add studyDesign if one is given
 if ~isempty(PopRunSet.studyDesign)
     [parPaths,parValues,ixStudyDesign] = readStudyDesign(WSettings,PopRunSet.studyDesign,parPaths,parValues);
@@ -179,6 +193,7 @@ else
     parPathsStudyDesign = [];
     parValuesStudyDesign = [];
 end
+
 
 save(fullfile(tmpDir,'pop.mat'),'parPaths','parValues','ixStudyDesign');
 
@@ -209,6 +224,8 @@ for iPar = 1:length(parPaths)
         switch parPaths{iPar}
             case {'IndividualId','Gender','RaceIndex','Population Name'}
                 unit{iPar} = 'none';
+            case 'Organism|BSA'
+                 unit{iPar} = 'dm²';
             otherwise
                 unit{iPar} = 'none';
                 writeToLog(sprintf('WARNING: For "%s" no base unit could be identified, may be cause problems if plotted',parPaths{iPar}),WSettings.logfile,true,false);
@@ -249,7 +266,7 @@ end
 
 save(fullfile(tmpDir,'outputList.mat'),'OutputList');
 
-% check if ontogenyFactors should be added to the physology plotList
+% check if ontogenyFactors should be added to the physiology plotList
 if ~isempty(VPC) && ...
  any(strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>'))
     ontogenyIDs = getParameter('*|Ontogeny factor*',1,'parametertype','readonly','property','ID');

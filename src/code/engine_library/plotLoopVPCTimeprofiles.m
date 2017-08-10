@@ -23,14 +23,13 @@ function FP = plotLoopVPCTimeprofiles(WSettings,textFunctionHandle,Def,RunSet,FP
 
 % get Reference simulation
 if isfield(Def,'ixRunSetRef') &&  ~isempty(Def.ixRunSetRef)
-    SimResultRef = loadSim(RunSet(Def.ixRunSetRef).name);
     popReportNameRef = RunSet(Def.ixRunSetRef).popReportName;
     reportNameRef = RunSet(Def.ixRunSetRef).reportName;
 else
-    SimResultRef = [];
     popReportNameRef = '';
     reportNameRef = '';
 end
+
 
 % get factor to translate time in  diplay units
 timeUnitFactor = getUnitFactor('',Def.timeDisplayUnit,'Time');
@@ -49,52 +48,60 @@ for iSet = Def.ixOfRunSets
         popReportName = '';
     end
     
-
-    % load Simulation
-    SimResult = loadSim(RunSet(iSet).name);
-    
-    % check if it is a multi application to generate timeLimits
-    load(fullfile('tmp',RunSet(iSet).name,'applicationProtocol.mat'));
-    if isValid
-        startTimes = unique([ApplicationProtocol.startTime]);
-    end
-        
-    if ~isempty(Def.timelimit)
-        timelimit = Def.timelimit;
-        timeRangetxt = sprintf('simulation time range %g - %g %s',timelimit(1),timelimit(2),Def.timeDisplayUnit);
-    elseif ~isValid || length(startTimes) ==1
-        timelimit = SimResult.time([1 end])';
-        timeRangetxt = {};
-    else
-        timelimit = [SimResult.time([1 end])';...
-            startTimes(1:2);...
-            startTimes(end) SimResult.time(end)];
-        timeRangetxt = {'total simulation time range','first application range','last application range'};
-    end
-    
     % load OutputList of population
     load(fullfile('tmp',RunSet(iSet).name,'outputList.mat'));
     
     % load data if available
     [~,TP,~] = loadMergedData(WSettings,{RunSet(iSet).name});
     dataReportName = RunSet(iSet).dataReportName;
-   
-    % initialize resiudla vector 
+    
+    % initialize residual vector for all outputs
     residuals = [];
+    
     
     % loop on Outputs
     for iO = 1:length(OutputList)
+
+        % load Simulation
+        [simTime,simValues,pathID] = loadSimResult(RunSet(iSet).name,iO);
+        if isfield(Def,'ixRunSetRef') &&  ~isempty(Def.ixRunSetRef)
+            [simTimeRef,simValuesRef] = loadSimResult(RunSet(Def.ixRunSetRef).name,nan,pathID);   
+        else
+            simTimeRef = [];
+            simValuesRef = [];
+        end
+    
+        % check if it is a multi application to generate timeLimits
+        load(fullfile('tmp',RunSet(iSet).name,'applicationProtocol.mat'));
+        if isValid
+            startTimes = unique([ApplicationProtocol.startTime]);
+        end
+        
+        if ~isempty(Def.timelimit)
+            timelimit = Def.timelimit;
+            timeRangetxt = sprintf('simulation time range %g - %g %s',timelimit(1),timelimit(2),Def.timeDisplayUnit);
+        elseif ~isValid || length(startTimes) ==1
+            timelimit = [simTime(1) simTime(end)];
+            timeRangetxt = {};
+        else
+            timelimit = [simTime([1 end])';...
+                startTimes(1:2);...
+                startTimes(end) simTime(end)];
+            timeRangetxt = {'total simulation time range','first application range','last application range'};
+        end
+        
+    
         
         for iT = 1:size(timelimit,1)
 
             % get indices for time range and adjust time
-            jjT = SimResult.time >= timelimit(iT,1) & SimResult.time <= timelimit(iT,2);
-            time = (SimResult.time(jjT) - timelimit(iT,1)).*timeUnitFactor;
-            
+            jjT = simTime >= timelimit(iT,1) & simTime <= timelimit(iT,2);
+            time = (simTime(jjT) - timelimit(iT,1)).*timeUnitFactor;
+
             % get indices for time range and adjust time for reference simulation
-            if ~isempty(SimResultRef)
-                jjTRef = SimResultRef.time >= timelimit(iT,1) & SimResultRef.time <= timelimit(iT,2);
-                timeRef = (SimResultRef.time(jjT) - timelimit(iT,1)).*timeUnitFactor;
+            if ~isempty(simTimeRef)
+                jjTRef = simTimeRef >= timelimit(iT,1) & simTimeRef <= timelimit(iT,2);
+                timeRef = (simTimeRef(jjT) - timelimit(iT,1)).*timeUnitFactor;
             else
                 timeRef = [];
             end
@@ -119,15 +126,12 @@ for iSet = Def.ixOfRunSets
             
         
             % get Y values for time range
-            y = SimResult.values{iO}(jjT,:).*OutputList(iO).unitFactor;
+            y = simValues(jjT,:).*OutputList(iO).unitFactor;
             
             % check if  reference output exists
             yRef = [];
-            if ~isempty(SimResultRef)
-                jj = strcmp(OutputList(iO).pathID,SimResultRef.outputPathList);
-                if any(jj)
-                    yRef = SimResultRef.values{jj}(jjTRef,:).*OutputList(iO).unitFactor;
-                end
+            if ~isempty(simValuesRef)
+                yRef = simValuesRef(jjTRef,:).*OutputList(iO).unitFactor;
             end
             
             % get data for this timelimit           
@@ -186,13 +190,13 @@ for iSet = Def.ixOfRunSets
                 
                 % get name and figure description
                 figureName = sprintf('O%d_RvT_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpResVsTime',...
+                figtxt= feval(textFunctionHandle,WSettings,'tpResVsTime',...
                     {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
                     lloq,popReportName});
                 
                 % do the plot
                 plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
-                    OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,OutputList(iO).residualScale,'vsTime',lloq);
+                    OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsTime');
                 
                 % save figure
                 FP = FP.printFigure(figureName,figtxt);
@@ -202,13 +206,14 @@ for iSet = Def.ixOfRunSets
                 
                 % get name and figure description
                 figureName = sprintf('O%d_RvY_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpResVsY',...
+                figtxt = feval(textFunctionHandle,WSettings,'tpResVsY',...
                     {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,OutputList(iO).residualScale,...
                     lloq,popReportName});
                 
                 % do the plot
                 plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
-                    OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,OutputList(iO).residualScale,'vsY',lloq);
+                    OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsY');
+                
                 
                 % save figure
                 FP = FP.printFigure(figureName,figtxt);
@@ -225,9 +230,9 @@ for iSet = Def.ixOfRunSets
         if any(ismember({'histRes','qqPlotRes'},Def.plotTypes))  && ~isempty(DataTP)
         
             % get Y values for time range
-            y = SimResult.values{iO}.*OutputList(iO).unitFactor;                        
+            y = simValues.*OutputList(iO).unitFactor;                        
             % get data for this timelimit           
-            [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,[0 SimResult.time(end)],SimResult.time,y);
+            [DataTP] = prepareDataForTimeRange(WSettings,TP,iO,[0 simTime(end)],simTime,y);
             
             for iInd = 1:length(DataTP)
                 offset = size(residuals,1);
@@ -241,6 +246,9 @@ for iSet = Def.ixOfRunSets
                         jj = DataTP(iInd).y > 0 & DataTP(iInd).predicted > 0;
                         residuals(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
                         residuals(offset+[1:sum(jj)],2) = iO; %#ok<AGROW>
+                    otherwise
+                        error('scale');
+
                 end
             end
         end
@@ -269,11 +277,11 @@ for iSet = Def.ixOfRunSets
         
         % get name and figure description
         figureName = 'ResidualQQplot';
-        [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'qqRes',...
+        figtxt = feval(textFunctionHandle,WSettings,'qqRes',...
             {{OutputList.reportName},RunSet(iSet).reportName,popReportName});
         
         % do the plot
-        plotReportQQPlot(WSettings,FP.figureHandle,residuals(:,1) ,residuals(:,2),legendEntries);
+        plotReportQQPlot(WSettings,FP.figureHandle,residuals(:,1));
         
         % save figure
         FP = FP.printFigure(figureName,figtxt);
@@ -284,18 +292,6 @@ end % iSet
 
 return
     
-
-function SimResult = loadSim(simulationName)
-
-fname = fullfile('tmp',simulationName,'simResult.mat');
-
-if ~exist(fname,'file')
-    SimResult = readPopulationResultfile(simulationName);
-else
-    load(fname);
-end
-
-
 
 function  [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit,time,y)
 

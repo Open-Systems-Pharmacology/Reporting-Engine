@@ -1,5 +1,5 @@
 function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
-% RUNMEANMODELWORKFLOW master routine for population workflow
+%RUNMEANMODELWORKFLOW master routine for Mean Model workflow
 %
 % runMeanModelWorkflow(TaskList,WSettings,PopRunSet,varargin)
 % 
@@ -177,39 +177,21 @@ save(fullfile(tmpDir,'outputList.mat'),'OutputList');
 if ~successInputCheck
     return
 end
-    
-processSimulation(simulationIndex);
 
-% initialize result array
-SimResult.time(:,1) = getSimulationTime(simulationIndex);
-SimResult.values = cell(1,length( OutputList));
-SimResult.PKPList = {};
+SimResult = generateSimResult(WSettings,'',simulationIndex,{},[],{OutputList.pathID},1,0); %#ok<NASGU>
 
-% get result
-for iO=1:length( OutputList(iO))
-    [~,tmpValues] = getSimulationResult(['*|' OutputList(iO).pathID],simulationIndex);
-    SimResult.values{iO}(:,1) = tmpValues;
-    
-    if ~isempty(OutputList(iO).pKParameterList)
-        
-        weight = getParameter('*|Organism|Weight',simulationIndex,'parametertype','readonly');
-        height = getParameter('*|Organism|Height',simulationIndex,'parametertype','readonly');
-        
-        if ~isempty(MeanModelSet.calculatePKParameterFh)
-            tmp = feval(MeanModelSet.calculatePKParameterFh,WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO}(:,1),{},[]);
-        else
-            tmp = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,SimResult.time,SimResult.values{iO}(:,1),weight,height);
-        end
-        [jj,ix] = ismember(OutputList(iO).pKParameterList(1,:),{PKParameterTemplate.name});
-        SimResult.PKPList{iO} = tmp(ix(jj));
-    else
-        SimResult.PKPList{iO} = [];
-    end
-        
-end
-  
 % save as temporary file
-save(fullfile(tmpDir,'simResult.mat'),'SimResult');
+save(fullfile(tmpDir,'simResult_1.mat'),'SimResult');
+
+% start the caluclation
+parPaths = {'Organism|Weight','Organism|Height'};
+parValues(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
+parValues(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');
+PKPList = calculatesPKParameterList(WSettings,MeanModelSet.name,MeanModelSet.calculatePKParameterFh,parPaths,parValues); %#ok<NASGU>
+
+% save as temporary file
+save(fullfile(tmpDir,'pKPList.mat'),'PKPList');
+  
 
 return
     

@@ -65,6 +65,7 @@ switch flag
             'Organism|Weight', 'Body weight', 'kg',{};...
             'Organism|Height', 'Height', 'cm',{};...
             'Organism|BMI', 'BMI', 'kg/m²',{};...
+            'Organism|BSA', 'Body surface area', 'm²',{};...
             'Gender', 'Gender', '',{'Male','Female'}};
         
         % list propety which shall be displayed on the x-axes, if empty a
@@ -95,8 +96,11 @@ switch flag
             'Organism|Weight', 'Body weight', 'kg',{};...
             'Organism|Height', 'Height', 'cm',{};...
             'Organism|BMI', 'BMI', 'kg/m²',{};...
-            'Gender', '', '',{'Male','Female'};...
-            '<addOntogenyFactor>','','',{}};
+            'Organism|BSA', 'Body surface area', 'm²',{};...
+           'Gender', '', '',{'Male','Female'};...
+            '<addOntogenyFactor>','','',{}}; % if the code finds the key word <addOntogenyFactor> 
+        % in this cell array then all ontogeny factors included in the xml file are added to this structure
+        % automatically during initialization of the workflow.
         
         % list propety which shall be displayed on the x-axes, if empty a
         % histogramm will be created
@@ -120,7 +124,8 @@ switch flag
         else
             PhysProperties.ixPopRunSetRef = [];
         end
-        
+    otherwise
+        error('unknown flag')
 end
 
 
@@ -152,6 +157,9 @@ switch flag
         % histogramm will be created
         PKParameter.xList = {'Organism|Age', 'age', 'year(s)';...
             'Organism|Weight', 'weigth', 'kg'};
+    otherwise
+                error('unknown flag')
+
 end
 
 
@@ -178,7 +186,9 @@ switch flag
         % name of Reference Population
         ix = intersect(find(jj_ref),ix_unique);
         PKParameter.ixPopRunSetRef = ix(1);
-        
+    otherwise
+        error('unknown flag')
+  
 end
 
 

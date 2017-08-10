@@ -1,4 +1,4 @@
-function   plotReportResiduals(WSettings,figureHandle,DataTP,timeLabel,timeUnit,yLabel,yUnit,legendEntries,yscale,xAxesFlag,lloq)
+function   plotReportResiduals(WSettings,figureHandle,DataTP,timeLabel,timeUnit,yLabel,yUnit,yscale,xAxesFlag)
 % PLOTREPORTRESIDUALS plots residuals vs time or predicted y
 %
 % plotReportResiduals(WSettings,figureHandle,DataTP,xAxesFlag,yLabel,yUnit,timeLabel,Def.timeDisplayUnit,legendEntries,yscale,lloq)
@@ -34,6 +34,9 @@ switch xAxesFlag
         xField = 'predicted';
         xLabelTxt = {'predicted',getLabelWithUnit(yLabel,yUnit)};
         xscale = yscale;
+    otherwise
+        error('unknown flag');
+
 end
 
 
@@ -49,6 +52,9 @@ for iInd = 1:length(DataTP)
         case 'log'
             res = log(DataTP(iInd).y)-log(DataTP(iInd).predicted);
             resLloq = DataTP(iInd).lloq-DataTP(iInd).predicted;
+        otherwise
+            error('unknown scale');
+
     end
     
     plot(DataTP(iInd).(xField),res,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:));
@@ -67,6 +73,9 @@ xlabel(xLabelTxt);
          ylabel({'residual','(measured - predicted)'});
      case 'log'
          ylabel({'residual','(log(measured) - log(predicted))'});
+     otherwise
+         error('unknown scale');
+
  end
  
  

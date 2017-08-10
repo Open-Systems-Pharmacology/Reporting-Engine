@@ -11,7 +11,7 @@ function [parPaths,parValues] = readPopulationCSV(csvfile)
 
 
 if ~exist(csvfile,'file')
-    error('This file does no exist: %s')
+    error('This file does no exist: %s',csvfile)
 end
 
 % read data

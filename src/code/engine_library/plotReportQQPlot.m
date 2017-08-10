@@ -1,4 +1,4 @@
-function  plotReportQQPlot(WSettings,figureHandle,res,sourceIndex,legendEntries)
+function  plotReportQQPlot(WSettings,figureHandle,res)
 % PLOTREPORTQQPLOT creates qqPlot for residuals
 %
 % [csvArray] = plotReportQQPlot(WSettings,figureHandle,y,yRef,xLabel,legendEntries)
@@ -8,8 +8,6 @@ function  plotReportQQPlot(WSettings,figureHandle,res,sourceIndex,legendEntries)
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %       res  ( double vector nInd x 1) property to plot
 %      sourceIndex (double vector) (nInd x 1) index of source population
-%       legendEntries (cell array of strings) {name of population for
-%                       legend, name of reference population for legend}
 %
 % Output
 %   csv (cellarray) table with numeric information to the plot

@@ -11,9 +11,9 @@ function [figtxt,figtxtTable,legendEntries] = textVPCPopulation(WSettings,figure
 
 
 % initialize outputs
-figtxt = '';
-figtxtTable = '';
-legendEntries = {};
+figtxt = ''; %#ok<NASGU>
+figtxtTable = '';%#ok<NASGU>
+legendEntries = {};%#ok<NASGU>
 
 switch figureType
     
@@ -36,10 +36,17 @@ switch figureType
     case 'pkBW'
         [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBW(WSettings,inputArray{1},inputArray{2},inputArray{3},inputArray{4},inputArray{5});
         
+        
+    case 'pkBWRatio'
+        [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBWRatio(WSettings,inputArray{1},...
+            inputArray{2},inputArray{3},inputArray{4},inputArray{5},inputArray{6});
+        
     % shaded Area for PK Parameter
     case 'pkShA'
         [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShA(inputArray{1},inputArray{2},inputArray{3},inputArray{4},...
             inputArray{5},inputArray{6});
+    otherwise
+        error('unknown figureType')
 
 end
 
@@ -112,6 +119,9 @@ switch scale
         figtxt = sprintf('%s Time profiles are plotted in a linear scale.',figtxt);
     case 'log'
         figtxt = sprintf('%s Time profiles are plotted in a logarithmic scale.',figtxt);
+    otherwise
+        error('unknown scale')
+
 end
 
 
@@ -167,6 +177,43 @@ else
 end
 
 return
+function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBWRatio(WSettings,yLabel,output,reportNames,popReportNames,scale,refReportName)
+
+
+% get table header
+figtxtTable = sprintf('Percentile of %s of %s normalized to individuals of %s.',yLabel,output,refReportName);
+
+% check if extrameas are plotted
+extremaTxt = '';
+if WSettings.boxwhiskerWithExtrema
+ extremaTxt = ' and extremes as open circles';
+end
+
+% get figure description
+figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the percentiles %d, %d, %d, %d, and %d%s',...
+    yLabel,output,WSettings.displayPercentiles(1),WSettings.displayPercentiles(2),WSettings.displayPercentiles(3),...
+    WSettings.displayPercentiles(4),WSettings.displayPercentiles(5),extremaTxt);
+
+% set scale text
+switch scale
+    case 'lin'
+        figtxt = sprintf('%s in a linear scale.',figtxt);
+    case 'log'
+        figtxt = sprintf('%s in a logarithmic scale.',figtxt);
+end
+
+% get xLabels
+if length(reportNames) ==1
+    legendEntries = {''};
+elseif length(unique(popReportNames)) == length(popReportNames);
+    legendEntries = popReportNames;
+elseif  length(unique(reportNames)) == length(reportNames);
+     legendEntries = reportNames;
+else
+     legendEntries = strcat(popReportNames,'; ',reportNames);
+end
+
+return
 
 
 function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShA(xPhys,yLabel,output,reportNames,refReportName,scale)
@@ -182,6 +229,9 @@ switch scale
         figtxt = sprintf('%s in a linear scale.',figtxtTable);
     case 'log'
         figtxt = sprintf('%s in a logarithmic scale.',figtxtTable);
+    otherwise
+        error('unknown scale')
+
 end
 
 legendEntries={reportNames,refReportName};

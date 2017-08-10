@@ -59,6 +59,8 @@ classdef ReportFigurePrint
                     case 'LANDSCAPE'
                         obj.PsOrientation='Landscape';
                         obj.PaperPosition=[0 0 27 20];
+                    otherwise
+                        error('unknonw format')
                 end
             end
 

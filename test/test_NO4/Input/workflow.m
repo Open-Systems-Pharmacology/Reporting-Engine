@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 09-Aug-2017 16:18:16
+% Original author: ZTCOK 10-Aug-2017 16:13:59
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -35,7 +35,7 @@ PopRunSet(1) = struct('name','OralSingle_IV_Multi','reportName','Multi IV and PO
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',1,'doSensitivityAnalysis',1);
+TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',0,'doSensitivityAnalysis',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available

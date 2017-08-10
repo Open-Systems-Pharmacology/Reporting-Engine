@@ -47,6 +47,9 @@ WSettings.shadedAreaMeanType = 'median';
 WSettings.boxwhiskerWithExtrema = false;
 
 %% recommendations
+% number of indivduals per resultfile
+WSettings.nIndPerSimResult = 1000;
+
 % minimal number for rangeplots
 WSettings.rangePlotsMin = 20000;
 

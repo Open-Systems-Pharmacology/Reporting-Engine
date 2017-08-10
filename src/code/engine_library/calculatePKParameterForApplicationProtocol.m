@@ -61,6 +61,8 @@ for iInt = 1:length(intervalList)
             
         case 'tLast_tEnd'
             timeRange = [startingTimes(end) simTime(end)];
+        otherwise
+            error('unknown timerange');
     end
 
     % get List of PK Parameter
@@ -193,6 +195,8 @@ switch flag
         PKParameterTemplate(end+1) = iniPKParameterTemplate('F_at_t2','F_{t end} (first dosing interval)','','1','cend','t1_t2'); 
         PKParameterTemplate(end+1) = iniPKParameterTemplate('F_at_tLast','F_{t end} (last dosing interval)','','1','cend','tLast_tEnd');
 
+    otherwise
+        error('unknown flag');
 end
 
 return

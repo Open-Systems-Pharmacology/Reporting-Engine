@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 09-Aug-2017 16:52:35
+% Original author: ZTCOK 10-Aug-2017 16:19:21
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml

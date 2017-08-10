@@ -34,6 +34,9 @@ switch yscale
         end
         yMin = yMin/2;
         yMax = max(max(cellfun(@max,{DataTP.y})),max(cellfun(@max,{DataTP.predicted})))*2;
+    otherwise
+        error('unknown flag');
+
 end
 
 % create figure

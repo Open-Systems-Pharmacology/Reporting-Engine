@@ -11,7 +11,7 @@ mkdir(testDir);
 logfile = fullfile(maindir,testDir,'logfile.txt');
         
 % loop on tests
-for iTest = 9:length(testList)
+for iTest = 1:length(testList);
 
     try
 
@@ -23,13 +23,13 @@ for iTest = 9:length(testList)
         targetDir = fullfile(maindir,testDir,testList(iTest).name);
         preparationDir = fullfile(maindir,testList(iTest).name,'prepareInput');
         
-        cd(preparationDir)
-        if exist('Workflow.xlsx','file')
-            preparePopulationWorkflow('Workflow.xlsx');
-        else
-            prepareMeanModelWorkflow('WorkflowMean.xlsx');
-        end
-        copyfile(fullfile(preparationDir,'workflow.m'),fullfile(sourceDir,'workflow.m'));
+%         cd(preparationDir)
+%         if exist('Workflow.xlsx','file')
+%             preparePopulationWorkflow('Workflow.xlsx');
+%         else
+%             prepareMeanModelWorkflow('WorkflowMean.xlsx');
+%         end
+%         copyfile(fullfile(preparationDir,'workflow.m'),fullfile(sourceDir,'workflow.m'));
         
         
         
