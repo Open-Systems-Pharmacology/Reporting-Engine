@@ -1,0 +1,13 @@
+PK parameter of C1 plasma;
+S1_bw1_C_max_lin;C_{max} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw1_C_max_log;C_{max} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S1_bw2_t_max_lin;t_{max} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw2_t_max_log;t_{max} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S1_bw3_C_tEnd_lin;C_{tEnd} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw3_C_tEnd_log;C_{tEnd} of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S1_bw4_AUC_lin;AUC of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw4_AUC_log;AUC of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S1_bw5_CL_lin;CL of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw5_CL_log;CL of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S1_bw6_Vss_lin;Vss of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S1_bw6_Vss_log;Vss of C1 plasma shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.

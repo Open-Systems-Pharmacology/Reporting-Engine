@@ -1,0 +1,23 @@
+09-Aug-2017 17:26:19 Start Workflow of type Population Simulation 
+ System is NOT validated 
+ Computer BY0LBF (PCWIN) 
+ Reporting Engine version: 0.1 
+ Open Systems Pharmacology Suite version: 7.1 
+ Version of SimModel: 2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 8.2.0.701 (R2013b) 
+
+09-Aug-2017 17:26:20 Start input checks
+09-Aug-2017 17:26:32 Applicationprotocol
+09-Aug-2017 17:26:32   Bolus_single|Application_1: start time 0 min; dose 73 mg; infusion time 0 min
+09-Aug-2017 17:26:35 Input checks were successfully executed. 
+
+09-Aug-2017 17:26:35 Start Simulation of SingleIvBolus
+09-Aug-2017 17:26:53 Simulation finished 
+
+09-Aug-2017 17:26:53 Calculate PK Parameter of SingleIvBolus
+09-Aug-2017 17:26:53 Calculation finished 
+
+09-Aug-2017 17:26:53 Start Population VPC
+09-Aug-2017 17:27:44 Finalized Population VPC 
+

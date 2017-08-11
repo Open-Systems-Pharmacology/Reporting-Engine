@@ -13,9 +13,7 @@ function [csv] = plotReportBoxwhisker(WSettings,figureHandle,y,yLabel,yUnit,ysca
 % Output
 %   csv (cellarray) table with numeric information to the plot
 
-
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 1-Aug-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
 % calculate percentiles
@@ -28,7 +26,7 @@ end
 
 for iSet=1:size(y,2)
     
-    if WSettings.withExtrema
+    if WSettings.boxwhiskerWithExtrema
         jjOut = y(:,iSet) < pct(1,iSet) | y(:,iSet) > pct(end,iSet);
         outlier=[outlier;[repmat(iSet,sum(jjOut),1), y(jjOut,iSet)]]; %#ok<AGROW>
     end
@@ -65,7 +63,7 @@ for iX = ji_plot
 end
 
 % outlier
-if WSettings.withExtrema
+if WSettings.boxwhiskerWithExtrema
     plot(outlier(:,1),outlier(:,2),'o','color',WSettings.colorVector(1,:),'linewidth',2,'markersize',6);
 end
 
@@ -94,11 +92,11 @@ end
 iRow = size(csv,1);
 
     
-% heder for differnt sets
+% header for differnt sets
 csv((iRow+1:iRow+size(y,2)),1) = xLabel;
 
 % percentiles
-csv((iRow+1):(iRow+size(y,2)),2:(1+size(pct,1))) = num2cell(pct);
+csv((iRow+1):(iRow+size(y,2)),2:(1+size(pct,1))) = num2cell(pct)';
 
 return
 

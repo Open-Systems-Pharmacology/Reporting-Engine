@@ -1,0 +1,7 @@
+Percentile of Age for virtual adult population.;
+;
+Age [year(s)];adult: n=10
+23 <= Age < 35.4;3
+35.4 <= Age < 60.2;4
+60.2 <= Age < 85.1;1
+85.1 <= Age < 97.5;2

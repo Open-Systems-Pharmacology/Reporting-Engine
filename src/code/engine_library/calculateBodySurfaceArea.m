@@ -9,8 +9,8 @@ function BSA = calculateBodySurfaceArea(WSettings,weight,height)
 %  weight (double vector) body weight of individuals [kg]
 %  height (double vector) height of individuals [dm]
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 31-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 switch WSettings.BSA_calculationmethode
 
@@ -19,7 +19,9 @@ switch WSettings.BSA_calculationmethode
         
     case 'Haycock'
         BSA = (0.024265.* (height.*10).^0.3964.* weight.^0.5378).*100;
-    
+    otherwise
+        
+        error('unknonw BSA caluclationmethode');
 end
 
 return

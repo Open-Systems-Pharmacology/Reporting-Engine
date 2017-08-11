@@ -1,0 +1,6 @@
+Time profiles of Theophylline for a PO administration of 320 mg;
+S1_O1_TP_Theophylline_lin;Time profile of Theophylline for PO administration of 320 mg. Data source: Boeckmann 1994. Time profiles are plotted in a linear scale.
+S1_O1_TP_Theophylline_log;Time profile of Theophylline for PO administration of 320 mg. Data source: Boeckmann 1994. Time profiles are plotted in a logarithmic scale.
+S1_O1_PvO_Theophylline_log;Predicted vs observed of Theophylline for PO administration of 320 mg. Data source: Boeckmann 1994. Prediction and observations are plotted in a logarithmic scale.
+S1_O1_RvT_Theophylline_log;Logarithmic resiudals vs time of Theophylline for PO administration of 320 mg. Data source: Boeckmann 1994.
+S1_O1_RvY_Theophylline_log;Logarithmic resiudals vs predicted values of Theophylline for PO administration of 320 mg. Data source: Boeckmann 1994.

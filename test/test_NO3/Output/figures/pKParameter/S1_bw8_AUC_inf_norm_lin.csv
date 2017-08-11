@@ -1,0 +1,5 @@
+Percentile of AUC_{inf} norm of C1 plasma.;;;;;
+;;;;;
+AUC_{inf} norm [µg*min/l];;;;;
+;5^{th} precentile;25^{th} precentile;50^{th} precentile;75^{th} precentile;95^{th} precentile
+;221831061077.0374;363530174008.4995;444060039770.1305;552312387819.0303;1053472385837.199

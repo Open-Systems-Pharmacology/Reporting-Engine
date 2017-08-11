@@ -1,8 +1,10 @@
-function [unitFactor,success] = getUnitfactorForOutputPath(Settings,pathID,targetUnit,simulationIndex)
+function [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,pathID,targetUnit,simulationIndex)
 % GETUNITFACTORFOROUTPUTPATH getfactor to convert output defined by path to target unit
 %
+%  [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,pathID,targetUnit,simulationIndex)
+%
 % Inputs: 
-%      - Settings (structure)    definition of properties used in all
+%      - WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %      - pathID (string)  path which identifies output
 %      - targetUnit (string) unit to convert internal unit
@@ -10,20 +12,16 @@ function [unitFactor,success] = getUnitfactorForOutputPath(Settings,pathID,targe
 %  Outputs:
 %      - unitFactor (double)  factor to convert interanl unit to target unit
 %      - success (boolean) if false, it was not possible to determine unit conversion factor
+%      - MW (double) molweigt of selected output
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 20-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-persistent unitList;
-persistent unitList_dimensionList;
 
-if isempty(unitList)
-    [unitList,unitList_dimensionList]=iniUnitList(0);
-end
 
 % initialie return values
 unitFactor = nan;
-success = true;
+success = true; %#ok<NASGU>
+MW = nan; %#ok<NASGU>
 
 % check if it is observer
 ise =  existsObserver(['*' pathID],simulationIndex);
@@ -50,11 +48,11 @@ end
     
 % if it neither observer nor statevariable, terminate function
 if ~ise
-    writeToLog(sprintf('ERROR: Outputpath "%s" could not be found in model',pathID),Settings.logfile,true,false);
+    writeToLog(sprintf('ERROR: Outputpath "%s" could not be found in model',pathID),WSettings.logfile,true,false);
     success = false;
     return
 end
     
-[unitFactor,success] = getUnitFactorForUnknownDimension(Settings,unit,targetUnit,MW);
+[unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,unit,targetUnit,MW);
 
 return

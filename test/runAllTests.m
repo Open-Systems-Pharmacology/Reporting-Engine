@@ -11,7 +11,7 @@ mkdir(testDir);
 logfile = fullfile(maindir,testDir,'logfile.txt');
         
 % loop on tests
-for iTest = 1:length(testList)
+for iTest = 1:length(testList);
 
     try
 
@@ -21,12 +21,26 @@ for iTest = 1:length(testList)
 
         sourceDir = fullfile(maindir,testList(iTest).name,'Input');
         targetDir = fullfile(maindir,testDir,testList(iTest).name);
+        preparationDir = fullfile(maindir,testList(iTest).name,'prepareInput');
+        
+%         cd(preparationDir)
+%         if exist('Workflow.xlsx','file')
+%             preparePopulationWorkflow('Workflow.xlsx');
+%         else
+%             prepareMeanModelWorkflow('WorkflowMean.xlsx');
+%         end
+%         copyfile(fullfile(preparationDir,'workflow.m'),fullfile(sourceDir,'workflow.m'));
+        
+        
         
         copyfile(sourceDir,targetDir);
         
         cd(targetDir);
         workflow;
-        if exist('checkTestResult.m','file')
+        if exist('exception.mat','file')
+            success = false;
+                writeToLog(sprintf('%s exception occured',testList(iTest).name),logfile,true,false);
+        elseif exist('checkTestResult.m','file')
             success = checkTestResult;
             if success
                 writeToLog(sprintf('%s was successful',testList(iTest).name),logfile,true,false);

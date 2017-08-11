@@ -1,0 +1,5 @@
+Percentile of Body weight for virtual children 0-3 years.;
+;
+Body weight [kg];0-3y: n=5
+10 <= Body weight < 14.2;2
+14.2 <= Body weight < 18.4;3

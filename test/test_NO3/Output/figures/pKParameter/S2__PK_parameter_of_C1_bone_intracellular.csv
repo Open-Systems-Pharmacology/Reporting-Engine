@@ -1,0 +1,29 @@
+PK parameter of C1 bone intracellular;
+S2_bw1_C_max_lin;C_{max} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw1_C_max_log;C_{max} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw2_C_max_norm_lin;C_{max} norm of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw2_C_max_norm_log;C_{max} norm of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw3_t_max_lin;t_{max} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw3_t_max_log;t_{max} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw4_C_tEnd_lin;C_{tEnd} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw4_C_tEnd_log;C_{tEnd} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw5_AUC_lin;AUC of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw5_AUC_log;AUC of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw6_AUC_norm_lin;AUC_{last} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw6_AUC_norm_log;AUC_{last} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw7_AUC_inf_lin;AUC_{inf} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw7_AUC_inf_log;AUC_{inf} of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw8_AUC_inf_norm_lin;AUC_{inf} norm of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw8_AUC_inf_norm_log;AUC_{inf} norm of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw9_MRT_lin;MRT of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw9_MRT_log;MRT of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw10_Thalf_lin;Thalf of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw10_Thalf_log;Thalf of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw11_FractionAucLastToInf_lin;Fraction AUC last to inf of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw11_FractionAucLastToInf_log;Fraction AUC last to inf of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw12_CL_lin;CL of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw12_CL_log;CL of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw13_Vss_lin;Vss of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw13_Vss_log;Vss of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.
+S2_bw14_Vd_lin;Vd of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a linear scale.
+S2_bw14_Vd_log;Vd of C1 bone intracellular shown as box whisker plot, which indicate the percentiles 5, 25, 50, 75, and 95 in a logarithmic scale.

@@ -1,36 +1,37 @@
-function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
+function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
 % master routine for population workflow
 %
+% runPopulationWorkflow(TaskList,WSettings,PopRunSet,varargin)
+% 
 % Inputs:
-%       TaskList (structure)    list of task which should be executed see GETDEFAULTTASKLISTPOPULATIONWORKFLOW
-%       Settings (structure)    definition of properties used in all
+%       WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%       PopRunSet (structure)   list of population simulations see GETDEFAULTPOPRUNSET
+%       TaskList (structure)    list of task which should be executed see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
+%       PopRunSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
+%       VPC  (structure) contains information which plots should be
+%               generated  see GETDEFAULTVPCPOPULATIONSETTINGS
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 14-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
 % try
     %% check optional inputs
-    [dataTpFile,VPC] = ...
-    checkInputOptions(varargin,{...
-    'dataTpFile','',{},...
-    'VPC','',[],...
-    });
+    if ~exist('Datafiles','var')
+        Datafiles = {};
+    end
 
     %% initialize workflow
-    [Settings] = initializeWorkflow('Population Simulation',Settings);
+    [WSettings] = initializeWorkflow('Population Simulation',WSettings);
     
     %% check if necessary inputs for task are available
-    writeToLog(sprintf('Start input checks'),Settings.logfile,true,false);
+    writeToLog(sprintf('Start input checks'),WSettings.logfile,true,false);
     
     successInputCheck = true;
 
     % simulation
     if TaskList.simulatePopulation
         for iSet = 1:length(PopRunSet)
-            successInputCheck = checkPopulationSimulationInput(Settings,PopRunSet(iSet)) & successInputCheck;
+            successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet(iSet)) & successInputCheck;
         end
     end
 
@@ -38,36 +39,33 @@ function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
     if TaskList.calculatePKParameter
         if ~ TaskList.simulatePopulation
             for iSet = 1:length(PopRunSet)
-                if ~exist(fullfile('Simulations',[PopRunSet(iSet).name '-Results.csv']),'file')
-                    writeToLog(sprintf('ERROR: results for "%s" does not exist, please set Task simulatePopulation to true',PopRunSet(iSet).name),Settings.logfile,true,false);
+                tmp = dir(fullfile('simulations',[PopRunSet(iSet).name '*-Results.csv']));
+                if isempty(tmp)
+                    writeToLog(sprintf('ERROR: results for "%s" does not exist, please set Task simulatePopulation to true',PopRunSet(iSet).name),WSettings.logfile,true,false);
                     successInputCheck = false;
                 end
-                successInputCheck = checkPopulationSimulationInput(Settings,PopRunSet(iSet)) & successInputCheck;
+                successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet(iSet)) & successInputCheck;
             end
         end
     end
 
     % data TP file
     % check if data read in is necessary
-    doReadDataTPfile = TaskList.doVPC & ~isempty(dataTpFile);
+    doReadDataTPfile = TaskList.doVPC & ~isempty(Datafiles);
     
-    % chekc file name of data read in
+    % check file name of data read in
     if doReadDataTPfile
-        if ~iscell(dataTpFile) || length(dataTpFile)~=2
-            writeToLog(sprintf('ERROR: variable dataTpFile for timeprofile data must be a cellarray, first entry datafile, second entry dictionary'),Settings.logfile,true,false);
-            successInputCheck = false;
-        else           
-            if ~exist(dataTpFile{1},'file')
-                writeToLog(sprintf('ERROR: Datafile %s does not exist',dataTpFile{1}),Settings.logfile,true,false);
-                successInputCheck = false;
-            end
-            if ~exist(dataTpFile{2},'file')
-                writeToLog(sprintf('ERROR: Dictionary %s for timeprofile datafile does not exist',dataTpFile{2}),Settings.logfile,true,false);
-                successInputCheck = false;
-            end
-        end
+        successInputCheck = checkInputDatafiles(WSettings,Datafiles) & successInputCheck;
     end
 
+    % PK Parameter
+    if TaskList.doVPC
+        if isempty(VPC)
+            writeToLog(sprintf('ERROR: VPC definition is missing!'),WSettings.logfile,true,false);
+            successInputCheck = false;
+        end
+    end
+    
     
     % stop if not all inputs are available
     if ~successInputCheck
@@ -79,8 +77,18 @@ function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
     % directory with infos like application protocols, and factor for
     % unitconversion 
     for iSet = 1:length(PopRunSet)
-        successInputCheck = preparePopulationSimulationConsistency(Settings,PopRunSet(iSet)) & successInputCheck;
+        [success,VPC] = preparePopulationSimulation(WSettings,PopRunSet(iSet),VPC);
+        successInputCheck = success & successInputCheck;
     end
+    % ontogeny factors are added now, get rid of keay word
+    if ~isempty(VPC)
+        jj = strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>');
+        if any(jj)
+            VPC.PhysProperties.yList = VPC.PhysProperties.yList(~jj,:);
+        end
+    end
+        
+
     
     % stop if inpt is inconsistent
     if ~successInputCheck
@@ -89,8 +97,15 @@ function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
     
     % read datafiles
     if doReadDataTPfile
-        successInputCheck = readTimeprofileDataForPopulation(Settings,dataTpFile,PopRunSet);
-    end
+        for iData = 1:size(Datafiles,1)
+            switch Datafiles{iData,3}
+                case 'timeprofile'
+                    successInputCheck = readTimeprofileDataForSimulation(WSettings,Datafiles(iData,[1 2]),PopRunSet);
+                otherwise
+                    error ('unknown datatype')
+            end
+        end
+    end              
     
     % stop if inpt is inconsistent
     if ~successInputCheck
@@ -98,7 +113,7 @@ function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
     end
 
     
-    writeToLog(sprintf('Input checks were successfully executed. \n'),Settings.logfile,true,false);
+    writeToLog(sprintf('Input checks were successfully executed. \n'),WSettings.logfile,true,false);
 
     %% Tasks processing
     
@@ -106,36 +121,36 @@ function runPopulationWorkflow(TaskList,Settings,PopRunSet,varargin)
     if TaskList.simulatePopulation
         
         for iSet = 1:length(PopRunSet)
-            runPopulationSimulation(Settings,PopRunSet(iSet));
+            runPopulationSimulation(WSettings,PopRunSet(iSet));
         end
     end
 
     % calculate PK Parameter
     if TaskList.calculatePKParameter
         for iSet = 1:length(PopRunSet)
-            calculatePopulationPKParameter(Settings,PopRunSet(iSet));
+            calculatePopulationPKParameter(WSettings,PopRunSet(iSet));
         end
     end
 
     % generate VPC
     if TaskList.doVPC
-        runPopulationVPC(Settings,VPC,PopRunSet);
+        runPopulationVPC(WSettings,VPC,PopRunSet);
     end
 
     
 % catch exception
 %     
 %     save('exception.mat','exception')
-%     writeToLog(exception.message,Settings.logfile,true,false);
+%     writeToLog(exception.message,WSettings.logfile,true,false);
 %     
 % end
-
+% 
 
 
 return
 
 
-function successInputCheck = preparePopulationSimulationConsistency(Settings,PopRunSet)
+function [successInputCheck,VPC] = preparePopulationSimulation(WSettings,PopRunSet,VPC)
 
 % initialize return value
 successInputCheck = true;
@@ -154,9 +169,22 @@ end
 % read population csv
 [parPaths,parValues] = readPopulationCSV(PopRunSet.popcsv);
 
+
+% add BSA if not available
+if ~any(strcmp(parPaths,'Organism|BSA'))
+    parPaths{end+1} = 'Organism|BSA';
+    
+    jj = strcmp('Organism|Weight',parPaths);
+    weight =  parValues(:,jj);
+    jj = strcmp('Organism|Height',parPaths);
+    height =  parValues(:,jj);
+    parValues(:,end+1) = calculateBodySurfaceArea(WSettings,weight,height);
+end
+
+
 % add studyDesign if one is given
 if ~isempty(PopRunSet.studyDesign)
-    [parPaths,parValues,ixStudyDesign] = readStudyDesign(Settings,PopRunSet.studyDesign,parPaths,parValues);
+    [parPaths,parValues,ixStudyDesign] = readStudyDesign(WSettings,PopRunSet.studyDesign,parPaths,parValues);
     
     parPathsStudyDesign = parPaths(ixStudyDesign);
     parValuesStudyDesign = parValues(:,ixStudyDesign);
@@ -166,17 +194,27 @@ else
     parValuesStudyDesign = [];
 end
 
+
 save(fullfile(tmpDir,'pop.mat'),'parPaths','parValues','ixStudyDesign');
 
 
 % analyse applicationProtocol
-[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(Settings,PopRunSet.xml,parPathsStudyDesign,parValuesStudyDesign);   %#ok<NASGU,ASGLU>
+[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,PopRunSet.xml,parPathsStudyDesign,parValuesStudyDesign);   %#ok<NASGU>
 save(fullfile(tmpDir,'applicationProtocol.mat'),'ApplicationProtocol','isValid');
 
 simulationIndex = 1; %Initialised in getApplicationProtocollFromXML
 
+% initialize PK Parameter
+if isempty(PopRunSet.calculatePKParameterFh)
+    PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol);
+else
+    PKParameterTemplate = feval(PopRunSet.calculatePKParameterFh,WSettings,ApplicationProtocol);
+end
 
-% get defaultUnits for population
+save(fullfile(tmpDir,'applicationProtocol.mat'),'-append','PKParameterTemplate');
+
+
+% get defaultUnits for outputs
 unit = cell(length(parPaths),1);
 for iPar = 1:length(parPaths)
     [ise,desc] = existsParameter(['*' parPaths{iPar}],simulationIndex,'parametertype','readonly');
@@ -186,9 +224,11 @@ for iPar = 1:length(parPaths)
         switch parPaths{iPar}
             case {'IndividualId','Gender','RaceIndex','Population Name'}
                 unit{iPar} = 'none';
+            case 'Organism|BSA'
+                 unit{iPar} = 'dm²';
             otherwise
                 unit{iPar} = 'none';
-                writeToLog(sprintf('WARNING: For "%s" no base unit could be identified, may be cause problems if plotted',parPaths{iPar}),Settings.logfile,true,false);
+                writeToLog(sprintf('WARNING: For "%s" no base unit could be identified, may be cause problems if plotted',parPaths{iPar}),WSettings.logfile,true,false);
                 
         end
     end
@@ -196,169 +236,86 @@ end
 save(fullfile(tmpDir,'pop.mat'),'-append','unit');
 
 
-% analyse outputs, chekc if existing and add unitfactor
+% analyse outputs, check if existing and add unitfactor
 OutputList = PopRunSet.OutputList;
 for iO = 1:length(OutputList)
     
-    [unitFactor,success] = getUnitfactorForOutputPath(Settings,OutputList(iO).pathID,OutputList(iO).displayUnit,simulationIndex);
+    [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,OutputList(iO).pathID,OutputList(iO).displayUnit,simulationIndex);
     successInputCheck = success & successInputCheck;
     OutputList(iO).unitFactor = unitFactor; 
+    
+    % check PK Parameter
+    for iPK = 1:size(OutputList(iO).pKParameterList,2)
+        
+        jj = strcmp(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
+        if ~any(jj)
+            writeToLog(sprintf('ERROR: Output %s has listed PK Parameter "%s" which is not calculated by the PK parameter function.',...
+                OutputList(iO).pathID,OutputList(iO).pKParameterList{1,iPK}),WSettings.logfile,true,false);
+            successInputCheck = false;
+        else
+            
+            [unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,PKParameterTemplate(jj).unit,OutputList(iO).pKParameterList{2,iPK},MW);
+            
+            successInputCheck = success & successInputCheck;
+           OutputList(iO).pKParameterList{3,iPK} = unitFactor;
+        end
+    end
+        
+    
 end
 
 save(fullfile(tmpDir,'outputList.mat'),'OutputList');
 
+% check if ontogenyFactors should be added to the physiology plotList
+if ~isempty(VPC) && ...
+ any(strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>'))
+    ontogenyIDs = getParameter('*|Ontogeny factor*',1,'parametertype','readonly','property','ID');
+    jj = getParameter(ontogenyIDs,1,'parametertype','readonly','property','isFormula');
+    
+    ontogenyPaths = getParameter(ontogenyIDs(~jj),1,'parametertype','readonly','property','Path');
+    
+    for iO = 1:length(ontogenyPaths)
+        tmp = regexp(ontogenyPaths{iO},'\|','split');
+        pathID = strjoin(tmp(2:end),'|');
+        if ~ismember(pathID,VPC.PhysProperties.yList(:,1))
+            if ismember(tmp{end},{'Ontogeny factor','Ontogeny factor GI'})
+                ontogenyName = strjoin(tmp([end 2:end-1]),' ');
+            else
+                ontogenyName = tmp{end};
+            end
+            VPC.PhysProperties.yList(end+1,:) = {pathID,ontogenyName,'',{}};
+        end
+    end
+end
+
+
 return
     
 
-function successInputCheck = checkPopulationSimulationInput(Settings,PopRunSet)
+function successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet)
 
 successInputCheck = true;
 
 % check name on special letters
 if any(ismember(PopRunSet.name,'./ ?§$%&()[]{}+~*#'))
-    writeToLog(sprintf('ERROR: Popsetname "%s" contains special signs, do not use them.',PopRunSet.name),Settings.logfile,true,false);
+    writeToLog(sprintf('ERROR: Popsetname "%s" contains special signs, do not use them.',PopRunSet.name),WSettings.logfile,true,false);
     successInputCheck = false;
 end
 
 % mandatory inputs
 if ~exist(PopRunSet.xml,'file')
-    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.xml),Settings.logfile,true,false);
+    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.xml),WSettings.logfile,true,false);
     successInputCheck = false;
 end
 if ~exist(PopRunSet.popcsv,'file')
-    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.popcsv),Settings.logfile,true,false);
-    successInputCheck = false;
-end
-if isempty(PopRunSet.OutputList)
-    writeToLog(sprintf('ERROR: outputList is empty'),Settings.logfile,true,false);
+    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.popcsv),WSettings.logfile,true,false);
     successInputCheck = false;
 end
                 
 % optional inputs
 if  ~isempty(PopRunSet.studyDesign) && ~exist(PopRunSet.studyDesign,'file') 
-    writeToLog(sprintf('ERROR: "%s" is given, but does not exist',PopRunSet.studyDesign),Settings.logfile,true,false);
+    writeToLog(sprintf('ERROR: "%s" is given, but does not exist',PopRunSet.studyDesign),WSettings.logfile,true,false);
     successInputCheck = false;
 end
  
-return
-
-
-function successInputCheck = readTimeprofileDataForPopulation(Settings,dataTpFile,PopRunSet) 
-
-successInputCheck = true; %#ok<NASGU>
-
-% collect filters
-k=0;
-for iSet = 1:length(PopRunSet)
-    
-    if ~isempty(PopRunSet(iSet).dataTpFilter)
-        k=k+1;
-        filterList{k} = PopRunSet(iSet).dataTpFilter; %#ok<AGROW>
-        PopRunSet(iSet).filterIndex = k;
-    else
-        PopRunSet(iSet).filterIndex = nan;
-    end
-    
-
-    for iO = 1:length(PopRunSet(iSet).OutputList);
-        
-        if ~isempty(PopRunSet(iSet).OutputList(iO).dataTpFilter)
-            k=k+1;
-            filterList{k,:} = PopRunSet(iSet).OutputList(iO).dataTpFilter; %#ok<AGROW>
-            PopRunSet(iSet).OutputList(iO).filterIndex = k;
-        else
-            PopRunSet(iSet).OutputList(iO).filterIndex = nan;
-        end
-
-    end
-end
-    
-    
-% read nonmefile uses Settings and dataTpFile
-[successInputCheck,X,filter,dict] = readNonmemFile(Settings,dataTpFile,'timeprofile',filterList);
-
-if ~successInputCheck
-    return
-end
-
-
-
-% get fieldnamees of cavariates
-jj = strcmp({dict.type},'covariate');
-fn_covariate = intersect(fieldnames(X),{dict(jj).matlabID});
-
-
-% get dataset for each popset
-for iSet = 1:length(PopRunSet)
-
-    % get filter of popset
-    if ~isnan(PopRunSet(iSet).filterIndex)
-        jj_set = filter(:,PopRunSet(iSet).filterIndex);
-    else
-        jj_set = true(size(X.stud));
-    end
-    
-    % get unique identifier
-    uniSTUD = unique(X.stud(jj_set));
-        
-
-    for iStud = 1:length(uniSTUD)
-        
-        jj_STUD = jj_set & X.stud == uniSTUD(iStud);
-        
-        uniSID = unique(X.sid(jj_STUD));
-        
-        for iSID = 1:length(uniSID)
-            
-            jj_SID = jj_STUD & X.sid == uniSID(iSID) ;
-            
-            % get index of dataset
-            if exist('DataTP','var')
-                indx = length(DataTP)+1;
-            else
-                indx = 1;
-            end
-            
-            for iO = 1:length(PopRunSet(iSet).OutputList);
-
-                % get filter of popset
-                if ~isnan(PopRunSet(iSet).OutputList(iO).filterIndex)
-                    jj_O = jj_SID & filter(:,PopRunSet(iSet).OutputList(iO).filterIndex);
-                else
-                    jj_O = jj_SID;
-                end
-                
-                if any(jj_O)
-                    
-                    % add to data structure
-                    DataTP(indx).stud = uniSTUD(iStud); %#ok<AGROW>
-                    DataTP(indx).sid = uniSID(iSID) ; %#ok<AGROW>
-                    DataTP(indx).Tp(iO).time = X.time(jj_O); %#ok<AGROW>
-                    DataTP(indx).Tp(iO).dv = X.dv(jj_O); %#ok<AGROW>
-                    if isfield(X,'tad')
-                        DataTP(indx).Tp(iO).tad = X.tad(jj_O); %#ok<AGROW>
-                    end
-                    DataTP(indx).Tp(iO).lloq = nan(size( DataTP(indx).Tp(iO).time)); %#ok<AGROW>
-                    if isfield(X,'lloq')
-                        lloq =X.lloq(jj_O);
-                        jj_lloq = DataTP(indx).Tp(iO).dv < lloq;
-                        DataTP(indx).Tp(iO).lloq(jj_lloq) = lloq(jj_lloq); %#ok<AGROW>
-                    end
-                
-                    % covariates
-                    for iFn = 1:length(fn_covariate)
-                        DataTP(indx).(fn_covariate{iFn}) = X.(fn_covariate{iFn})(find(jj_SID,1)); %#ok<AGROW>
-                
-                    end
-                end
-            end
-        end
-    end
-    
-    % get temporary directory
-    tmpDir = fullfile('tmp',PopRunSet(iSet).name);
-    % save data
-    save(fullfile(tmpDir,'dataTp.mat'),'DataTP','dict');
-end
-
 return

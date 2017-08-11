@@ -1,0 +1,7 @@
+Percentile of Body weight for virtual adult population.;
+;
+Body weight [kg];adult: n=10
+44.1 <= Body weight < 49.4;2
+49.4 <= Body weight < 60;1
+60 <= Body weight < 70.6;5
+70.6 <= Body weight < 75.9;2

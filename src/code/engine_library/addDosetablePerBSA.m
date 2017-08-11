@@ -18,8 +18,7 @@ function [targetParameterValues]  = addDosetablePerBSA(WSettings,targetParameter
 % Outputs:
 %   - targetParameterValues (double matrix):  values of the of the newly created population population parameters
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 18-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
 % get Body weight of poulation

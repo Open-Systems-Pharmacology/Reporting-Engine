@@ -1,8 +1,8 @@
-function [unitFactor,success] = getUnitFactorForUnknownDimension(Settings,unit,targetUnit,MW)
+function [unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,unit,targetUnit,MW)
 % GETUNITFACTORFORUNKNOWNDIMENSION getfactor to convert units, 
 %
 % Inputs: 
-%      - Settings (structure)    definition of properties used in all
+%      - WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %      - targetUnit (string) unit to convert internal unit
 %      - MW (double) moelcular weigth
@@ -10,14 +10,14 @@ function [unitFactor,success] = getUnitFactorForUnknownDimension(Settings,unit,t
 %      - unitFactor (double)  factor to convert interanl unit to target unit
 %      - success (boolean) if false, it was not possible to determine unit conversion factor
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 26-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 persistent unitList;
-persistent unitList_dimensionList;
+persistent unitListDimensionList;
 
 if isempty(unitList)
-    [unitList,unitList_dimensionList]=iniUnitList(0);
+    [unitList,unitListDimensionList] = iniUnitList(0);
 end
 
 % initialize return values
@@ -27,34 +27,54 @@ success = true;
 
 
 % check if taregt unit exist, and get index of dimension
-ix_dim_display = find(cellfun(@(x) any(strcmp(x,targetUnit)),{unitList.unit_txt}));
-if isempty(ix_dim_display)
-    writeToLog(sprintf('ERROR: unit "%s" for seems to be no default OSPSuite unit',targetUnit),Settings.logfile,true,false);
+ixDimDisplay = find(cellfun(@(x) any(strcmp(x,targetUnit)),{unitList.unit_txt}));
+if isempty(ixDimDisplay)
+    writeToLog(sprintf('ERROR: unit "%s" for seems to be no default OSPSuite unit',targetUnit),WSettings.logfile,true,false);
     success = false;
     return
 end
     
 % get index of dimension for internal unit
-ix_dim_internal = find(cellfun(@(x) any(strcmp(x,unit)),{unitList.unit_txt}));
+ixDimInternal = find(cellfun(@(x) any(strcmp(x,unit)),{unitList.unit_txt}));
 
 % target unit and internal unit should have a common dimension
-ix_dim = intersect(ix_dim_display,ix_dim_internal);
-if isempty(ix_dim)
-    writeToLog(sprintf('ERROR: For unit "%s", there is no common dimension with display unit "%s"',unit,targetUnit),Settings.logfile,true,false);
+ixDim = intersect(ixDimDisplay,ixDimInternal);
+if isempty(ixDim)    
+    
+    % merge molar and mass AUC
+    jj = ismember({'AUC (molar)','AUC (mass)'},unitListDimensionList([ixDimDisplay,ixDimInternal]));
+    if all(jj) && exist('MW','var')
+        switch unitListDimensionList{ixDimDisplay}
+            case 'AUC (mass)'
+                unitFactorMolar = getUnitFactor(unit,'µmol*min/l','AUC (molar)');
+                unitFactorMass = getUnitFactor('µg*min/l',targetUnit,'AUC (mass)');
+                unitFactor = unitFactorMolar.*MW.*unitFactorMass;
+            case 'AUC (molar)'
+                unitFactorMass = getUnitFactor(targetUnit,'µg*min/l','AUC (mass)');
+                unitFactorMolar = getUnitFactor('µmol*min/l',unit,'AUC (molar)');
+                unitFactor = unitFactorMolar./MW.*unitFactorMass;
+            otherwise
+                error('unknown dimension');
+
+        end
+        return
+    end
+    
+    writeToLog(sprintf('ERROR: For unit "%s", there is no common dimension with display unit "%s"',unit,targetUnit),WSettings.logfile,true,false);
     success = false;
     return
 end
 
 % get Unitfactor
 % for concnetration molweight is als needed
-if strcmp(unitList_dimensionList{ix_dim(1)},'Concentration')
+if strcmp(unitListDimensionList{ixDim(1)},'Concentration')
     if ~exist('MW','var')
         error('molweight is needed');
     end        
-    unitFactor = getUnitFactor(unit,targetUnit,unitList_dimensionList{ix_dim(1)},'MW',MW*1e9);
+    unitFactor = getUnitFactor(unit,targetUnit,unitListDimensionList{ixDim(1)},'MW',MW*1e9);
 
 else    
-    unitFactor = getUnitFactor(unit,targetUnit,unitList_dimensionList{ix_dim(1)});
+    unitFactor = getUnitFactor(unit,targetUnit,unitListDimensionList{ixDim(1)});
 end
 
 return

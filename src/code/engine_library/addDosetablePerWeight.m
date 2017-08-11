@@ -1,8 +1,10 @@
-function [targetParameterValues]  = addDosetablePerWeight(Settings,targetParameterList,parPaths,parValues,SplitCondition)
+function [targetParameterValues]  = addDosetablePerWeight(WSettings,targetParameterList,parPaths,parValues,SplitCondition)
 % add new lines to the population, which overwrites the dose in the applicationprotocol
 %
+% [targetParameterValues]  = addDosetablePerWeight(WSettings,targetParameterList,parPaths,parValues,SplitCondition)
+%
 % Inputs:
-%   - Settings       (structure) containing global settings see GETDEFAULTWORKFLOWSETTINGS
+%   - WSettings       (structure) containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %   - targetParameterList (cellarray of string)   List of
 %                       applicationparameter, which should be added whith adjusted dose to the
 %                       population values
@@ -16,13 +18,12 @@ function [targetParameterValues]  = addDosetablePerWeight(Settings,targetParamet
 % Outputs:
 %   - targetParameterValues (double matrix):  values of the of the newly created population population parameters
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 18-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
 % get Body weight of poulation
-jj_BW = strcmp('Organism|Weight',parPaths);
-weight =  parValues(:,jj_BW);
+jjBW = strcmp('Organism|Weight',parPaths);
+weight =  parValues(:,jjBW);
 
 
 % get new Values
@@ -39,13 +40,13 @@ end
 jj = weight< min([SplitCondition.BWmin]);
 if any(jj)
     writeToLog(sprintf('%d individual(s) have/has a bodyweight less than %g, and are not covered by the weight dependent dosetable',...
-        sum(jj),min([SplitCondition.BWmin])),Settings.logfile,true,false);
+        sum(jj),min([SplitCondition.BWmin])),WSettings.logfile,true,false);
      targetParameterValues(jj,:) = 0;
 end
-jj = weight >= max([SplitCondition.BWmin]);
+jj = weight >= max([SplitCondition.BWmax]);
 if any(jj)
     writeToLog(sprintf('%d individual(s) have/has a bodyweight greater equal than %g, and are not covered by the weight dependent dosetable',...
-        sum(jj),max([SplitCondition.BWmax])),Settings.logfile,true,false);
+        sum(jj),max([SplitCondition.BWmax])),WSettings.logfile,true,false);
 
     targetParameterValues(jj,:) = 0;
 

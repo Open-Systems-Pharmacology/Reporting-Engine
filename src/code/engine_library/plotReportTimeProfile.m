@@ -1,7 +1,7 @@
-function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq)
+function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq)
 %PLOTREPORTTIMEPROFILE Plots the time profile of a population in comparison to a reference population
 %
-%  csv =  plotReportTimeProfile(WSettings,time,y,timeRef,yRef,timeUnit,yLabel,yUnit,yscale,LLOQ,figureHandle)
+% csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,DataTP,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq)
 %
 % Inputs: 
 %       WSettings (structure)    definition of properties used in all
@@ -13,7 +13,10 @@ function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef
 %           if empty no reference population is drawn
 %   yRef  (double matrix (nIndividual x n timepoints)): time profile of of reference population 
 %           if empty no reference population is drawn
+%   DataTP (structure) dataprofile
+%   timeLabel (string)   text beside the X-axis
 %   timeUnit (string)   text beside the X-axis
+%   yLimit (double vector 1 x 2)   limits of x axes
 %   yLabel (string)  text beside the Y-axis
 %   yUnit (string)   text beside the Y-axis
 %   legendEntries (cell array of strings) {name of population for  legend,
@@ -25,47 +28,20 @@ function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef
 % Output
 %   csv (cellarray) table with numeric information to the plot
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 28-July-2017
-
-% initialize XLS Array
-csv = {}; 
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % calculate percentiles of population
-[yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getPercentiles(WSettings,y);
+[yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getRangePlotPercentiles(WSettings,y');
 
 % calculate percentiles of reference pop
 if ~isempty(yRef) 
-    [yMinRef,yMeanRef,yMaxRef] = getPercentiles(WSettings,yRef);
+    [yMinRef,yMeanRef,yMaxRef] = getRangePlotPercentiles(WSettings,yRef');
 else
     yMinRef = nan;
 end
 
-
-% set csvArray
-if ~isnan(yMin)   
-    
-    % description
-    csv{1,1} = getLabelWithUnit(yLabel,yUnit);
-    
-    % time
-    csv{2,1} = sprintf('Time [%s]',timeUnit);
-    csv(3:2+length(time),1) = num2cell(time);
-    
-    % values
-    csv(2,2:4) = csvHeader;
-    csv(3:2+length(time),2:4) = num2cell([yMin,yMean,yMax]);
-else
-    
-    % time
-    csv{1,1} = sprintf('Time [%s]',timeUnit);
-    csv(2:1+length(time),1) = num2cell(time);
-
-    % description
-    csv{1,2} = getLabelWithUnit(ylabel,yUnit);    
-    csv(2:1+length(time),2) = num2cell(yMean);
-    
-end
+% get Csv Array beforr y values are tarnsformed for y scale
+csv = getCsvArray(yMin,yMean,yMax,yLabel,yUnit,timeLabel,timeUnit,time,csvHeader);
 
 
 % for yscal log transfer valiues to logscale
@@ -73,15 +49,37 @@ if strcmp(yscale,'log')
     yMin = log10(yMin);
     yMax = log10(yMax);
     yMean = log10(yMean);
+        
+    ylim = min([yMin(11:end), yMean(11:end)]);
+    
     if ~isempty(yRef)
         yMinRef = log10(yMinRef);
         yMaxRef = log10(yMaxRef);
         yMeanRef = log10(yMeanRef);
+        
+        ylim = min([yMin(11:end), yMean(11:end),yMinRef(11:end),yMeanRef(11:end)]);
+
     end
     if ~isnan(lloq)
         lloq = log10(lloq);
     end
+    
+    if ~isempty(DataTP)
+        for iInd = 1:length(DataTP)
+            DataTP(iInd).y = log10(DataTP(iInd).y);
+            jj = ~isinf(DataTP(iInd).y);
+            ylim = min([ylim;DataTP(iInd).y(jj)]);
+        end
+    end
+    
+    ylim = ylim*0.8;
+else
+    ylim = 0;
+    
 end
+
+
+
 
 % create figure
 ax = getReportFigure(WSettings,1,1,figureHandle);
@@ -97,7 +95,7 @@ if ~isnan(yMin)
     ij = find(~isinf(yMin) & ~isinf(yMax)); 
     
     
-    lgh(2) = patch([time(ij); time(ij(end:-1:1))],[yMin(ij); yMax(ij(end:-1:1))],WSettings.colorVector(1,:),'linestyle','none','FaceAlpha',0.5,...
+    lgh(2) = patch([time(ij), time(ij(end:-1:1))],[yMin(ij), yMax(ij(end:-1:1))],WSettings.colorVector(1,:),'linestyle','none','FaceAlpha',0.5,...
         'EdgeColor',WSettings.colorVector(1,:),'displayname',strtrim(sprintf('%s %s',legendEntries{1},rangeTxt)));
 end
 
@@ -105,9 +103,9 @@ end
 if ~isnan(yMinRef)
     
     % exclude log(0)
-    jj = ~isinf(yMin); 
+     ij = find(~isinf(yMinRef) & ~isinf(yMaxRef)); 
 
-    lgh(4) = patch([timeRef(jj); timeRef(end:-1:1)],[yMinRef(jj); yMaxRef(end:-1:1)],WSettings.colorVector(2,:),'linestyle','none','FaceAlpha',0.5,...
+    lgh(4) = patch([timeRef(ij), timeRef(ij(end:-1:1))],[yMinRef(ij), yMaxRef(ij(end:-1:1))],WSettings.colorVector(2,:),'linestyle','none','FaceAlpha',0.5,...
         'EdgeColor',WSettings.colorVector(2,:),'displayname',strtrim(sprintf('%s %s',legendEntries{2},rangeTxt)));
 end
 
@@ -115,24 +113,34 @@ end
 lgh(1)=plot(time,yMean,'-','color',WSettings.colorVector(1,:),'linewidth',2,...
     'displayname',strtrim(sprintf('%s %s',legendEntries{1},legendTextMean)));
 
-% Patch of referencep poulation
+% Mean of referencep population
 if ~isnan(yMinRef)
-    lgh(4)=plot(timeRef,yMeanRef,'-','color',WSettings.colorVector(1,:),'linewidth',2,...
+    lgh(3)=plot(timeRef,yMeanRef,'-','color',WSettings.colorVector(2,:),'linewidth',2,...
         'displayname',strtrim(sprintf('%s %s',legendEntries{2},legendTextMean)));
 end
     
 % plot data
+if ~isempty(DataTP)
+    [col,mk] = getcolmarkForMap(WSettings.colormapData,length(DataTP));
+    
+    for iInd = 1:length(DataTP)
+        lgh(5) = plot(DataTP(iInd).time,DataTP(iInd).y,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),...
+            'displayname',legendEntries{3});
+        plot(DataTP(iInd).time,DataTP(iInd).lloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
+    end
+end    
 
 % Plot LLOQ
 if ~isnan(lloq)
-    plot([time(1) time(end)],[1 1]*lloq,'k:','linewidth',2,'displayname','lower limit of quantification');
+    plot([time(1) time(end)],[1 1]*lloq,'k:','linewidth',1,'displayname',legendEntries{end});
 end
 
 % set legend
-legend(lgh,get(lgh,'displayname'),'location','northoutside');
+jj = lgh>0;
+legend(lgh(jj),get(lgh(jj),'displayname'),'location','northoutside');
     
 % Set axes labels
-xlabel(sprintf('Time [%s]',timeUnit));
+xlabel(getLabelWithUnit(timeLabel,timeUnit));
 ylabel(getLabelWithUnit(yLabel,yUnit));
 
 setAxesScaling(ax,'timeUnit',timeUnit,'xlim',[time(1) time(end)]);
@@ -140,36 +148,11 @@ setAxesScaling(ax,'timeUnit',timeUnit,'xlim',[time(1) time(end)]);
 % set ytick to logscale if necessary
 xl = get(ax,'xlim');
 yl = get(ax,'ylim');
+yl(1) = ylim;
+set(ax,'ylim',yl);
 
-if strcmp(yscale,'log')
-    yt = get(ax,'ytick');
-    
-    % get new integer ticks
-    ytNew = intersect(yt,ceil(yt(1)):floor(yt(end)));
-    
-    % if none or only one add outer limits
-    if  length(ytNew) <=1
-        ytNew = [floor(yt(1)),ytNew,ceil(yt(end))];
-        yl = [ytNew(1) ytNew(end)];
-        set(ax,'ylim',yl)
-    end
- 
-    set(ax,'ytick',ytNew,'yticklabel',10.^ytNew);
- 
-    % get ticks of yt
-    ytTicks = 10.^(ytNew(1)).*[0.1:0.1:1];
-    for iT = 1:length(ytNew)
-        ytTicks = [ytTicks 10.^(ytNew(iT)).*[2:1:10]];
-    end
-    jj = log10(ytTicks) >= yt(1) &  log10(ytTicks) <= yt(end);
-    ytTicks = log10(ytTicks(jj));
-    
-    for iT = 1:length(ytTicks)
-        plot(xl(1)+[0 0.008*range(xl)],ytTicks(iT)*[1 1],'k-');
-        plot(xl(2)-[0 0.008*range(xl)],ytTicks(iT)*[1 1],'k-');
-    end
-    
-    
+if strcmp(yscale,'log')    
+    setLogarithmicYticks(ax);
 end
 % plot box
 plot(xl([1 1]),yl([1 2]),'k-');
@@ -181,39 +164,31 @@ plot(xl([1 2]),yl([2 2]),'k-');
 return
 
 
+function csv = getCsvArray(yMin,yMean,yMax,yLabel,yUnit,timeLabel,timeUnit,time,csvHeader)
+csv = {}; 
 
-function [yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getPercentiles(WSettings,y)
 
-if size(y,1) == 2 % only one individual
-    yMin = nan;
-    yMax = nan;
-    yMean = y;
-    legendTextMean = '';
+% set csvArray
+if ~isnan(yMin)   
     
-    csvHeader = {};
+    % description
+    csv{1,1} = getLabelWithUnit(yLabel,yUnit);
+    
+    % time
+    csv{2,1} = getLabelWithUnit(timeLabel,timeUnit);
+    csv(3:2+length(time),1) = num2cell(time);
+    
+    % values
+    csv(2,2:4) = csvHeader;
+    csv(3:2+length(time),2:4) = num2cell([yMin',yMean',yMax']);
 else
-    % exclude non processable individuals
-    jjNonan = all(~isnan(y));
-    yMin=prctile(y(:,jjNonan), WSettings.displayPercentiles(1),2);
-    yMax=prctile(y(:,jjNonan), WSettings.displayPercentiles(end),2);
-    switch WSettings.shadedAreaMeanType
-        case 'median'
-            yMean=median(y,2);
-            legendTextMean='median';
-        case 'geomean'
-            yMean=geomean(y,2);
-            legendTextMean='geo. mean';
-        case 'mean'
-            yMean=mean(y,2);
-            legendTextMean='arith. mean';
-    end
+    
+    % time
+    csv{1,1} = getLabelWithUnit(timeLabel,timeUnit);
+    csv(2:1+length(time),1) = num2cell(time);
 
-    % get text for range legend
-    rangeTxt = sprintf('%s-%s percentile',...
-        getPercentilePotenzText(WSettings.displayPercentiles(1)),...
-        getPercentilePotenzText(WSettings.displayPercentiles(end)));
-
-    csvHeader = {sprintf('%s precentile',getPercentilePotenzText(WSettings.displayPercentiles(1))),...
-        legendTextMean,sprintf('%s precentile',getPercentilePotenzText(WSettings.displayPercentiles(end)))};
-        
+    % description
+    csv{1,2} = getLabelWithUnit(yLabel,yUnit);    
+    csv(2:1+length(time),2) = num2cell(yMean);
+    
 end

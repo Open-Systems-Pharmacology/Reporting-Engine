@@ -1,4 +1,4 @@
-function parValuesFinal = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection)
+function [parValuesFinal,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection)
 % LOADSELECTEDPATHSOFPOPULATION load values for selected paths for one or a merged population
 % 
 % parValuesFinal = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection)
@@ -9,25 +9,29 @@ function parValuesFinal = loadSelectedPathsOfPopulation(WSettings,listOfname,par
 %       listOfname (cell array of strings)   list dfines the selection of  populations
 %       parPathSelection (cell array of strings 2 x n) first row list the selected paths
 %                               second row corresponding display units
+% Outputs:
+%      parValuesFinal (double matrix) (nInd x nPar) popParameter 
+%      sourceIndex (double vector) (nInd x 1) index of source population
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 26-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 for iName = 1:length(listOfname)
 
     load(fullfile('tmp',listOfname{iName},'pop.mat'));
     [jj,ix] = ismember(parPathSelection(:,1),parPaths);
     
-    if sum(jj) < size(parPathSelection,2)
+    if sum(jj) < size(parPathSelection,1)
        error('Error path selection for population parameter, was not correct');
     end
 
     if iName ==1
         % initialize parValuesFinal
         parValuesFinal = parValues(:,ix(jj)); %#ok<NODEF>
-        
+        sourceIndex = ones(size(parValuesFinal,1),1);
     else
         parValuesFinal = [parValuesFinal;parValues(:,ix(jj))]; %#ok<NODEF,AGROW>
+        sourceIndex = [sourceIndex;ones(size(parValues,1),1).*iName]; %#ok<AGROW>
     end
 end
         

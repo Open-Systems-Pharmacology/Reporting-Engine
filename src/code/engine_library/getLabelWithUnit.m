@@ -8,8 +8,8 @@ function yLabelFinal = getLabelWithUnit(yLabel,yUnit)
 %   yLabelFinal (string) label with unit
 
 
-% Open Systems Pharmacology Suite;  http://forum.open-systems-pharmacology.org
-% Date: 28-July-2017
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 
 if ~isempty(yUnit)
     yLabelFinal = sprintf('%s [%s]',yLabel,yUnit);

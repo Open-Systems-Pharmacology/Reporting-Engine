@@ -1,0 +1,5 @@
+Percentile of Height for virtual children 6-9 years.;
+;
+Height [cm];6-9y: n=5
+120 <= Height < 129;2
+129 <= Height < 139;3

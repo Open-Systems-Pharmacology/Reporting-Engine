@@ -1,0 +1,47 @@
+09-Aug-2017 17:03:02 Start Workflow of type Population Simulation 
+ System is NOT validated 
+ Computer BY0LBF (PCWIN) 
+ Reporting Engine version: 0.1 
+ Open Systems Pharmacology Suite version: 7.1 
+ Version of SimModel: 2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 8.2.0.701 (R2013b) 
+
+09-Aug-2017 17:03:02 Start input checks
+09-Aug-2017 17:03:28 Applicationprotocol
+09-Aug-2017 17:03:28   Bolus_single|Application_1: start time 0 min; dose 12.25 mg; infusion time 0 min
+09-Aug-2017 17:04:00 Applicationprotocol
+09-Aug-2017 17:04:00   Bolus_single|Application_1: start time 0 min; dose 12.25 mg; infusion time 0 min
+09-Aug-2017 17:04:33 Applicationprotocol
+09-Aug-2017 17:04:33   Bolus_single|Application_1: start time 0 min; dose 12.25 mg; infusion time 0 min
+09-Aug-2017 17:05:05 Applicationprotocol
+09-Aug-2017 17:05:05   Bolus_single|Application_1: start time 0 min; dose 12.25 mg; infusion time 0 min
+09-Aug-2017 17:05:09 Input checks were successfully executed. 
+
+09-Aug-2017 17:05:09 Start Simulation of adult
+09-Aug-2017 17:05:45 Simulation finished 
+
+09-Aug-2017 17:05:45 Start Simulation of children_0_3y
+09-Aug-2017 17:06:20 Simulation finished 
+
+09-Aug-2017 17:06:20 Start Simulation of children_3_6y
+09-Aug-2017 17:06:54 Simulation finished 
+
+09-Aug-2017 17:06:54 Start Simulation of children_6_9y
+09-Aug-2017 17:07:29 Simulation finished 
+
+09-Aug-2017 17:07:29 Calculate PK Parameter of adult
+09-Aug-2017 17:07:29 Calculation finished 
+
+09-Aug-2017 17:07:29 Calculate PK Parameter of children_0_3y
+09-Aug-2017 17:07:29 Calculation finished 
+
+09-Aug-2017 17:07:29 Calculate PK Parameter of children_3_6y
+09-Aug-2017 17:07:30 Calculation finished 
+
+09-Aug-2017 17:07:30 Calculate PK Parameter of children_6_9y
+09-Aug-2017 17:07:30 Calculation finished 
+
+09-Aug-2017 17:07:30 Start Population VPC
+09-Aug-2017 17:09:14 Finalized Population VPC 
+
