@@ -1,10 +1,10 @@
-function SimResult = generateSimResult(WSettings,xml,simulationIndex,parPaths,parValues,outputPathList,nInd,individualIdVector)
+function SimResult = generateSimResult(WSettings,SimulationSet,simulationIndex,parPaths,parValues,outputPathList,nInd,individualIdVector)
 % GENERATESIMRESULT processes given  simulation with differnet parameter values
 %
 % Inputs
 %   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %   name (string) naem of simulation
-%   xml (string) name of xmlfile may be empty, if model is already
+%   SimulationSet (structure) structure with name of xmlfile and simulation time may be empty, if model is already
 %       initialized, but then simulationIndex is needed.
 %   simulationIndex (nan) if xmls is simulationIndex is needed
 %   parPaths (cellarray of strings) pathnames of parameter
@@ -17,15 +17,21 @@ function SimResult = generateSimResult(WSettings,xml,simulationIndex,parPaths,pa
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % initialize model
-if ~isempty(xml)
+if ~isempty(SimulationSet)
+        
     initStruct=[];
     for iPar=1:length(parPaths)
         initStruct=initParameter(initStruct,[ '*|' parPaths{iPar}],'always','throwWarningIfNotExisting',false);
     end
-    initSimulation(xml,initStruct);
+    initSimulation(SimulationSet.xml,initStruct);
     
     % Only one simulation is intialized so the simulation index is always 1
     simulationIndex = 1;
+    
+    % set simulaion time if given
+    if isfield(SimulationSet,'simulationTime') && ~isempty(PopRunSet.simulationTime)
+        setSimulationTime(SimulationSet.simulationTime,simulationIndex)
+    end
 
 end
 

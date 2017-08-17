@@ -1,11 +1,11 @@
-function VPC = getDefaultVPCPopulationSettings(PopRunSet,flag) 
+function VPC = getDefaultVPCPopulationSettings(PopRunSet,workflowType) 
 %GETDEFAULTVPCPOPULATIONSETTINGS get WSettings for visual predicitve check
 %
 %  VPC = getDefaultVPCPopulationSettings(WSettings,PopRunSet,flag)
 %
 % Inputs:
 %       PopRunSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
-%       flag (string)  defines type of population, default = 'paralellComparison'
+%       workflowType (string)  defines type of population, default = 'paralellComparison'
 %                               other possibilities are 'pediatric', ratioComparison;
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
@@ -15,13 +15,13 @@ function VPC = getDefaultVPCPopulationSettings(PopRunSet,flag)
 VPC.textFunctionHandle = @textVPCPopulation;
 
 % add default structure for demographi plots
-VPC.PhysProperties = addVPCPhysProperties(PopRunSet,flag);
+VPC.PhysProperties = addVPCPhysProperties(PopRunSet,workflowType);
 
 % add default structure for timeprofile plots
-VPC.Timeprofile = addVPCTimeprofile(PopRunSet,flag);
+VPC.Timeprofile = addVPCTimeprofile(PopRunSet,workflowType);
 
 % add default structure for PK-Parameter plots
-VPC.PKParameter = addVPCPKParameter(PopRunSet,flag);
+VPC.PKParameter = addVPCPKParameter(PopRunSet,workflowType);
 
 return
 

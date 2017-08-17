@@ -22,6 +22,7 @@ function [ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSetting
 %                                       false dose is absolute  
 %       infusionTime        (double)    [min] time of infusion, 
 %                                       zero if the application is no infusion
+%       compound        (string)        name of applicated compound
 %  isValid  (boolean)  if true,  all necessary field were available in the xml file, 
 %                      if false, some fields could not be found, may be the xml is a 
 %                       MoBi file with a user defined application. Special attention is needed 
@@ -59,6 +60,7 @@ if ise
         
         tmp = regexp(desc{iApp+1,2},'\|','split');
         pathPrefix = strjoin(tmp(1:end-1),'|');
+        pathCompound = [strjoin(tmp(1:end-2),'|') '|*|Concentration'];
         
         % initialize
         ApplicationProtocol(iApp) = getDefaultApplicationProtocol( strjoin(tmp(3:(end-2)),'|')); 
@@ -79,6 +81,11 @@ if ise
         
         [ApplicationProtocol(iApp),isValid,isIndividualized] = addParameter(WSettings,ApplicationProtocol(iApp),[pathPrefix,'|Infusion time'],...
             'infusionTime',simulationIndex,studyDesignPathId,parValuesStudyDesign,isValid,isIndividualized);
+                
+        % get CompoundName
+        tmp = getParameter(pathCompound,simulationIndex,'parametertype','readonly','property','path');
+        tmp = regexp(tmp,'\|','split');
+        ApplicationProtocol(iApp).compound = tmp{end-1};
         
     end
 else
@@ -136,7 +143,7 @@ function ApplicationProtocol = getDefaultApplicationProtocol(name)
  ApplicationProtocol =    struct('name',name,'startTime',nan,...
         'dose',nan,'dosePerBodyWeight',nan,'dosePerBodySurfaceArea',nan,'drugMass',nan,...
         'isDosePerBodyweight',false,'isDosePerBodySurfaceArea',false,...
-        'infusionTime',0);
+        'infusionTime',0,'compound','');
     
 return    
     
@@ -180,7 +187,7 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
     end
 else
     % check if mandatory field are missing
-    if ismember(fieldNameStructure,{'startTime','dose','dosePerBodyWeight','drugMass'})
+    if ismember(fieldNameStructure,{'startTime','dose','drugMass'})
                 writeToLog(sprintf('mandatory field %s is missing, applicationprotocol of xml is set to invalid',fieldNameStructure),...
                     WSettings.logfile,true,false);
                 isValid = false;
