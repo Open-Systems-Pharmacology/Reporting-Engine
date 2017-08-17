@@ -11,12 +11,16 @@ if ~exist('sheet','var')
     sheet = 1;
 end
 
-[MeanModelSet,TaskList,workflowType,dataFiles] = readWorkflowInput(workflowInputxls,sheet);
+[MeanModelSet,TaskList,~,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet);
 
 
 %% add Outputs
 for iSet = 1:length(MeanModelSet)
-    MeanModelSet(iSet).OutputList = readOutputXls(MeanModelSet(iSet).outputxls,MeanModelSet(iSet).outputsheet);
+    if ~isempty(MeanModelSet(iSet).outputxls)
+        MeanModelSet(iSet).OutputList = readOutputXls(MeanModelSet(iSet).outputxls,MeanModelSet(iSet).outputsheet);
+    else
+        MeanModelSet(iSet).OutputList = struct([]);
+    end
 end
 MeanModelSet = rmfield(MeanModelSet,'outputxls');
 MeanModelSet = rmfield(MeanModelSet,'outputsheet');
@@ -34,14 +38,19 @@ fprintf(fid,'clear MeanModelSet');
 fprintf(fid,'\r\n');
 for iSet = 1:length(MeanModelSet)
     
-    for iO = 1:length(MeanModelSet(iSet).OutputList)
-        [outputListText,cellText] = getDefinitonTextOutputList(MeanModelSet(iSet).OutputList,iO);
-        fprintf(fid,sprintf('%s',outputListText));
-        fprintf(fid,'\r\n');
-        for iC = 1:length(cellText)
-            fprintf(fid,sprintf('%s',cellText{iC}));
+    if ~isempty(MeanModelSet(iSet).OutputList)
+        for iO = 1:length(MeanModelSet(iSet).OutputList)
+            [outputListText,cellText] = getDefinitonTextOutputList(MeanModelSet(iSet).OutputList,iO);
+            fprintf(fid,sprintf('%s',outputListText));
             fprintf(fid,'\r\n');
-        end            
+            for iC = 1:length(cellText)
+                fprintf(fid,sprintf('%s',cellText{iC}));
+                fprintf(fid,'\r\n');
+            end
+        end
+    else
+        fprintf(fid,'OutputList = [];');
+        fprintf(fid,'\r\n');
     end
     
     popRunSetText = getDefinitonTextMeanModel(MeanModelSet,iSet);
@@ -57,6 +66,7 @@ writeTaskList(fid,TaskList);
 
 % write Datafiles
 writeDataFiles(fid,dataFiles);
+
 
 %% write function call VPC
 fprintf(fid,'%% get Definition of default plots');
@@ -74,9 +84,13 @@ fprintf(fid,'\r\n');
 fprintf(fid,'\r\n');
 
 
+%% write function call Sensitivity
+% write sensitivity Aalysis
+writeSensitivityParameterList(fid,sensParameterList);
+
 fprintf(fid,'%% start the execution');
 fprintf(fid,'\r\n');
-fprintf(fid,'runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles);');
+fprintf(fid,'runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles,sensParameterList);');
 fprintf(fid,'\r\n');
 
 fclose(fid);
@@ -114,7 +128,7 @@ for iFN = 1:length(fn)
     elseif iscell(OutputList(iO).(fn{iFN}))
         tmp = OutputList(iO).(fn{iFN});
         if isempty(tmp)
-            t = sprintf('%s''%s'',{},',t,fn{iFN});
+            t = sprintf('%s''%s'',[],',t,fn{iFN});
         else
             
             c = sprintf('OutputList(%d).%s = {',iO,fn{iFN});

@@ -12,7 +12,7 @@ if ~exist('sheet','var')
     sheet = 1;
 end
 
-[PopRunSet,TaskList,workflowType,dataFiles] = readWorkflowInput(workflowInputxls,sheet);
+[PopRunSet,TaskList,workflowType,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet);
 
 
 %% add Outputs
@@ -77,10 +77,14 @@ fprintf(fid,'end');
 fprintf(fid,'\r\n');
 fprintf(fid,'\r\n');
 
+%% write function call Sensitivity
+% write sensitivity Aalysis
+writeSensitivityParameterList(fid,sensParameterList);
 
+% start execution
 fprintf(fid,'%% start the execution');
 fprintf(fid,'\r\n');
-fprintf(fid,'runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles);');
+fprintf(fid,sprintf('runPopulationWorkflow(WSettings,TaskList,PopRunSet,''%s'',VPC,dataFiles,sensParameterList);',workflowType));
 fprintf(fid,'\r\n');
 
 fclose(fid);

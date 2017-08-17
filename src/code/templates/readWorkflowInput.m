@@ -1,4 +1,4 @@
-function [SimulationSet,TaskList,workflowType,dataFiles] = readWorkflowInput(workflowInputxls,sheet)
+function [SimulationSet,TaskList,workflowType,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet)
 % READWORKFLOWINPUT converts workflow xls to STructures
 %
 %  Inputs 
@@ -9,7 +9,7 @@ function [SimulationSet,TaskList,workflowType,dataFiles] = readWorkflowInput(wor
 %       TaskList (structure) stores list of tasks
 %       workflowType (string)  type of workflow
 %       dataFiles (cellarray) strores name of data files
-%  
+%       sensParameterList (cellarray) definiton for sensitivity analysis
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
@@ -25,11 +25,11 @@ xlsIdentifier = xlsIdentifier(jj);
 xlsInfo = xlsInfo(jj,:);
 
 
-
 %% generate Population sets:
 
 % get rows with identifiers for simulation
 jjIdentifier =  ~strncmp(xlsIdentifier,'Task',4) ...
+    & ~strncmp(xlsIdentifier,'sens',4) ...
     & ~ismember(xlsIdentifier,{'WorkflowType','dataFileTimeprofile','dataDictTimeprofile'});
 
 % get cols for simulation info
@@ -58,6 +58,23 @@ for iCol = find(jjCol)
     
     SimulationSet(iD) = cell2struct(tmp,xlsIdentifier(jjIdentifier)); %#ok<AGROW>
 end
+
+
+% check if outputxls is empty
+if isfield(SimulationSet,'outputxls')
+    jj = cellfun(@isempty,{SimulationSet.outputxls}) & ...
+        ~cellfun(@isempty,{SimulationSet.outputsheet});
+    
+    if any(jj)
+        for iSet  = find(jj)
+            SimulationSet(iSet).outputxls = workflowInputxls; %#ok<AGROW>
+        end
+    end
+end
+
+
+
+
 
 %% generate Tasklist
 
@@ -102,5 +119,29 @@ if all(jjIdentifier)
     end
 end
 
+%% get sensitivity
+[jjIdentifier,ijIdentifier] = ismember({'sensXls','sensSheet'},xlsIdentifier);
+if all(jjIdentifier)
+    tmp = xlsInfo(ijIdentifier,1);
+    jj = cellfun(@isnumeric,tmp);
+    if all(jj)  &&  all(cellfun(@isnan,tmp(jj)))
+        sensParameterList={};
+    else
+        if isnan(tmp{1})
+            sensXLS = workflowInputxls;
+        else
+            sensXLS = tmp{1};
+        end
+        if isnan(tmp{2})
+            sensSheet = 1;
+        else
+            sensSheet = tmp{2};
+        end
+        [~,~,sensParameterList] = xlsread(sensXLS,sensSheet);
+        sensParameterList = sensParameterList(2:end,1:5);
+        jj = ~cellfun(@isnumeric,sensParameterList(:,1));
+        sensParameterList = sensParameterList(jj,:);
+    end
+end
 
 return
