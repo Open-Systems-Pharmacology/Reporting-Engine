@@ -46,6 +46,10 @@ WSettings.shadedAreaMeanType = 'median';
 % decide if boxwhsikers are plote with extremas
 WSettings.boxwhiskerWithExtrema = false;
 
+% sensitivity analysis
+WSettings.sensitivityCutoff = 0.9;
+WSettings.sensitivitPrctileSelection = [5 50 95];
+
 %% recommendations
 % number of indivduals per resultfile
 WSettings.nIndPerSimResult = 1000;

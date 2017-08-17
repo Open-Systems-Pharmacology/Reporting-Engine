@@ -1,4 +1,4 @@
-function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
+function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Datafiles,sensParameterList)
 % master routine for population workflow
 %
 % runPopulationWorkflow(TaskList,WSettings,PopRunSet,varargin)
@@ -8,8 +8,15 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %       TaskList (structure)    list of task which should be executed see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
 %       PopRunSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
+%       workflowType (string)  defines type of population, default = 'paralellComparison'
+%                               other possibilities are 'pediatric', ratioComparison;
 %       VPC  (structure) contains information which plots should be
 %               generated  see GETDEFAULTVPCPOPULATIONSETTINGS
+%       sensParameterList  (cellarry) 1. column pathid of parameter,
+%                       2. number of steps
+%                       3. variation range
+%                       4. minimal value
+%                       5. maximal value
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
@@ -66,6 +73,29 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
         end
     end
     
+    % PK Parameter
+    if TaskList.doSensitivityAnalysis
+        if isempty(sensParameterList)
+            writeToLog(sprintf('ERROR: sensitivity definition is missing!'),WSettings.logfile,true,false);
+            successInputCheck = false;
+        end
+        % for sensitivit population workflow same output is needed
+        success = checkOutputConsistencyForSensitivity(WSettings,PopRunSet,workflowType);
+        successInputCheck = successInputCheck & success;
+        
+        % PK Parameter are needed
+        if ~ TaskList.calculatePKParameter
+            for iSet = 1:length(PopRunSet)
+                tmp = dir(fullfile('simulations',[PopRunSet(iSet).name '*PK-Analyses.csv']));
+                if isempty(tmp)
+                    writeToLog(sprintf('ERROR: PK Parameter results for "%s" does not exist, please set Task calculatePKParameter to true',...
+                        PopRunSet(iSet).name),WSettings.logfile,true,false);
+                    successInputCheck = false;
+                end
+            end
+        end
+
+    end
     
     % stop if not all inputs are available
     if ~successInputCheck
@@ -77,19 +107,17 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
     % directory with infos like application protocols, and factor for
     % unitconversion 
     for iSet = 1:length(PopRunSet)
-        [success,VPC] = preparePopulationSimulation(WSettings,PopRunSet(iSet),VPC);
+        [success,VPC] = preparePopulationSimulation(WSettings,PopRunSet(iSet),VPC,sensParameterList);
         successInputCheck = success & successInputCheck;
     end
-    % ontogeny factors are added now, get rid of keay word
+    % ontogeny factors are added now, get rid of key word
     if ~isempty(VPC)
         jj = strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>');
         if any(jj)
             VPC.PhysProperties.yList = VPC.PhysProperties.yList(~jj,:);
         end
     end
-        
-
-    
+            
     % stop if inpt is inconsistent
     if ~successInputCheck
         return
@@ -137,6 +165,11 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
         runPopulationVPC(WSettings,VPC,PopRunSet);
     end
 
+    % generate sesnitivity analysis
+    if TaskList.doSensitivityAnalysis
+        runPopulationSensitivity(WSettings,PopRunSet,workflowType);
+    end
+
     
 % catch exception
 %     
@@ -150,7 +183,7 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles)
 return
 
 
-function [successInputCheck,VPC] = preparePopulationSimulation(WSettings,PopRunSet,VPC)
+function [successInputCheck,VPC] = preparePopulationSimulation(WSettings,PopRunSet,VPC,sensParameterList)
 
 % initialize return value
 successInputCheck = true;
@@ -214,7 +247,7 @@ end
 save(fullfile(tmpDir,'applicationProtocol.mat'),'-append','PKParameterTemplate');
 
 
-% get defaultUnits for outputs
+% get defaultUnits for population parameter
 unit = cell(length(parPaths),1);
 for iPar = 1:length(parPaths)
     [ise,desc] = existsParameter(['*' parPaths{iPar}],simulationIndex,'parametertype','readonly');
@@ -265,6 +298,13 @@ for iO = 1:length(OutputList)
 end
 
 save(fullfile(tmpDir,'outputList.mat'),'OutputList');
+
+% check sensitivity definition
+if ~isempty(sensParameterList)
+    sensParameterList = checkSensitivityParameter(WSettings,sensParameterList,simulationIndex);     %#ok<NASGU>
+    save(fullfile(tmpDir,'senssitivity.mat'),'sensParameterList');
+end
+
 
 % check if ontogenyFactors should be added to the physiology plotList
 if ~isempty(VPC) && ...
@@ -319,3 +359,40 @@ if  ~isempty(PopRunSet.studyDesign) && ~exist(PopRunSet.studyDesign,'file')
 end
  
 return
+
+
+function  successInputCheck = checkOutputConsistencyForSensitivity(WSettings,PopRunSet,workflowType)
+
+successInputCheck = true;
+
+if strcmp(workflowType,'pediatric')
+    jjRef = [PopRunSet.isReference];
+    setList = find(~jjRef);
+else
+    setList = 1:length(PopRunSet);
+end
+
+%  get outputs and PKPList
+baseOutputList = PopRunSet(setList(1)).OutputList;
+
+for iSet = setList(2:end)
+
+    OutputList = PopRunSet(iSet).OutputList;
+    
+    if ~(length(OutputList) == length(baseOutputList)) || ...
+        ~all(strcmp({OutputList.pathID},{baseOutputList.pathID})) 
+            writeToLog(sprintf('ERROR: Outputs must be the same for a sensitivity analysis!'),WSettings.logfile,true,false);
+            successInputCheck = false;
+    end
+    
+    if successInputCheck
+        for iO = 1:length(baseOutputList)
+            if ~(length(OutputList(iO).pKParameterList(1,:)) == length(baseOutputList(iO).pKParameterList(1,:))) || ...
+                    ~all(strcmp(OutputList(iO).pKParameterList(1,:),baseOutputList(iO).pKParameterList(1,:)))
+                writeToLog(sprintf('ERROR: PK parameter of Outputs must be the same for a sensitivity analysis!'),WSettings.logfile,true,false);
+                successInputCheck = false;                
+            end
+        end
+    end
+    
+end

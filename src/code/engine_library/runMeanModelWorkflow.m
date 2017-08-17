@@ -1,4 +1,4 @@
-function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
+function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sensParameterList,MBS)
 %RUNMEANMODELWORKFLOW master routine for Mean Model workflow
 %
 % runMeanModelWorkflow(TaskList,WSettings,PopRunSet,varargin)
@@ -10,6 +10,12 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
 %       RUNMEANMODELWORKFLOW (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORMEANMODELSIMULATION
 %       VPC  (structure) contains information which plots should be
 %               generated  see GETDEFAULTVPCPOPULATIONSETTINGS
+%       sensParameterList  (cellarry) 1. column pathid of parameter,
+%                       2. number of steps
+%                       3. variation range
+%                       4. minimal value
+%                       5. maximal value
+
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
@@ -50,7 +56,15 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
             successInputCheck = false;
         end
     end
-    
+
+    % PK Parameter
+    if TaskList.doSensitivityAnalysis
+        if isempty(sensParameterList)
+            writeToLog(sprintf('ERROR: sensitivity definition is missing!'),WSettings.logfile,true,false);
+            successInputCheck = false;
+        end
+    end
+
     
     % stop if not all inputs are available
     if ~successInputCheck
@@ -63,9 +77,9 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
     % unitconversion, and timeprofiles of desired outputs 
 
     for iSet = 1:length(MeanModelSet)
-        [success,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet(iSet),VPC);
+        [success,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet(iSet),VPC,sensParameterList);
         successInputCheck = success & successInputCheck;
-    end
+    end    
             
     % stop if inpt is inconsistent
     if ~successInputCheck
@@ -99,6 +113,20 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
         runMeanModelVPC(WSettings,VPC,MeanModelSet);
     end
 
+    % generate sesnitivity analysis
+    if TaskList.doSensitivityAnalysis
+        runMeanModelSensitivity(WSettings,MeanModelSet);
+    end
+
+    % generate absorption plots
+    if TaskList.doAbsorptionPlots
+        runMeanModelAbsorption(WSettings,MeanModelSet);
+    end
+
+    % checkMassbalance
+    if TaskList.checkMassbalance
+        runMeanModelCheckMassbalance(WSettings,MeanModelSet,MBS);
+    end
     
 % catch exception
 %     
@@ -112,7 +140,7 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles)
 return
 
 
-function [successInputCheck,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet,VPC)
+function [successInputCheck,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet,VPC,sensParameterList)
 
 % initialize return value
 successInputCheck = true;
@@ -172,18 +200,31 @@ for iO = 1:length(OutputList)
 end
 
 save(fullfile(tmpDir,'outputList.mat'),'OutputList');
+    
+% check sensitivity definition
+if ~isempty(sensParameterList)
+    sensParameterList = checkSensitivityParameter(WSettings,sensParameterList,simulationIndex);     %#ok<NASGU>
+    save(fullfile(tmpDir,'senssitivity.mat'),'sensParameterList');
+end
+
 
 % do the simulation
 if ~successInputCheck
     return
 end
 
+% if no outputs are defined, return now
+if isempty(OutputList)
+    return
+end
+
+
 SimResult = generateSimResult(WSettings,'',simulationIndex,{},[],{OutputList.pathID},1,0); %#ok<NASGU>
 
 % save as temporary file
 save(fullfile(tmpDir,'simResult_1.mat'),'SimResult');
 
-% start the caluclation
+% start the PKParameter caluclation
 parPaths = {'Organism|Weight','Organism|Height'};
 parValues(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
 parValues(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');

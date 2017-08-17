@@ -35,7 +35,7 @@ while exist(csvfile,'file')
         jjO = strcmp(OutputList(iO).pathID,outputPathList);
         
         tmp = [];
-        for iPK = 1:length(OutputList(iO).pKParameterList)
+        for iPK = 1:size(OutputList(iO).pKParameterList,2)
             
             jjPK = jjO & strcmp(OutputList(iO).pKParameterList{1,iPK},PKParameter);
             
