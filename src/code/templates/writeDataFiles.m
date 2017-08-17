@@ -23,7 +23,7 @@ if isempty(dataFiles)
 else
 
     for iF = 1:size(dataFiles,1)
-        fprintf(fid,'dataFiles = {''%s'',''%s'',''%s''};',dataFiles{iF,1},dataFiles{iF,2},dataFiles{iF,3});
+        fprintf(fid,'dataFiles(%d,:) = {''%s'',''%s'',''%s''};',iF,dataFiles{iF,1},dataFiles{iF,2},dataFiles{iF,3});
         fprintf(fid,'\r\n');
     end
 end

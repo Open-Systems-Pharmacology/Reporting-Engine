@@ -36,6 +36,7 @@ for iCol = 1:nCol
     jj = isnan(contentnum);
     
     % less string then numrich values
+    % todo ausgabe wenn gemischte spalten sind
     if sum(jj) < nRow/2
         tmp = contentnum; %#ok<NASGU>
     else

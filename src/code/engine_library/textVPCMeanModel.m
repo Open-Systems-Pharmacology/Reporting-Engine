@@ -56,7 +56,9 @@ return
 
 function [figtxt,figtxtTable,legendEntries] = textVPCTimeprofileTpShadedArea(output,simulation,nameData,scale,lloq,nData)
 
-            
+% initialize outputs            
+legendEntries={''};
+
 % get name and figure description
 figtxtTable = sprintf('Time profile of %s for %s.',...
     output,simulation);

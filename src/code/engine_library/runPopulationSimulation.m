@@ -33,8 +33,8 @@ for iBunch = 1:nBunch
     
     indVector = bunches(iBunch):(bunches(iBunch+1)-1);
     
-    % do the simulation
-    [SimResult] = generateSimResult(WSettings,PopRunSet.xml,nan,parPaths,parValues(indVector,:),...
+    % do the simulation    
+    [SimResult] = generateSimResult(WSettings,PopRunSet,nan,parPaths,parValues(indVector,:),...
         {OutputList.pathID},length(indVector),individualIdVector(indVector));
         
     % export results to  new result file

@@ -7,8 +7,11 @@
 %  functions called by master routines; which call one task specified
 %   runPopulationSimulation                    - runs a population simulation defined within a PopRunSet 
 %   calculatePopulationPKParameter             - calculates PK-Parameter for simulations defined within a PopRunSet 
+%   runPopulationSensitivity                   - calculates and plots senstivity for all poulations
 %   runPopulationVPC                           - runs the visual predictive check for VPC
 %   runMeanModelVPC                            - runs the visual predictive check for VPC
+%   runMeanModelAbsorption                     - gets absorption characteristic of the applications at time 0
+%   runMeanModelSensitivity                    - runs the sensitivity analysis for all mean models defined in set
 %
 %  functions, which defines default inputs used in the workflow script
 %   getDefaultOutput                           - defines the properties of an Output
@@ -32,6 +35,7 @@
 %   plotReportPredictedVsObserved              - plot predcited vs observed
 %   plotReportQQPlot                           - creates qqPlot for residuals
 %   plotReportResiduals                        - plots residuals vs time or predicted y
+%   plotSensListMostSensitive                  - plots all sensitivity above cutoff value
 %
 %  internal functions
 %   initializeWorkflow                         - initialise the workflow, sets up the logfile, and sets global settings
@@ -41,6 +45,14 @@
 %   plotLoopPopulationVPCforPhysiology         - does physiologocal plots for population VPC
 %   plotLoopVPCTimeprofiles                    - generates timeprofile plots for a population VPC
 %   readTimeprofileDataForSimulation           - read timeprofile nonmen data and save the as temporary structure
+%   calculatesPKParameterList                  - calculates the Pkparameter
+%   generateSimResult                          - processes given  simulation with differnet parameter values
+%   loadSimResult                              - load the simulated result for one sepcific output
+%   calculateSensitivity                       - calculate sensitivity for PK Parameter
+%   checkSensitivityParameter                  - check parameter paths of sensitivity
+%   exportSensitivityForPopulation             - export list of all caclualted sensitivities
+%   getListOfBestSensitivities                 - get all sensitivity above cutoff value
+%   generateSensitivityParameterSet            - generates parameter for sensitivity calulation
 %
 %
 %  function which can be set by a function handle
@@ -71,6 +83,3 @@
 %  configuration function
 %   ReportingEngineVersionInfo                 - configuration function, here properties of the reporting engine are listed
 %  
-%   calculatesPKParameterList                  - GENERATEPKPARAMETERLIST calculates the Pkparameter
-%   generateSimResult                          - processes given  simulation with differnet parameter values
-%   loadSimResult                              - load the simulated result for one sepcific output
