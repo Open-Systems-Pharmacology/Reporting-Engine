@@ -1,4 +1,4 @@
-function  [parPathsNew,parValuesNew,SensPointer] = generateSensitivityParameterSet(WSettings,sensParameterList,parPaths,parValues) 
+function  [parPathsNew,parValuesNew,SensPointer] = generateSensitivityParameterSet(WSettings,sensParameterList,parPaths,parValues)  %#ok<INUSL>
 % GENERATESENSITIVITYPARAMETERSET generates parameter for sensitivity calulation
 %
 % [parPathsNew,parValuesNew] = generateSensitivityParameterSet(WSettings,sensParameterList,parPaths,parValues)
@@ -9,7 +9,7 @@ function  [parPathsNew,parValuesNew,SensPointer] = generateSensitivityParameterS
 %       sensParameterList  (cellarry) first column pathid of parameter,
 %                       second column number of steps
 %                       third column variation range
-%                       4. column default value from xml
+%                       5. column default value from xml
 %   parPaths (cellarray of strings)  Paths of population parameter
 %   parValues (double matrix)  Values of population parameter for one
 %   individual
@@ -33,7 +33,7 @@ parPathsNew = parPaths;
 % find new ones
 ixPar = length(parPaths)+[1:sum(~jj)];
 parPathsNew(ixPar) = sensParameterList(~jj,1);
-parValues(1,ixPar) = cell2mat(sensParameterList(~jj,6));
+parValues(1,ixPar) = cell2mat(sensParameterList(~jj,5));
 
 % combine old and new
 ix = nan(size(jj));
@@ -58,11 +58,11 @@ for iPar=1:size(sensParameterList,1)
     
     % check if they are within allowed ranges
     jj = true(1,length(newValues));
-    if ~isnan(sensParameterList{iPar,4})
-        jj = jj & newValues >= sensParameterList{iPar,4};
+    if ~isnan(sensParameterList{iPar,6})
+        jj = jj & newValues >= sensParameterList{iPar,6};
     end
-    if ~isnan(sensParameterList{iPar,5})
-        jj = jj & newValues <= sensParameterList{iPar,5};
+    if ~isnan(sensParameterList{iPar,7})
+        jj = jj & newValues <= sensParameterList{iPar,7};
     end
     if any(jj)
         
@@ -75,7 +75,7 @@ for iPar=1:size(sensParameterList,1)
         SensPointer(iPar).relValuesPar = relValues(jj);
         k = k + nInd;
     else
-         writeToLog(sprintf('WARNING Parameter is without the allowed limits %s', sensParameterList{iPar,1}),WSettings.logfile,true,false);
+         writeToReportLog('WARNING',sprintf('Parameter is without the allowed limits %s', sensParameterList{iPar,1}),false);
     end
 end
 

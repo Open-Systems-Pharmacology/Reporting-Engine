@@ -16,8 +16,10 @@
 %  functions, which defines default inputs used in the workflow script
 %   getDefaultOutput                           - defines the properties of an Output
 %   getDefaultWorkflowSettings                 - definition of properties used in all workflow functions
-%   getDefaultVPCPopulationSettings            - get WSettings for visual predicitve check
-%   getDefaultVPCMeanModelSettings             - get WSettings for visual predicitve check
+%   runMeanModelCheckMassbalance               - gets absorption characteristic of the applications at time 0
+%   getDefaultVPCSettings                      - GETDEFAULTVPCPOPULATIONSETTINGS get Settings for visual predicitve check
+%   getDefaultMassbalanceSettings              - GETDEFAULTVPCMEANMODELSETTINGS get WSettings for visual predicitve check
+%
 %
 %  functions, which reads input files
 %   readPopulationCSV                          - reads a poulation csv file 
@@ -58,8 +60,8 @@
 %  function which can be set by a function handle
 %   addDosetablePerWeight                      - add new lines to the population, which overwrites the dose in the applicationprotocol
 %   addDosetablePerBSA                         - add new rows to the population, which overwrites the dose in the applicationprotocol
-%   textVPCPopulation                          - creates text fo figures and tables
-%   textVPCMeanModel                           - creates text fo figures and tables
+%   textVPC                                    - TEXTVPCMEANMODEL creates text fo figures and tables
+%
 %
 %  functions to support graphical export
 %   ReportFigurePrint                          - class which manages the print of figures
@@ -79,6 +81,10 @@
 %   getcolmarkForMap                           - get colormatrix and marker-vector for a specified colormap
 %   setLogarithmicYticks                       - set yticks to an axes, where the conten where plotted as log10
 %   checkInputDatafiles                        - check if varaibale Datafiles is correctly given
+%   addToLegendPopulationSensitivity           - ADDTOLEGENDPOULATIONSENSITIVITY add legend entires to population sensitivity plots
+%   writeToReportLog                           - Support function: Writes text to logfile. Each entry starts with a time stamp
+%   workflowModeToText                         - generates text for logfile out of vartableworkflowMode
+%   getVPCRange                                - calcualtes ranges for VPC plots
 %
 %  configuration function
 %   ReportingEngineVersionInfo                 - configuration function, here properties of the reporting engine are listed

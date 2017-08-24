@@ -1,4 +1,4 @@
-function   plotReportResiduals(WSettings,figureHandle,DataTP,timeLabel,timeUnit,yLabel,yUnit,yscale,xAxesFlag)
+function   [goodness] = plotReportResiduals(WSettings,figureHandle,DataTP,timeLabel,timeUnit,yLabel,yUnit,yscale,xAxesFlag,legendEntries)
 % PLOTREPORTRESIDUALS plots residuals vs time or predicted y
 %
 % plotReportResiduals(WSettings,figureHandle,DataTP,xAxesFlag,yLabel,yUnit,timeLabel,Def.timeDisplayUnit,legendEntries,yscale,lloq)
@@ -42,28 +42,37 @@ end
 
 
 [col,mk] = getcolmarkForMap(WSettings.colormapData,length(DataTP));
-    
+
+% initialize vectors for ggodnessfit
+gX = [];
+gY = [];
+
 for iInd = 1:length(DataTP)
     % calculate residulas according yscale % ToDo Normalisation
     switch yscale
         case 'lin'
             res = DataTP(iInd).y-DataTP(iInd).predicted;
-            resLloq = DataTP(iInd).lloq-DataTP(iInd).predicted;
         case 'log'
             res = log(DataTP(iInd).y)-log(DataTP(iInd).predicted);
-            resLloq = DataTP(iInd).lloq-DataTP(iInd).predicted;
         otherwise
             error('unknown scale');
 
     end
     
-    plot(DataTP(iInd).(xField),res,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:));
-    plot(DataTP(iInd).(xField),resLloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
+    lgh(1) = plot(DataTP(iInd).(xField),res,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),'displayname',legendEntries{1});
+    %     plot(DataTP(iInd).(xField),resLloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
+    
+    % construct vectors for goodness fit
+    gX = [gX; DataTP(iInd).(xField)]; %#ok<AGROW>
+    gY = [gY; res]; %#ok<AGROW>
+
 end
 
 set(ax,'xscale',xscale);
 
 xl = get(ax,'xlim');
+yl = get(ax,'ylim');
+set(ax,'ylim',max(abs(yl))*[-1 1]);
 
 plot(xl,[0 0],'k-','linewidth',2);
 
@@ -77,6 +86,22 @@ xlabel(xLabelTxt);
          error('unknown scale');
 
  end
+ 
+ 
+ legend(lgh,get(lgh,'displayname'),'location','northoutside');
+
+ 
+ % getGoodness
+ if strcmp(xscale,'log')
+     gX = log(gX);
+ end
+ 
+ [b,bint] = regress(gY,[ones(size(gX)), gX]);
+ % slope and intercept may be 0:
+ success = all(sign(bint(:,1))<0) & all(sign(bint(:,2))>0);
+    
+ goodness = {sprintf('residuals fit a line with intercept %.3g [%.3g-%.3g] and slope %.3g [%.3g-%.3g]',b(1),bint(1,1),bint(2,2),b(1),bint(2,1),bint(2,2)),success};
+    
  
  
  return

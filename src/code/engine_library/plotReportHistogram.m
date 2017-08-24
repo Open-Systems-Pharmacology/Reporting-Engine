@@ -74,7 +74,7 @@ end
 if ~isempty(yData)
     l(:,end+1) = histc(yData,bins);
     lnorm(:,end+1) = l(:,end)./length(yData).*100;
-    lgtxt{end+1} = legendEntries{3};
+    lgtxt{end+1} = legendEntries{end};
     [colMap] = [colMap;getcolmarkForMap(WSettings.colormapData,1)];
 
 end
@@ -87,8 +87,12 @@ if isempty(xCategory)
     lgh = bar(mBins,lnorm(1:length(mBins),:),barType);
     set(ax,'xlim',bins([1 end]));
 else
-    lgh = bar(1:length(mBins),lnorm(1:length(mBins),:),barType);
-    set(ax,'xlim',[0.5 length(mBins)+0.5]);
+    if length(mBins) >1
+        lgh = bar(1:length(mBins),lnorm(1:length(mBins),:),barType);
+    else
+        lgh = bar(1:2,[lnorm(1:length(mBins),:);zeros(1,size(lnorm,2))],barType);
+    end
+        set(ax,'xlim',[0.5 length(mBins)+0.5]);
 end
 for iL = 1:length(lgh);
     set(lgh(iL),'displayname',lgtxt{iL});
@@ -113,7 +117,7 @@ if strcmp(flag,'isResiduals')
         yl = get(ax,'ylim');
         
         xNormal = xl(1):range(xl)/100:xl(2);
-        yNormal = pdf('normal',xNormal,0,1);
+        yNormal = pdf('normal',xNormal,0,std(y));
         
         lgh(end+1) = plot(xNormal,yNormal.*max(sum(lnorm,2))/max(yNormal),'-k','linewidth',2,'displayname','normal distribution');
         plot([0 0],yl,'-k','linewidth',2)
@@ -141,7 +145,7 @@ for iBin = 1:length(bins)-1
 end
 
 if ~isempty(yData)
-    csvArray{1,end+1} = legendEntries{3};
+    csvArray{1,end+1} = legendEntries{end};
     for iBin = 1:length(bins)-1
         csvArray{iBin+1,end} = sprintf('%d',l(iBin,end)); %#ok<AGROW>
     end

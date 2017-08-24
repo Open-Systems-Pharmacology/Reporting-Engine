@@ -29,10 +29,10 @@ MeanModelSet = rmfield(MeanModelSet,'outputsheet');
 fid = fopen('workflow.m','w');
 
 % write header
-writeWorkflowHeader(fid)
+writeWorkflowHeader(fid,'meanModel','default');
 
-% write Definitions of sets of Populations
-fprintf(fid,'%% Definitions of sets of Mean Model silulations');
+% write Definitions of sets of Simulations
+fprintf(fid,'%% Definitions of sets of Mean Model simulations');
 fprintf(fid,'\r\n'); 
 fprintf(fid,'clear MeanModelSet');
 fprintf(fid,'\r\n');
@@ -73,7 +73,7 @@ fprintf(fid,'%% get Definition of default plots');
 fprintf(fid,'\r\n');
 fprintf(fid,'if TaskList.doVPC');
 fprintf(fid,'\r\n');
-fprintf(fid,sprintf('    VPC = getDefaultVPCMeanModelSettings(MeanModelSet);'));
+fprintf(fid,sprintf('    VPC = getDefaultVPCSettings(WSettings,MeanModelSet);'));
 fprintf(fid,'\r\n');
 fprintf(fid,'else');
 fprintf(fid,'\r\n');
@@ -84,13 +84,28 @@ fprintf(fid,'\r\n');
 fprintf(fid,'\r\n');
 
 
+%% write function call VPC
+fprintf(fid,'%% get Definition of default plots');
+fprintf(fid,'\r\n');
+fprintf(fid,'if TaskList.checkMassbalance');
+fprintf(fid,'\r\n');
+fprintf(fid,sprintf('    MBS = getDefaultMassbalanceSettings;'));
+fprintf(fid,'\r\n');
+fprintf(fid,'else');
+fprintf(fid,'\r\n');
+fprintf(fid,'    MBS = [];');
+fprintf(fid,'\r\n');
+fprintf(fid,'end');
+fprintf(fid,'\r\n');
+fprintf(fid,'\r\n');
+
 %% write function call Sensitivity
 % write sensitivity Aalysis
 writeSensitivityParameterList(fid,sensParameterList);
 
 fprintf(fid,'%% start the execution');
 fprintf(fid,'\r\n');
-fprintf(fid,'runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles,sensParameterList);');
+fprintf(fid,'runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles,sensParameterList,MBS);');
 fprintf(fid,'\r\n');
 
 fclose(fid);
@@ -136,6 +151,7 @@ for iFN = 1:length(fn)
                 c = sprintf('%s''%s'';',c,strjoin(tmp(iRow,:),''','''));
             end
             c = sprintf('%s};',c(1:end-1));
+            c = strrep(c,'%','%%');
             cellText{end+1} = c; %#ok<AGROW>
         
             t = sprintf('%s''%s'',[],',t,fn{iFN});
@@ -145,6 +161,7 @@ for iFN = 1:length(fn)
     end
 end
 t = sprintf('%s);',t(1:end-1));
+t = strrep(t,'%','%%');
 
 
 return

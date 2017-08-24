@@ -11,7 +11,7 @@ function runMeanModelCheckMassbalance(WSettings,MeanModelSet,MBS)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-writeToLog(sprintf('Start generate Massbalance plots'),WSettings.logfile,true,false);
+writeToReportLog('INFO',sprintf('Start generate Massbalance plots'),false);
 
 % Initialize figureDir
 FP = ReportFigurePrint(fullfile('figures','massbalance'),WSettings.printFormatList);
@@ -97,13 +97,13 @@ end
 FP.saveCaptiontextArray;
 
 
-writeToLog(sprintf('Finalized Massbalance plots \n'),WSettings.logfile,true,false);
+writeToReportLog('INFO',sprintf('Finalized Massbalance plots \n'),false);
 
 return
 
 function plotPie(WSettings,fh,time,tPoint,R,col)
 
-ax = getReportFigure(WSettings,1,1,fh,'figureformat','portrait');
+getReportFigure(WSettings,1,1,fh,'figureformat','portrait');
 
 x = (reshape([R.v],length(time),length(R)));
 xPoint = interp1(time,x,tPoint);
@@ -119,7 +119,7 @@ for iR=1:length(xPoint)
   theta = theta0 + [0;xPoint(iR)*(0:n)'/n;0]*2*pi;
   [xx,yy] = pol2cart(theta,r);
   theta0 = max(theta);
-  lgh(iR) = patch(xx,yy,col(iR,:),'displayname',sprintf('%s %s (%.2g%%)',R(iR).compound,R(iR).name,xPoint(iR)*100));
+  lgh(iR) = patch(xx,yy,col(iR,:),'displayname',sprintf('%s %s (%.2g%%)',R(iR).compound,R(iR).name,xPoint(iR)*100)); %#ok<AGROW>
   hold on;
 end
 
@@ -190,8 +190,8 @@ csv{1,1} = sprintf('time [%s]',MBS.displayUnit);
 csv(2:(1+length(time)),1) = cellfun(@num2str,num2cell(time),'uniformoutput',false);
 
 for iR=1:length(R)
-    csv{1,1+iR} = sprintf('%s %s [µmol]',R(iR).compound,R(iR).name);
-    csv(2:(1+length(time)),1+iR) = cellfun(@num2str,num2cell(R(iR).v),'uniformoutput',false);
+    csv{1,1+iR} = sprintf('%s %s [µmol]',R(iR).compound,R(iR).name); %#ok<AGROW>
+    csv(2:(1+length(time)),1+iR) = cellfun(@num2str,num2cell(R(iR).v),'uniformoutput',false); %#ok<AGROW> 
 end
 
 return

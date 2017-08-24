@@ -89,7 +89,7 @@ if ise
         
     end
 else
-    writeToLog('There is no valid application within the xml',WSettings.logfile,true,false);
+    writeToReportLog('WARNING',sprintf('There is no valid application within the xml %s',xml),false);
     isValid = false;
 end    
 
@@ -108,14 +108,14 @@ ApplicationProtocol = ApplicationProtocol(jj);
 
 % check if there is a application protocol
 if isempty(ApplicationProtocol)
-    writeToLog('There is no valid application within the xml',WSettings.logfile,true,false);
+    writeToReportLog('WARNING',sprintf('There is no valid application within the xml %s',xml),false);
     isValid = false;
     return
 end
 
 
 % list application protocol in logfile
-writeToLog(sprintf('Applicationprotocol'),WSettings.logfile,true,false);
+ writeToReportLog('INFO',sprintf('Applicationprotocol'),false);
 for iApp = 1:length(ApplicationProtocol)
     
     if isIndividualized
@@ -132,7 +132,7 @@ for iApp = 1:length(ApplicationProtocol)
     
     msg = sprintf('  %s: start time %g min; %s; infusion time %g min',ApplicationProtocol(iApp).name,ApplicationProtocol(iApp).startTime,...
         dosetxt,ApplicationProtocol(iApp).infusionTime);
-    writeToLog(msg,WSettings.logfile,true,false);
+    writeToReportLog('INFO',msg,false);
 end
 
 return
@@ -147,7 +147,7 @@ function ApplicationProtocol = getDefaultApplicationProtocol(name)
     
 return    
     
- function [ApplicationProtocol,isValid,isIndividualized] = addParameter(WSettings,ApplicationProtocol,pathID,...
+ function [ApplicationProtocol,isValid,isIndividualized] = addParameter(~,ApplicationProtocol,pathID,...
          fieldNameStructure,simulationIndex,studyDesignPathId,parValuesStudyDesign,isValid,isIndividualized)
          
 if existsParameter(pathID,simulationIndex,'parametertype','readonly');
@@ -173,7 +173,7 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
         
                 switch fieldNameStructure
                     case 'startTime'
-                        writeToLog('startTime is individualized by study design, applicationprotocol of xml is set to invalid',WSettings.logfile,true,false);
+                        writeToReportLog('WARNING','startTime is individualized by study design, applicationprotocol of xml is set to invalid',false);
                         isValid = false;
                     case 'drugMass'
                         % if drugmass is set individualized, dose ist absolute
@@ -188,8 +188,7 @@ if existsParameter(pathID,simulationIndex,'parametertype','readonly');
 else
     % check if mandatory field are missing
     if ismember(fieldNameStructure,{'startTime','dose','drugMass'})
-                writeToLog(sprintf('mandatory field %s is missing, applicationprotocol of xml is set to invalid',fieldNameStructure),...
-                    WSettings.logfile,true,false);
+                writeToReportLog('WARNING',sprintf('mandatory field %s is missing, applicationprotocol of xml is set to invalid',fieldNameStructure),false);
                 isValid = false;
     end
             

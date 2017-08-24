@@ -1,4 +1,4 @@
-09-Aug-2017 16:52:36 Start Workflow of type Mean Model Simulation 
+22-Aug-2017 09:21:24 Start Workflow:  MeanModel workflow, mode default 
  System is NOT validated 
  Computer BY0LBF (PCWIN) 
  Reporting Engine version: 0.1 
@@ -6,13 +6,16 @@
  Version of SimModel: 2 
  SimModelCompName: OSPSuite_SimModelComp.xml 
  Matlab version: 8.2.0.701 (R2013b) 
+ Started by: ZTCOK 
 
-09-Aug-2017 16:52:36 Start input checks
-09-Aug-2017 16:53:56 Applicationprotocol
-09-Aug-2017 16:53:56   PO 320mg|Solution|Application_1: start time 0 min; dose 320 mg; infusion time 0 min
-09-Aug-2017 16:54:01 Read  file data.mndat with 133 rows
-09-Aug-2017 16:54:02 Input checks were successfully executed. 
+22-Aug-2017 09:21:25 Start input checks
+22-Aug-2017 09:22:48 Applicationprotocol
+22-Aug-2017 09:22:48   PO 320mg|Solution|Application_1: start time 0 min; dose 320 mg; infusion time 0 min
+22-Aug-2017 09:22:49 Read  file data.mndat with 133 rows
+22-Aug-2017 09:22:50 Input checks were successfully executed. 
 
-09-Aug-2017 16:54:02 Start Mean Model VPC
-09-Aug-2017 16:54:25 Finalized Mean Model VPC 
+22-Aug-2017 09:22:50 Start Mean Model VPC
+22-Aug-2017 09:23:11 Finalized Mean Model VPC 
+
+22-Aug-2017 09:23:11 Mean model workflow finalized 
 

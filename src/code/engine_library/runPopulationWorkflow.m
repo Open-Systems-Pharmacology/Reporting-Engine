@@ -1,4 +1,4 @@
-function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Datafiles,sensParameterList)
+function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles,sensParameterList)
 % master routine for population workflow
 %
 % runPopulationWorkflow(TaskList,WSettings,PopRunSet,varargin)
@@ -8,8 +8,6 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %       TaskList (structure)    list of task which should be executed see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
 %       PopRunSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORPOPULATIONSIMULATION
-%       workflowType (string)  defines type of population, default = 'paralellComparison'
-%                               other possibilities are 'pediatric', ratioComparison;
 %       VPC  (structure) contains information which plots should be
 %               generated  see GETDEFAULTVPCPOPULATIONSETTINGS
 %       sensParameterList  (cellarry) 1. column pathid of parameter,
@@ -21,24 +19,24 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-% try
+try
     %% check optional inputs
     if ~exist('Datafiles','var')
         Datafiles = {};
     end
 
     %% initialize workflow
-    [WSettings] = initializeWorkflow('Population Simulation',WSettings);
+    [WSettings] = initializeWorkflow(WSettings);
     
     %% check if necessary inputs for task are available
-    writeToLog(sprintf('Start input checks'),WSettings.logfile,true,false);
+    writeToReportLog('INFO',sprintf('Start input checks'),false);
     
     successInputCheck = true;
 
     % simulation
     if TaskList.simulatePopulation
         for iSet = 1:length(PopRunSet)
-            successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet(iSet)) & successInputCheck;
+            successInputCheck = checkPopulationSimulationInput(PopRunSet(iSet)) & successInputCheck;
         end
     end
 
@@ -48,10 +46,11 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
             for iSet = 1:length(PopRunSet)
                 tmp = dir(fullfile('simulations',[PopRunSet(iSet).name '*-Results.csv']));
                 if isempty(tmp)
-                    writeToLog(sprintf('ERROR: results for "%s" does not exist, please set Task simulatePopulation to true',PopRunSet(iSet).name),WSettings.logfile,true,false);
+                    writeToReportLog('ERROR',sprintf('results for "%s" does not exist, please set Task simulatePopulation to true',...
+                        PopRunSet(iSet).name),false);
                     successInputCheck = false;
                 end
-                successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet(iSet)) & successInputCheck;
+                successInputCheck = checkPopulationSimulationInput(PopRunSet(iSet)) & successInputCheck;
             end
         end
     end
@@ -68,7 +67,7 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
     % PK Parameter
     if TaskList.doVPC
         if isempty(VPC)
-            writeToLog(sprintf('ERROR: VPC definition is missing!'),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('VPC definition is missing!'),false);
             successInputCheck = false;
         end
     end
@@ -76,11 +75,11 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
     % PK Parameter
     if TaskList.doSensitivityAnalysis
         if isempty(sensParameterList)
-            writeToLog(sprintf('ERROR: sensitivity definition is missing!'),WSettings.logfile,true,false);
+            writeToReportLog('ERROR','sensitivity definition is missing!',false);
             successInputCheck = false;
         end
         % for sensitivit population workflow same output is needed
-        success = checkOutputConsistencyForSensitivity(WSettings,PopRunSet,workflowType);
+        success = checkOutputConsistencyForSensitivity(WSettings,PopRunSet);
         successInputCheck = successInputCheck & success;
         
         % PK Parameter are needed
@@ -88,8 +87,8 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
             for iSet = 1:length(PopRunSet)
                 tmp = dir(fullfile('simulations',[PopRunSet(iSet).name '*PK-Analyses.csv']));
                 if isempty(tmp)
-                    writeToLog(sprintf('ERROR: PK Parameter results for "%s" does not exist, please set Task calculatePKParameter to true',...
-                        PopRunSet(iSet).name),WSettings.logfile,true,false);
+                    writeToReportLog('ERROR',sprintf('PK Parameter results for "%s" does not exist, please set Task calculatePKParameter to true',...
+                        PopRunSet(iSet).name),false);
                     successInputCheck = false;
                 end
             end
@@ -141,7 +140,7 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
     end
 
     
-    writeToLog(sprintf('Input checks were successfully executed. \n'),WSettings.logfile,true,false);
+    writeToReportLog('INFO',sprintf('Input checks were successfully executed. \n)'),false);
 
     %% Tasks processing
     
@@ -167,17 +166,20 @@ function runPopulationWorkflow(WSettings,TaskList,PopRunSet,workflowType,VPC,Dat
 
     % generate sesnitivity analysis
     if TaskList.doSensitivityAnalysis
-        runPopulationSensitivity(WSettings,PopRunSet,workflowType);
+        runPopulationSensitivity(WSettings,PopRunSet);
     end
+    
+    writeToReportLog('INFO',sprintf('Population workflow finalized \n'),false);
 
     
-% catch exception
-%     
-%     save('exception.mat','exception')
-%     writeToLog(exception.message,WSettings.logfile,true,false);
-%     
-% end
-% 
+catch exception
+    
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Population workflow finished with error \n'),false);
+  
+end
+
 
 
 return
@@ -195,7 +197,12 @@ if ~exist(tmpDir,'dir')
     mkdir(tmpDir)
 else
     % clear up all temporary results
-    delete(fullfile(tmpDir,'*.mat'));
+    if ~WSettings.restart
+        delete(fullfile(tmpDir,'*.mat'));
+    else
+        writeToReportLog('WARNING',sprintf('As script is started in restart mode, temporaray results are nor deleted! \n'),false);
+    end
+
 end
 
 
@@ -261,7 +268,8 @@ for iPar = 1:length(parPaths)
                  unit{iPar} = 'dm²';
             otherwise
                 unit{iPar} = 'none';
-                writeToLog(sprintf('WARNING: For "%s" no base unit could be identified, may be cause problems if plotted',parPaths{iPar}),WSettings.logfile,true,false);
+                writeToReportLog('WARNING',sprintf('For "%s" no base unit could be identified, may be cause problems if plotted',parPaths{iPar}),...
+                    false);
                 
         end
     end
@@ -282,12 +290,12 @@ for iO = 1:length(OutputList)
         
         jj = strcmp(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
         if ~any(jj)
-            writeToLog(sprintf('ERROR: Output %s has listed PK Parameter "%s" which is not calculated by the PK parameter function.',...
-                OutputList(iO).pathID,OutputList(iO).pKParameterList{1,iPK}),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('Output %s has listed PK Parameter "%s" which is not calculated by the PK parameter function.',...
+                OutputList(iO).pathID,OutputList(iO).pKParameterList{1,iPK}),false);
             successInputCheck = false;
         else
             
-            [unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,PKParameterTemplate(jj).unit,OutputList(iO).pKParameterList{2,iPK},MW);
+            [unitFactor,success] = getUnitFactorForUnknownDimension(PKParameterTemplate(jj).unit,OutputList(iO).pKParameterList{2,iPK},MW);
             
             successInputCheck = success & successInputCheck;
            OutputList(iO).pKParameterList{3,iPK} = unitFactor;
@@ -301,8 +309,8 @@ save(fullfile(tmpDir,'outputList.mat'),'OutputList');
 
 % check sensitivity definition
 if ~isempty(sensParameterList)
-    sensParameterList = checkSensitivityParameter(WSettings,sensParameterList,simulationIndex);     %#ok<NASGU>
-    save(fullfile(tmpDir,'senssitivity.mat'),'sensParameterList');
+    sensParameterList = checkSensitivityParameter(sensParameterList,simulationIndex);     %#ok<NASGU>
+    save(fullfile(tmpDir,'sensitivity.mat'),'sensParameterList');
 end
 
 
@@ -332,40 +340,40 @@ end
 return
     
 
-function successInputCheck = checkPopulationSimulationInput(WSettings,PopRunSet)
+function successInputCheck = checkPopulationSimulationInput(PopRunSet)
 
 successInputCheck = true;
 
 % check name on special letters
 if any(ismember(PopRunSet.name,'./ ?§$%&()[]{}+~*#'))
-    writeToLog(sprintf('ERROR: Popsetname "%s" contains special signs, do not use them.',PopRunSet.name),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('Popsetname "%s" contains special signs, do not use them.',PopRunSet.name),false);
     successInputCheck = false;
 end
 
 % mandatory inputs
 if ~exist(PopRunSet.xml,'file')
-    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.xml),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('"%s" does not exist',PopRunSet.xml),false);
     successInputCheck = false;
 end
 if ~exist(PopRunSet.popcsv,'file')
-    writeToLog(sprintf('ERROR: "%s" does not exist',PopRunSet.popcsv),WSettings.logfile,true,false);
+   writeToReportLog('ERROR',sprintf('"%s" does not exist',PopRunSet.popcsv),false);
     successInputCheck = false;
 end
                 
 % optional inputs
 if  ~isempty(PopRunSet.studyDesign) && ~exist(PopRunSet.studyDesign,'file') 
-    writeToLog(sprintf('ERROR: "%s" is given, but does not exist',PopRunSet.studyDesign),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('"%s" is given, but does not exist',PopRunSet.studyDesign),false);
     successInputCheck = false;
 end
  
 return
 
 
-function  successInputCheck = checkOutputConsistencyForSensitivity(WSettings,PopRunSet,workflowType)
+function  successInputCheck = checkOutputConsistencyForSensitivity(WSettings,PopRunSet)
 
 successInputCheck = true;
 
-if strcmp(workflowType,'pediatric')
+if strcmp(WSettings.workflowMode,'pediatric')
     jjRef = [PopRunSet.isReference];
     setList = find(~jjRef);
 else
@@ -381,7 +389,7 @@ for iSet = setList(2:end)
     
     if ~(length(OutputList) == length(baseOutputList)) || ...
         ~all(strcmp({OutputList.pathID},{baseOutputList.pathID})) 
-            writeToLog(sprintf('ERROR: Outputs must be the same for a sensitivity analysis!'),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('Outputs must be the same for a sensitivity analysis!'),false);
             successInputCheck = false;
     end
     
@@ -389,7 +397,7 @@ for iSet = setList(2:end)
         for iO = 1:length(baseOutputList)
             if ~(length(OutputList(iO).pKParameterList(1,:)) == length(baseOutputList(iO).pKParameterList(1,:))) || ...
                     ~all(strcmp(OutputList(iO).pKParameterList(1,:),baseOutputList(iO).pKParameterList(1,:)))
-                writeToLog(sprintf('ERROR: PK parameter of Outputs must be the same for a sensitivity analysis!'),WSettings.logfile,true,false);
+                writeToReportLog('ERROR',sprintf('PK parameter of Outputs must be the same for a sensitivity analysis!'),false);
                 successInputCheck = false;                
             end
         end

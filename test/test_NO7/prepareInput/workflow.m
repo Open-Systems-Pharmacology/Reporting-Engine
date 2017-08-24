@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:19:21
+% Original author: ZTCOK 17-Aug-2017 14:54:51
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -27,12 +27,12 @@ MeanModelSet(1) = struct('name','PO320mg','reportName','PO administration of 320
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('doVPC',1,'doSensitivityAnalysis',0);
+TaskList = struct('doVPC',1,'doSensitivityAnalysis',0,'doAbsorptionPlots',1,'checkMassbalance',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
 %  first column nonmem file, second column dictionary, third column datatype
-dataFiles = {'data.mndat','dict.csv','timeprofile'};
+dataFiles(1,:) = {'data.mndat','dict.csv','timeprofile'};
 
 % get Definition of default plots
 if TaskList.doVPC
@@ -41,5 +41,17 @@ else
     VPC = [];
 end
 
+% get Definition of default plots
+if TaskList.checkMassbalance
+    MBS = getDefaultMassbalanceSettings(MeanModelSet);
+else
+    MBS = [];
+end
+
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles);
+runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles,sensParameterList,MBS);

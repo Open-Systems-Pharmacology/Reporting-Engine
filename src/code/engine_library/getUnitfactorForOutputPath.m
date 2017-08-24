@@ -48,11 +48,11 @@ end
     
 % if it neither observer nor statevariable, terminate function
 if ~ise
-    writeToLog(sprintf('ERROR: Outputpath "%s" could not be found in model',pathID),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('Outputpath "%s" could not be found in model',pathID),false);
     success = false;
     return
 end
     
-[unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,unit,targetUnit,MW);
+[unitFactor,success] = getUnitFactorForUnknownDimension(unit,targetUnit,MW);
 
 return

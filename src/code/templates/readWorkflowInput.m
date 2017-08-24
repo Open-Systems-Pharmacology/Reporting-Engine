@@ -138,7 +138,10 @@ if all(jjIdentifier)
             sensSheet = tmp{2};
         end
         [~,~,sensParameterList] = xlsread(sensXLS,sensSheet);
-        sensParameterList = sensParameterList(2:end,1:5);
+        if size(sensParameterList,2)<4
+            error('Please insert 4 columns for sensitivities: Path, number of steps, variation range,report name');
+        end
+        sensParameterList = sensParameterList(2:end,1:4);
         jj = ~cellfun(@isnumeric,sensParameterList(:,1));
         sensParameterList = sensParameterList(jj,:);
     end

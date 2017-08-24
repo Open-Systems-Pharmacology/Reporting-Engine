@@ -1,7 +1,6 @@
-function MBS = getDefaultMassbalanceSettings(MeanModelSet) 
+function MBS = getDefaultMassbalanceSettings
 %GETDEFAULTVPCMEANMODELSETTINGS get WSettings for visual predicitve check
 %
-%  MBS = getDefaultMassbalanceSettings(MeanModelSet) 
 %
 % Inputs:
 %       MeanModelSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORMEANMODELSIMULATION

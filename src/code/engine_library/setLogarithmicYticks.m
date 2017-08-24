@@ -12,7 +12,7 @@ yt = get(ax,'ytick');
 yl = get(ax,'ylim');
 
 % get new integer ticks
-ytNew = intersect(yt,ceil(yt(1)):floor(yt(end)));
+ytNew = intersect(round(yt),ceil(yt(1)):floor(yt(end)));
 
 % if none or only one add outer limits
 if  length(ytNew) <=1
@@ -31,8 +31,8 @@ end
 
 % get Minor ticks of yt
 yMinorTicks = 10.^(ytNew(1)).*[0.1:0.1:1];
-for iT = 1:length(ytNew)
-    yMinorTicks = [yMinorTicks 10.^(ytNew(iT)).*[2:1:10]]; %#ok<AGROW>
+for iT = min(ytNew):max(ytNew)
+    yMinorTicks = [yMinorTicks 10.^(iT).*[2:1:10]]; %#ok<AGROW>
 end
 jj = log10(yMinorTicks) >= yl(1) &  log10(yMinorTicks) <= yl(end);
 yMinorTicks = log10(yMinorTicks(jj));

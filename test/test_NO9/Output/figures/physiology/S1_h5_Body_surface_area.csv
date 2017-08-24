@@ -1,0 +1,7 @@
+Percentile of Body surface area for virtual adult population.;
+;
+Body surface area [m²];adult: n=10
+1.39 <= Body surface area < 1.48;2
+1.48 <= Body surface area < 1.65;1
+1.65 <= Body surface area < 1.83;5
+1.83 <= Body surface area < 1.92;2

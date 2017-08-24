@@ -134,8 +134,8 @@ for iSet = 1:length(RunSet)
                             TP{iO}(indx).isLloq(jj_lloq) = true; %#ok<AGROW>
                             tmp =  unique(lloq(jj_lloq));
                             if length(tmp) > 1
-                                writeToLog(sprintf('WARNING: non unique lloq for STUD %d SID %d', ...
-                                    DataTP(indx).stud ,DataTP(indx).sid),WSettings.logfile,true,false);
+                                writeToReportLog('WARNING',sprintf('non unique lloq for STUD %d SID %d', ...
+                                    DataTP(indx).stud ,DataTP(indx).sid),false);
                             end
                             TP{iO}(indx).lloq = min(tmp); %#ok<AGROW>
                         end

@@ -97,8 +97,8 @@ for iInt = 1:length(intervalList)
     infusionTime = unique([ApplicationProtocol(jjApp).infusionTime]);
     if length(infusionTime)>1 
         if ismember('MRT',{PKParameterTemplate(jj_PK).fnPK});
-            writeToLog(sprintf('WARNING for the time slot %d - %d infusion time was not unique MRT will be nan',...
-                timeRange(1),timeRange(end)),WSettings.logfile,true,false);
+            writeToReportLog('WARNING',sprintf('WARNING for the time slot %d - %d infusion time was not unique MRT will be nan',...
+                timeRange(1),timeRange(end)),false);
         end
         infusionTime = nan;
     end

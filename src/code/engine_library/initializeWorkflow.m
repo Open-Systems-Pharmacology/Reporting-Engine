@@ -1,10 +1,9 @@
-function [WSettings] = initializeWorkflow(workflowType,WSettings)
+function [WSettings] = initializeWorkflow(WSettings)
 % initialise the workflow, sets up the logfile, and sets global settings
 %
 % [WSettings] = initializeWorkflow(workflowType,WSettings)
 % 
 % Inputs:
-%       workflowType (string)  type of workflow
 %       WSettings (structure)  see GETDEFAULTWORKFLOWSETTINGS
 % Outputs:
 %       WSettings (structure)  see GETDEFAULTWORKFLOWSETTINGS
@@ -15,9 +14,6 @@ function [WSettings] = initializeWorkflow(workflowType,WSettings)
 
 
 %% adjust global settings
-if isempty(WSettings.logfile)
-    WSettings.logfile = 'logfile.txt';
-end
 
 % add Reporting engine version
 TRE = ReportingEngineVersionInfo;
@@ -30,11 +26,8 @@ computerName = getenv('COMPUTERNAME');
 WSettings.isValidatedSystem = ismember(computerName,TRE.ListOfValidatedComputers);
 
 
-
-
 % add OSPSuite version
 T = OSPSuiteVersionInfo;
-% T = SBSuiteVersionInfo;
 if isunix 
     versionOfSimMOdel = T.SimModelVersion_Linux; %default linux version
 else
@@ -42,7 +35,7 @@ else
 end
 
 %% Initialize logfile
-msg = sprintf('Start Workflow of type %s \n',workflowType);
+msg = sprintf('Start Workflow:  %s \n',workflowModeToText(WSettings.workflowType,WSettings.workflowMode));
 if WSettings.isValidatedSystem
     msg = sprintf('%s System is validated \n',msg);
 else
@@ -51,12 +44,13 @@ end
 msg = sprintf('%s Computer %s (%s) \n',msg,computerName,computer);
 msg = sprintf('%s Reporting Engine version: %g \n',msg,TRE.ReportingEngineVersion);
 msg = sprintf('%s Open Systems Pharmacology Suite version: %g \n',msg,T.OSPSuiteVersion);
-% msg = sprintf('%s Open Systems Pharmacology Suite version: %g \n',msg,T.SBSuiteVersion);
 msg = sprintf('%s Version of SimModel: %g \n',msg,versionOfSimMOdel);
 msg = sprintf('%s SimModelCompName: %s \n',msg,T.SimModelCompName);
 msg = sprintf('%s Matlab version: %s \n',msg,version);
+msg = sprintf('%s Started by: %s \n',msg,getenv('Username'));
 
-writeToLog(msg,WSettings.logfile,true,true);
+writeToReportLog('INFO',msg,true);
+copyfile('logfile.txt','errorLogfile.txt');
 
 % close all precvious figures
 close all;

@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:13:59
+% Original author: ZTCOK 16-Aug-2017 15:28:19
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -31,6 +31,8 @@ OutputList(4) = struct('pathID','Organism|Bone|Intracellular|Itraconazole|Concen
 OutputList(4).pKParameterList = {'C_max','C_max_norm','C_max_t1_t2','C_max_t1_t2_norm','C_max_tLast_tEnd','C_max_tLast_tEnd_norm','t_max','t_max_t1_t2','t_max_tLast_tEnd','C_trough_t2','C_trough_tLast','AUC_t1_t2','AUC_t1_t2_norm','AUC_tLast_minus_1_tLast','AUC_tLast_minus_1_tLast_norm','AUC_inf_t1','AUC_inf_t1_norm','AUC_inf_tLast','AUC_inf_tLast_norm','MRT','Thalf','Thalf_tLast_tEnd';'µmol/l','mg/l','µmol/l','mg/l','µmol/l','mg/l','h','h','h','µmol/l','µmol/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','h','h','h'};
 OutputList(5) = struct('pathID','Organism|Bone|Intracellular|Hydroxy_Itraconazole|Concentration in container','reportName','Hydroxy Itraconazole Bone','displayUnit','µg/l','dataTpFilter','','residualScale','log','unitFactor',NaN,'pKParameterList',[]);
 OutputList(5).pKParameterList = {'C_max','C_max_norm','C_max_t1_t2','C_max_t1_t2_norm','C_max_tLast_tEnd','C_max_tLast_tEnd_norm','t_max','t_max_t1_t2','t_max_tLast_tEnd','C_trough_t2','C_trough_tLast','AUC_t1_t2','AUC_t1_t2_norm','AUC_tLast_minus_1_tLast','AUC_tLast_minus_1_tLast_norm','AUC_inf_t1','AUC_inf_t1_norm','AUC_inf_tLast','AUC_inf_tLast_norm','MRT','Thalf','Thalf_tLast_tEnd';'µmol/l','mg/l','µmol/l','mg/l','µmol/l','mg/l','h','h','h','µmol/l','µmol/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','h','h','h'};
+OutputList(6) = struct('pathID','Organism|Bone|Intracellular|Midazolam|Concentration in container','reportName','Midazolam Bone','displayUnit','µg/l','dataTpFilter','','residualScale','log','unitFactor',NaN,'pKParameterList',[]);
+OutputList(6).pKParameterList = {'C_max','C_max_norm','C_max_t1_t2','C_max_t1_t2_norm','C_max_tLast_tEnd','C_max_tLast_tEnd_norm','t_max','t_max_t1_t2','t_max_tLast_tEnd','C_trough_t2','C_trough_tLast','AUC_t1_t2','AUC_t1_t2_norm','AUC_tLast_minus_1_tLast','AUC_tLast_minus_1_tLast_norm','AUC_inf_t1','AUC_inf_t1_norm','AUC_inf_tLast','AUC_inf_tLast_norm','MRT','Thalf','Thalf_tLast_tEnd';'µmol/l','mg/l','µmol/l','mg/l','µmol/l','mg/l','h','h','h','µmol/l','µmol/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','h','h','h'};
 PopRunSet(1) = struct('name','OralSingle_IV_Multi','reportName','Multi IV and PO application','boxwhiskerLabel','','xml','Children_OralSingle_IV_Multi.xml','studyDesign','','isReference',0,'popcsv','Children_OralSingle_IV_Multi.csv','popReportName','virtual test population','calculatePKParameterFh','','dataTpFilter','','dataReportName','','OutputList',OutputList);
 clear OutputList
 
@@ -49,5 +51,10 @@ else
     VPC = [];
 end
 
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,'parallelComparison',VPC,dataFiles,sensParameterList);

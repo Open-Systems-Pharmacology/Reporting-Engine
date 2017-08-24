@@ -42,14 +42,14 @@ end
 % check if some individuals are outside bound
 jj = BSA< min([SplitCondition.BSAmin]);
 if any(jj)
-    writeToLog(sprintf('%d individual(s) have/has a body surface area less than %g, and are not covered by the bsa dependent dosetable',...
-        sum(jj),min([SplitCondition.BSAmin])),WSettings.logfile,true,false);
+    writeToReportLog('WARNING',sprintf('%d individual(s) have/has a body surface area less than %g, and are not covered by the bsa dependent dosetable',...
+        sum(jj),min([SplitCondition.BSAmin])),false);
      targetParameterValues(jj,:) = 0;
 end
 jj = BSA >= max([SplitCondition.BSAmax]);
 if any(jj)
-    writeToLog(sprintf('%d individual(s) have/has a  body surface area greater equal than %g, and are not covered by the bsa dependent dosetable',...
-        sum(jj),max([SplitCondition.BSAmax])),WSettings.logfile,true,false);
+   writeToReportLog('WARNING',sprintf('%d individual(s) have/has a  body surface area greater equal than %g, and are not covered by the bsa dependent dosetable',...
+        sum(jj),max([SplitCondition.BSAmax])),false);
 
     targetParameterValues(jj,:) = 0;
 

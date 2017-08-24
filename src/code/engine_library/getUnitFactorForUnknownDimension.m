@@ -1,9 +1,7 @@
-function [unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,unit,targetUnit,MW)
+function [unitFactor,success] = getUnitFactorForUnknownDimension(unit,targetUnit,MW)
 % GETUNITFACTORFORUNKNOWNDIMENSION getfactor to convert units, 
 %
 % Inputs: 
-%      - WSettings (structure)    definition of properties used in all
-%                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %      - targetUnit (string) unit to convert internal unit
 %      - MW (double) moelcular weigth
 %  Outputs:
@@ -29,7 +27,7 @@ success = true;
 % check if taregt unit exist, and get index of dimension
 ixDimDisplay = find(cellfun(@(x) any(strcmp(x,targetUnit)),{unitList.unit_txt}));
 if isempty(ixDimDisplay)
-    writeToLog(sprintf('ERROR: unit "%s" for seems to be no default OSPSuite unit',targetUnit),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('unit "%s" for seems to be no default OSPSuite unit',targetUnit),false);
     success = false;
     return
 end
@@ -60,7 +58,7 @@ if isempty(ixDim)
         return
     end
     
-    writeToLog(sprintf('ERROR: For unit "%s", there is no common dimension with display unit "%s"',unit,targetUnit),WSettings.logfile,true,false);
+    writeToReportLog('ERROR',sprintf('For unit "%s", there is no common dimension with display unit "%s"',unit,targetUnit),false);
     success = false;
     return
 end

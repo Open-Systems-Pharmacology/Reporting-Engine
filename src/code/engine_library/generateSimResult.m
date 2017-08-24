@@ -1,4 +1,4 @@
-function SimResult = generateSimResult(WSettings,SimulationSet,simulationIndex,parPaths,parValues,outputPathList,nInd,individualIdVector)
+function SimResult = generateSimResult(WSettings,SimulationSet,simulationIndex,parPaths,parValues,outputPathList,nInd,individualIdVector) %#ok<INUSL>
 % GENERATESIMRESULT processes given  simulation with differnet parameter values
 %
 % Inputs
@@ -29,7 +29,7 @@ if ~isempty(SimulationSet)
     simulationIndex = 1;
     
     % set simulaion time if given
-    if isfield(SimulationSet,'simulationTime') && ~isempty(PopRunSet.simulationTime)
+    if isfield(SimulationSet,'simulationTime') && ~isempty(SimulationSet.simulationTime)
         setSimulationTime(SimulationSet.simulationTime,simulationIndex)
     end
 
@@ -73,8 +73,8 @@ for iInd=1:nInd
                 % chek if it is a unique parameter 
                 if length(tmp)>1
                     
-                    writeToLog(sprintf('WARNING %s is a parameter of the population csv, which correspond to more then one simulation parameter',...
-                        parPaths{iPar}),WSettings.logfile,true,false);
+                    writeToReportLog('WARNING',sprintf('%s is a parameter of the population csv, which correspond to more then one simulation parameter',...
+                        parPaths{iPar}),false);
                     
                     for iTmp = 2:length(tmp)
                         indx = length(rowIndex)+1;
@@ -88,8 +88,8 @@ for iInd=1:nInd
                 % parameter, otherwise,  set a warning
                 if ~ismember(parPaths{iPar},{'IndividualId','Gender','RaceIndex','Population Name',...
                         'Organism|Weight','Organism|BMI','Organism|BSA'})                
-                    writeToLog(sprintf('WARNING %s is parameter of the population csv, but not available as parameter in the xml', ...
-                        parPaths{iPar}),WSettings.logfile,true,false);
+                    writeToReportLog('WARNING',sprintf(' %s is parameter of the population csv, but not available as parameter in the xml', ...
+                        parPaths{iPar}),false);
                 end
             end                
         end
@@ -116,7 +116,7 @@ for iInd=1:nInd
             end
         end
     else
-        writeToLog(sprintf('WARNING solver error, at individual %d',iInd),WSettings.logfile,true,false);
+        writeToReportLog('WARNING',sprintf('solver error, at individual %d',iInd),false);
     end
     
 end

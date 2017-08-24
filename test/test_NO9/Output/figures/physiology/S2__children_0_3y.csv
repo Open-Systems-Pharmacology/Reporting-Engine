@@ -3,4 +3,5 @@ S2_h1_Age;Percentile of Age for virtual children 0-3 years.
 S2_h2_Body_weight;Percentile of Body weight for virtual children 0-3 years.
 S2_h3_Height;Percentile of Height for virtual children 0-3 years.
 S2_h4_BMI;Percentile of BMI for virtual children 0-3 years.
-S2_h5_Gender;Percentile of Gender for virtual children 0-3 years.
+S2_h5_Body_surface_area;Percentile of Body surface area for virtual children 0-3 years.
+S2_h6_Gender;Percentile of Gender for virtual children 0-3 years.

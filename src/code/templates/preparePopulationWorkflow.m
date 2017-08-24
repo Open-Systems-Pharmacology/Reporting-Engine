@@ -12,7 +12,7 @@ if ~exist('sheet','var')
     sheet = 1;
 end
 
-[PopRunSet,TaskList,workflowType,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet);
+[PopRunSet,TaskList,workflowMode,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet);
 
 
 %% add Outputs
@@ -28,7 +28,7 @@ PopRunSet = rmfield(PopRunSet,'outputsheet');
 fid = fopen('workflow.m','w');
 % write header
 % write header
-writeWorkflowHeader(fid)
+writeWorkflowHeader(fid,'popModel',workflowMode)
 
 % write Definitions of sets of Populations
 fprintf(fid,'%% Definitions of sets of Populations');
@@ -67,7 +67,7 @@ fprintf(fid,'%% get Definition of default plots');
 fprintf(fid,'\r\n');
 fprintf(fid,'if TaskList.doVPC');
 fprintf(fid,'\r\n');
-fprintf(fid,sprintf('    VPC = getDefaultVPCPopulationSettings(PopRunSet,''%s'');',workflowType));
+fprintf(fid,'    VPC = getDefaultVPCSettings(WSettings,PopRunSet);');
 fprintf(fid,'\r\n');
 fprintf(fid,'else');
 fprintf(fid,'\r\n');
@@ -84,7 +84,7 @@ writeSensitivityParameterList(fid,sensParameterList);
 % start execution
 fprintf(fid,'%% start the execution');
 fprintf(fid,'\r\n');
-fprintf(fid,sprintf('runPopulationWorkflow(WSettings,TaskList,PopRunSet,''%s'',VPC,dataFiles,sensParameterList);',workflowType));
+fprintf(fid,sprintf('runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles,sensParameterList);'));
 fprintf(fid,'\r\n');
 
 fclose(fid);
@@ -129,6 +129,7 @@ for iFN = 1:length(fn)
                 c = sprintf('%s''%s'';',c,strjoin(tmp(iRow,:),''','''));
             end
             c = sprintf('%s};',c(1:end-1));
+            c = strrep(c,'%','%%');
             cellText{end+1} = c; %#ok<AGROW>
         
             t = sprintf('%s''%s'',[],',t,fn{iFN});
@@ -139,6 +140,7 @@ for iFN = 1:length(fn)
 end
 t = sprintf('%s);',t(1:end-1));
 
+t = strrep(t,'%','%%');
 
 return
 

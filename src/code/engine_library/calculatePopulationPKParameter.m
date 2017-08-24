@@ -12,29 +12,37 @@ function calculatePopulationPKParameter(WSettings,PopRunSet)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
+try
+    writeToReportLog('INFO',sprintf('Calculate PK Parameter of %s',PopRunSet.name),false);
+    
+    
+    % load population
+    load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
+    
+    % reduce to demographic
+    [jj,ix] = ismember({'IndividualId','Organism|Weight','Organism|Height','Organism|BMI'},parPaths); %#ok<NODEF>
+    parPaths = parPaths(ix(jj));
+    parValues = parValues(:,ix(jj)); %#ok<NODEF>
+    
+    % start the caluclation
+    [PKPList,individualIdVector,pathList] = calculatesPKParameterList(WSettings,PopRunSet.name,PopRunSet.calculatePKParameterFh,parPaths,parValues);
+    
+    % export PKParameter
+    exportPKParameter(WSettings,PopRunSet.name,PKPList,individualIdVector,pathList);
+    
+    % save as temporary file
+    save(fullfile('tmp',PopRunSet.name,'pKPList.mat'),'PKPList');
+    
+    
+    writeToReportLog('INFO',sprintf('Calculation finished \n'),false);
 
-writeToLog(sprintf('Calculate PK Parameter of %s',PopRunSet.name),WSettings.logfile,true,false);
-
-
-% load population 
-load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
-
-% reduce to demographic
-[jj,ix] = ismember({'IndividualId','Organism|Weight','Organism|Height','Organism|BMI'},parPaths); %#ok<NODEF>
-parPaths = parPaths(ix(jj));
-parValues = parValues(:,ix(jj)); %#ok<NODEF>
-
-% start the caluclation
-[PKPList,individualIdVector,pathList] = calculatesPKParameterList(WSettings,PopRunSet.name,PopRunSet.calculatePKParameterFh,parPaths,parValues);
-
-% export PKParameter
-exportPKParameter(WSettings,PopRunSet.name,PKPList,individualIdVector,pathList);
-
-% save as temporary file
-save(fullfile('tmp',PopRunSet.name,'pKPList.mat'),'PKPList');
-
-
-writeToLog(sprintf('Calculation finished \n'),WSettings.logfile,true,false);
+catch exception
+        
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception')
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Calculation finished with error \n'),false);
+        
+end
 
 return
 

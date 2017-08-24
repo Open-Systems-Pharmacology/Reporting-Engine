@@ -49,7 +49,7 @@ for iPop = 1:size(sens,2)
             
             data{3,1}(offset+[1:nPar],1) = simulationName(iPop);
             data{3,2}(offset+[1:nPar],1) = {individualname};
-            data{3,3}(offset+[1:nPar],1) = sensParameterList(:,1);
+            data{3,3}(offset+[1:nPar],1) = sensParameterList(:,4);
             data{3,4}(offset+[1:nPar],1) = [sens{iInd,iPop}.slope];
             data{3,5}(offset+[1:nPar],1) = [sens{iInd,iPop}.slopeCILower];
             data{3,6}(offset+[1:nPar],1) = [sens{iInd,iPop}.slopeCIUpper];
