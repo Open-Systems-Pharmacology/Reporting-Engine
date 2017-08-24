@@ -1,8 +1,9 @@
 % Script to start a workflow
+% Type: MeanModel workflow, mode default
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:19:21
+% Original author: ZTCOK 22-Aug-2017 09:20:57
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -17,9 +18,9 @@
 
 % global settings
 % there are globale settings which are used in all functions.
-WSettings = getDefaultWorkflowSettings;
+WSettings = getDefaultWorkflowSettings('meanModel','default');
 
-% Definitions of sets of Mean Model silulations
+% Definitions of sets of Mean Model simulations
 clear MeanModelSet
 OutputList(1) = struct('pathID','Organism|PeripheralVenousBlood|Theophylline|Plasma (Peripheral Venous Blood)','reportName','Theophylline','displayUnit','mg/l','dataTpFilter','STUD==0','residualScale','log','unitFactor',NaN,'pKParameterList',[]);
 OutputList(1).pKParameterList = {'C_max','t_max','C_tEnd','AUC';'mg/l','h','mg/l','mg*h/l'};
@@ -27,19 +28,31 @@ MeanModelSet(1) = struct('name','PO320mg','reportName','PO administration of 320
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('doVPC',1,'doSensitivityAnalysis',0);
+TaskList = struct('doVPC',1,'doSensitivityAnalysis',0,'doAbsorptionPlots',0,'checkMassbalance',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
 %  first column nonmem file, second column dictionary, third column datatype
-dataFiles = {'data.mndat','dict.csv','timeprofile'};
+dataFiles(1,:) = {'data.mndat','dict.csv','timeprofile'};
 
 % get Definition of default plots
 if TaskList.doVPC
-    VPC = getDefaultVPCMeanModelSettings(MeanModelSet);
+    VPC = getDefaultVPCSettings(WSettings,MeanModelSet);
 else
     VPC = [];
 end
 
+% get Definition of default plots
+if TaskList.checkMassbalance
+    MBS = getDefaultMassbalanceSettings;
+else
+    MBS = [];
+end
+
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles);
+runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,dataFiles,sensParameterList,MBS);

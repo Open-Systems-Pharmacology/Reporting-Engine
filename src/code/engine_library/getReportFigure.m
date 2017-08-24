@@ -198,6 +198,9 @@ if timestamp
     'Tag','Timestamp');
 end
 
+% reset colormap
+colormap('default');
+
 %% Generate axes
 if isnan(axes_position)
     ax_handles=nan(nRows*nCols,1);

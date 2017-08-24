@@ -46,13 +46,13 @@ iCut=0;
 CsortSumSensPop=struct;
 for iPop=1:nPop
     for iPrc=1:nPrc      
-        tmp=sqrt(cumsum([sens{iPop,iPrc}(sortSumSensIx(end:-1:1)).slope].^2));
+        tmp=sqrt(cumsum([sens{iPrc,iPop}(sortSumSensIx(end:-1:1)).slope].^2));
         if ~isempty(tmp)
             tmp = tmp(end:-1:1)./tmp(end);
             jj=find(tmp < (1 - WSettings.sensitivityCutoff),1);
             iCut=max(jj-1,iCut);
         end
-        CsortSumSensPop(iPop,iPrc).slope=tmp;
+        CsortSumSensPop(iPrc,iPop).slope=tmp;
     end
 end
 if isempty(iCut)

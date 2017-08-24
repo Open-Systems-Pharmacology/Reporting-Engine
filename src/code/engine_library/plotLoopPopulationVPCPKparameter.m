@@ -180,8 +180,8 @@ for iO = 1:length(o)
             end
        
             if warningflagRangePlots
-                writeToLog(sprintf(['WARNING: you are creating Rangeplots with %d individuals, recommended are at least %d individuals. ',...
-                    'Statistic might be not sufficient'],length(y),WSettings.rangePlotsMin),WSettings.logfile,true,false);
+                writeToReportLog('WARNING',sprintf(['you are creating Rangeplots with %d individuals, recommended are at least %d individuals. ',...
+                    'Statistic might be not sufficient'],length(y),WSettings.rangePlotsMin),false);
                 warningflagRangePlots = false;
             end
 

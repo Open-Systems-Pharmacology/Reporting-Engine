@@ -1,8 +1,9 @@
 % Script to start a workflow
+% Type: Population workflow, with project specific mode parallelComparison
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:20:43
+% Original author: ZTCOK 22-Aug-2017 09:40:50
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -17,7 +18,7 @@
 
 % global settings
 % there are globale settings which are used in all functions.
-WSettings = getDefaultWorkflowSettings;
+WSettings = getDefaultWorkflowSettings('popModel','parallelComparison');
 
 % Definitions of sets of Populations
 clear PopRunSet
@@ -28,7 +29,7 @@ PopRunSet(1) = struct('name','SingleIvBolus','reportName','single IV application
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',1,'doSensitivityAnalysis',1);
+TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',1,'doSensitivityAnalysis',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
@@ -37,10 +38,15 @@ dataFiles = {};
 
 % get Definition of default plots
 if TaskList.doVPC
-    VPC = getDefaultVPCPopulationSettings(PopRunSet,'parallelComparison');
+    VPC = getDefaultVPCSettings(WSettings,PopRunSet);
 else
     VPC = [];
 end
 
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles,sensParameterList);

@@ -87,11 +87,14 @@ for iSet = 1:nOuterLoop
         end
         
         % data
+        yData = [];
         if ~isempty(Data)
             jjDict = strcmp({Dict.pathID},parPathSelection{iY});
-            yData = [Data.(Dict(jjDict).matlabID)]';
-        else
-            yData = [];
+            if any(jjDict) 
+                if isfield(Data,(Dict(jjDict).matlabID))
+                    yData = [Data.(Dict(jjDict).matlabID)]';
+                end
+            end
         end
         dataReportName = PopRunSet(ixSet(1)).dataReportName;
         
@@ -129,8 +132,8 @@ for iSet = 1:nOuterLoop
         
             
                 if warningflagRangePlots
-                   writeToLog(sprintf(['WARNING: you are creating Rangeplots with %d individuals, recommended are at least %d individual. ',...
-                       'Statistic might be not sufficient'],size(parValues,1),WSettings.rangePlotsMin),WSettings.logfile,true,false); 
+                   writeToReportLog('WARNING',sprintf(['you are creating Rangeplots with %d individuals, recommended are at least %d individual. ',...
+                       'Statistic might be not sufficient'],size(parValues,1),WSettings.rangePlotsMin),false); 
                     warningflagRangePlots = false;
                 end
                 

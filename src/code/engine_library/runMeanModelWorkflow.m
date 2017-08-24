@@ -20,17 +20,17 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-% try
+try
     %% check optional inputs
     if ~exist('Datafiles','var')
         Datafiles = {};
     end
 
     %% initialize workflow
-    [WSettings] = initializeWorkflow('Mean Model Simulation',WSettings);
+    [WSettings] = initializeWorkflow(WSettings);
     
     %% check if necessary inputs for task are available
-    writeToLog(sprintf('Start input checks'),WSettings.logfile,true,false);
+    writeToReportLog('INFO','Start input checks',false);
     
     successInputCheck = true;
 
@@ -52,7 +52,7 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
     % PK Parameter
     if TaskList.doVPC
         if isempty(VPC)
-            writeToLog(sprintf('ERROR: VPC definition is missing!'),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('VPC definition is missing!'),false);
             successInputCheck = false;
         end
     end
@@ -60,11 +60,18 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
     % PK Parameter
     if TaskList.doSensitivityAnalysis
         if isempty(sensParameterList)
-            writeToLog(sprintf('ERROR: sensitivity definition is missing!'),WSettings.logfile,true,false);
+           writeToReportLog('ERROR',sprintf('sensitivity definition is missing!'),false);
             successInputCheck = false;
         end
     end
 
+    % PK Parameter
+    if TaskList.checkMassbalance
+        if isempty(MBS)
+            writeToReportLog('ERROR',sprintf('ERROR: MBS definition is missing!'),false);
+            successInputCheck = false;
+        end
+    end
     
     % stop if not all inputs are available
     if ~successInputCheck
@@ -77,14 +84,20 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
     % unitconversion, and timeprofiles of desired outputs 
 
     for iSet = 1:length(MeanModelSet)
-        [success,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet(iSet),VPC,sensParameterList);
+        [success,VPC,simulationIndex] = prepareMeanModelSimulation(WSettings,MeanModelSet(iSet),VPC,sensParameterList);
         successInputCheck = success & successInputCheck;
+        
+        % processSimulation
+        if successInputCheck
+            doSim(WSettings,MeanModelSet(iSet),VPC,simulationIndex);
+        end
     end    
             
     % stop if inpt is inconsistent
     if ~successInputCheck
         return
     end
+   
     
     % read datafiles
     if doReadDataTPfile
@@ -104,7 +117,7 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
     end
 
     
-    writeToLog(sprintf('Input checks were successfully executed. \n'),WSettings.logfile,true,false);
+    writeToReportLog('INFO',sprintf('Input checks were successfully executed. \n'),false);
 
     %% Tasks processing
     
@@ -128,19 +141,22 @@ function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sens
         runMeanModelCheckMassbalance(WSettings,MeanModelSet,MBS);
     end
     
-% catch exception
-%     
-%     save('exception.mat','exception')
-%     writeToLog(exception.message,WSettings.logfile,true,false);
-%     
-% end
+    writeToReportLog('INFO',sprintf('Mean model workflow finalized \n'),false);
 
+    
+catch exception
+    
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Mean model workflow finished with error \n'),false);
+  
+end
 
 
 return
 
 
-function [successInputCheck,VPC] = prepareMeanModelSimulation(WSettings,MeanModelSet,VPC,sensParameterList)
+function [successInputCheck,VPC,simulationIndex] = prepareMeanModelSimulation(WSettings,MeanModelSet,VPC,sensParameterList)
 
 % initialize return value
 successInputCheck = true;
@@ -152,7 +168,11 @@ if ~exist(tmpDir,'dir')
     mkdir(tmpDir)
 else
     % clear up all temporary results
-    delete(fullfile(tmpDir,'*.mat'));
+    if ~WSettings.restart
+        delete(fullfile(tmpDir,'*.mat'));
+    else
+        writeToReportLog('WARNING',sprintf('As script is started in restart mode, temporaray results are nor deleted! \n'),false);
+    end
 end
 
 
@@ -184,12 +204,12 @@ for iO = 1:length(OutputList)
         
         jj = strcmp(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
         if ~any(jj)
-            writeToLog(sprintf('ERROR: Output %s has listed PK Parameter "%s" which is not calculated by the PK parameter function.',...
-                OutputList(iO).pathID,OutputList(iO).pKParameterList{1,iPK}),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('Output %s has listed PK Parameter "%s" which is not calculated by the PK parameter function.',...
+                OutputList(iO).pathID,OutputList(iO).pKParameterList{1,iPK}),false);
             successInputCheck = false;
         else
             
-            [unitFactor,success] = getUnitFactorForUnknownDimension(WSettings,PKParameterTemplate(jj).unit,OutputList(iO).pKParameterList{2,iPK},MW);
+            [unitFactor,success] = getUnitFactorForUnknownDimension(PKParameterTemplate(jj).unit,OutputList(iO).pKParameterList{2,iPK},MW);
             
             successInputCheck = success & successInputCheck;
            OutputList(iO).pKParameterList{3,iPK} = unitFactor;
@@ -203,8 +223,8 @@ save(fullfile(tmpDir,'outputList.mat'),'OutputList');
     
 % check sensitivity definition
 if ~isempty(sensParameterList)
-    sensParameterList = checkSensitivityParameter(WSettings,sensParameterList,simulationIndex);     %#ok<NASGU>
-    save(fullfile(tmpDir,'senssitivity.mat'),'sensParameterList');
+    sensParameterList = checkSensitivityParameter(sensParameterList,simulationIndex);     %#ok<NASGU>
+    save(fullfile(tmpDir,'sensitivity.mat'),'sensParameterList');
 end
 
 
@@ -218,9 +238,57 @@ if isempty(OutputList)
     return
 end
 
+return
+    
 
-SimResult = generateSimResult(WSettings,'',simulationIndex,{},[],{OutputList.pathID},1,0); %#ok<NASGU>
+function successInputCheck = checkMeanModelInput(~,MeanModelSet)
 
+successInputCheck = true;
+
+% check name on special letters
+if any(ismember(MeanModelSet.name,'./ ?§$%&()[]{}+~*#'))
+    writeToReportLog('ERROR',sprintf('Name "%s" contains special signs, do not use them.',MeanModelSet.name),false);
+    successInputCheck = false;
+end
+
+% mandatory inputs
+if ~exist(MeanModelSet.xml,'file')
+    writeToReportLog('ERROR',sprintf('"%s" does not exist',MeanModelSet.xml),false);
+    successInputCheck = false;
+end
+                 
+return
+
+function doSim(WSettings,MeanModelSet,VPC,simulationIndex)
+
+% do the simualtion of the model
+tmpDir = fullfile('tmp',MeanModelSet.name); 
+load(fullfile(tmpDir,'outputList.mat'),'OutputList');
+
+if ~isempty(VPC) && ~isempty(VPC.optimizedParameters)
+    initStruct = [];
+    for iPar = 1:length(VPC.optimizedParameters)
+        initStruct = initParameter(initStruct,['*|' VPC.optimizedParameters{iPar}],'always','calculateSensitivity',true);
+    end
+    
+    initSimulation(MeanModelSet.xml,initStruct);
+    
+    simulationIndex=1;
+    
+end
+
+SimResult = generateSimResult(WSettings,'',simulationIndex,{},[],{OutputList.pathID},1,0); 
+
+if ~isempty(VPC) && ~isempty(VPC.optimizedParameters)
+
+    for iO = 1:length(OutputList)
+        for iPar = 1:length(VPC.optimizedParameters)
+            [~,v(:,iPar)] = getSimulationSensitivityResult(['*|' OutputList.pathID],['*|' VPC.optimizedParameters{iPar}],simulationIndex); %#ok<AGROW>
+        end
+        SimResult.sensitivity{iO} = v;
+    end
+    
+end
 % save as temporary file
 save(fullfile(tmpDir,'simResult_1.mat'),'SimResult');
 
@@ -232,26 +300,6 @@ PKPList = calculatesPKParameterList(WSettings,MeanModelSet.name,MeanModelSet.cal
 
 % save as temporary file
 save(fullfile(tmpDir,'pKPList.mat'),'PKPList');
-  
+
 
 return
-    
-
-function successInputCheck = checkMeanModelInput(WSettings,MeanModelSet)
-
-successInputCheck = true;
-
-% check name on special letters
-if any(ismember(MeanModelSet.name,'./ ?§$%&()[]{}+~*#'))
-    writeToLog(sprintf('ERROR: Name "%s" contains special signs, do not use them.',MeanModelSet.name),WSettings.logfile,true,false);
-    successInputCheck = false;
-end
-
-% mandatory inputs
-if ~exist(MeanModelSet.xml,'file')
-    writeToLog(sprintf('ERROR: "%s" does not exist',MeanModelSet.xml),WSettings.logfile,true,false);
-    successInputCheck = false;
-end
-                 
-return
-

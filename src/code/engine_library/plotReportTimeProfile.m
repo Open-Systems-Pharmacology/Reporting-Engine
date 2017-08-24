@@ -1,4 +1,5 @@
-function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq)
+function [csv,goodness] =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq,...
+    VPCresult,iFlag)
 %PLOTREPORTTIMEPROFILE Plots the time profile of a population in comparison to a reference population
 %
 % csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef,DataTP,timeUnit,yLabel,yUnit,legendEntries,yscale,lloq)
@@ -30,19 +31,36 @@ function csv =  plotReportTimeProfile(WSettings,figureHandle,time,y,timeRef,yRef
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-% calculate percentiles of population
-[yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getRangePlotPercentiles(WSettings,y');
+% initialize goodness
+goodness = {'',nan}; %#ok<NASGU>
 
-% calculate percentiles of reference pop
-if ~isempty(yRef) 
-    [yMinRef,yMeanRef,yMaxRef] = getRangePlotPercentiles(WSettings,yRef');
+
+% get Range
+if ~exist('VPCresult','var') || isempty(VPCresult)
+    % calculate percentiles of population
+    [yMin,yMean,yMax,legendTextMean,rangeTxt,csvHeader] = getRangePlotPercentiles(WSettings,y');
+    
+    % calculate percentiles of reference pop
+    if ~isempty(yRef)
+        [yMinRef,yMeanRef,yMaxRef] = getRangePlotPercentiles(WSettings,yRef');
+    else
+        yMinRef = nan;
+    end
 else
-    yMinRef = nan;
+    yMean = y';
+    yMax = VPCresult.yMax(:,iFlag)';
+    yMin = VPCresult.yMin(:,iFlag)';
+    legendTextMean = VPCresult.legendTextMean;
+    rangeTxt = VPCresult.rangeTxt;
+    csvHeader = VPCresult.csvHeader;
+    
+     yMinRef = nan;
 end
 
 % get Csv Array beforr y values are tarnsformed for y scale
 csv = getCsvArray(yMin,yMean,yMax,yLabel,yUnit,timeLabel,timeUnit,time,csvHeader);
 
+time = reshape(time,size(yMean));
 
 % for yscal log transfer valiues to logscale
 if strcmp(yscale,'log')
@@ -67,6 +85,7 @@ if strcmp(yscale,'log')
     if ~isempty(DataTP)
         for iInd = 1:length(DataTP)
             DataTP(iInd).y = log10(DataTP(iInd).y);
+            DataTP(iInd).lloq = log10(DataTP(iInd).lloq);
             jj = ~isinf(DataTP(iInd).y);
             ylim = min([ylim;DataTP(iInd).y(jj)]);
         end
@@ -77,8 +96,6 @@ else
     ylim = 0;
     
 end
-
-
 
 
 % create figure
@@ -126,13 +143,13 @@ if ~isempty(DataTP)
     for iInd = 1:length(DataTP)
         lgh(5) = plot(DataTP(iInd).time,DataTP(iInd).y,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),...
             'displayname',legendEntries{3});
-        plot(DataTP(iInd).time,DataTP(iInd).lloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
+        plot(DataTP(iInd).time,DataTP(iInd).lloq,mk(iInd),'color',col(iInd,:),'linewidth',2,'displayname',legendEntries{3});
     end
 end    
 
 % Plot LLOQ
 if ~isnan(lloq)
-    plot([time(1) time(end)],[1 1]*lloq,'k:','linewidth',1,'displayname',legendEntries{end});
+    lgh(end+1) = plot([time(1) time(end)],[1 1]*lloq,'k-','linewidth',2,'displayname',legendEntries{end});
 end
 
 % set legend
@@ -143,24 +160,45 @@ legend(lgh(jj),get(lgh(jj),'displayname'),'location','northoutside');
 xlabel(getLabelWithUnit(timeLabel,timeUnit));
 ylabel(getLabelWithUnit(yLabel,yUnit));
 
-setAxesScaling(ax,'timeUnit',timeUnit,'xlim',[time(1) time(end)]);
-    
 % set ytick to logscale if necessary
-xl = get(ax,'xlim');
 yl = get(ax,'ylim');
 yl(1) = ylim;
 set(ax,'ylim',yl);
 
+setAxesScaling(ax,'timeUnit',timeUnit,'xlim',[time(1) time(end)]);
+    
+
 if strcmp(yscale,'log')    
     setLogarithmicYticks(ax);
 end
-% plot box
-plot(xl([1 1]),yl([1 2]),'k-');
-plot(xl([2 2]),yl([1 2]),'k-');
-plot(xl([1 2]),yl([1 1]),'k-');
-plot(xl([1 2]),yl([2 2]),'k-');
-    
 
+% getGoodness
+if ~isempty(DataTP) && any(~isnan(yMin))
+    nIn = 0;
+    nAll = 0;
+    for iInd = 1:length(DataTP)
+        jjNAN = ~isnan(DataTP(iInd).y);
+        nAll = sum(jjNAN) + nAll;
+        % get predicted min and max
+        DataMin = interp1(time,yMin,DataTP(iInd).time);
+        DataMax = interp1(time,yMax,DataTP(iInd).time);
+        jj = jjNAN & DataTP(iInd).y >= DataMin & DataTP(iInd).y <= DataMax;
+        nIn = sum(jj) + nIn;
+    end
+    
+    p =  (WSettings.displayPercentiles(5)-WSettings.displayPercentiles(1))/100;
+    
+    nMax = binoinv(0.95,nAll,p);
+    nMin = binoinv(0.05,nAll,p);
+    
+    success = nMin <= nIn & nIn <= nMax;
+    
+    goodness = {sprintf('%d of %d datapoints within %g%% range of simulation, expected are values between %d %d',nIn,nAll,p*100,nMin,nMax),success};
+    
+    
+else
+    goodness = {'',nan};
+end
 return
 
 

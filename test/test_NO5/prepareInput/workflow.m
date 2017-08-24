@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:18:10
+% Original author: ZTCOK 16-Aug-2017 15:33:28
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -43,5 +43,10 @@ else
     VPC = [];
 end
 
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,'parallelComparison',VPC,dataFiles,sensParameterList);

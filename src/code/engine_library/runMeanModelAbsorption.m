@@ -10,29 +10,37 @@ function runMeanModelAbsorption(WSettings,MeanModelSet)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-
-writeToLog(sprintf('Start generate absorption plots'),WSettings.logfile,true,false);
-
-% Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','absorption'),WSettings.printFormatList);
-FP = FP.iniCaptiontextFigtextArray('Absorption characteristics','absorption');
-
-for iSet = 1:length(MeanModelSet)
-   
-    [time,R] = simulateAbsorption(WSettings,MeanModelSet(iSet));
+try
+    writeToReportLog('INFO',sprintf('Start generate absorption plots'),false);
     
-    if isempty(R)
-        writeToLog(sprintf('No compound is absorbed in %s',MeanModelSet(iSet).name),WSettings.logfile,true,false);
-    else
-        FP = plotAbsorption(WSettings,MeanModelSet.name,time,R,FP);
+    % Initialize figureDir
+    FP = ReportFigurePrint(fullfile('figures','absorption'),WSettings.printFormatList);
+    FP = FP.iniCaptiontextFigtextArray('Absorption characteristics','absorption');
+    
+    for iSet = 1:length(MeanModelSet)
+        
+        [time,R] = simulateAbsorption(WSettings,MeanModelSet(iSet));
+        
+        if isempty(R)
+            writeToReportLog('WARNING',sprintf('No compound is absorbed in %s',MeanModelSet(iSet).name),false);
+        else
+            FP = plotAbsorption(WSettings,MeanModelSet.name,time,R,FP);
+        end
     end
-end
-
-FP.saveCaptiontextArray;
-
-
-writeToLog(sprintf('Finalized Absorption plots \n'),WSettings.logfile,true,false);
-
+    
+    FP.saveCaptiontextArray;
+    
+    
+    writeToReportLog('INFO',sprintf('Finalized Absorption plots \n'),false);
+    
+ catch exception
+        
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Absorption plots finished with error \n'),false);
+        
+end   
+    
 return
 
 

@@ -13,38 +13,47 @@ function runPopulationVPC(WSettings,VPC,PopRunSet)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-writeToLog(sprintf('Start Population VPC'),WSettings.logfile,true,false);
+try
+    writeToReportLog('INFO',sprintf('Start Population VPC'),false);
+    
+    
+    % demographic
+    % loop on demographic definitions
+    % Initialize figureDir
+    FP = ReportFigurePrint(fullfile('figures','physiology'),WSettings.printFormatList);
+    
+    for iD = 1:length(VPC.PhysProperties)
+        FP = plotLoopPopulationVPCforPhysiology(WSettings,VPC.textFunctionHandle,VPC.PhysProperties(iD),PopRunSet,FP);
+    end
+    
+    % time profiles
+    % Initialize figureDir
+    FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
+    
+    for iD = 1:length(VPC.Timeprofile)
+        FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),PopRunSet,FP);
+    end
+    
+    
+    % pk parameter
+    % Initialize figureDir
+    FP = ReportFigurePrint(fullfile('figures','pKParameter'),WSettings.printFormatList);
+    
+    for iD = 1:length(VPC.PKParameter)
+        FP = plotLoopPopulationVPCPKparameter(WSettings,VPC.textFunctionHandle,VPC.PKParameter(iD),PopRunSet,FP);
+    end
+    
+    
+    writeToReportLog('INFO',sprintf('Finalized Population VPC \n'),false);
 
-
-% demographic
-% loop on demographic definitions
-% Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','physiology'),WSettings.printFormatList);
-
-for iD = 1:length(VPC.PhysProperties)
-    FP = plotLoopPopulationVPCforPhysiology(WSettings,VPC.textFunctionHandle,VPC.PhysProperties(iD),PopRunSet,FP);
+catch exception
+        
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Population VPC  finished with error \n'),false);
+        
 end
-
-% time profiles
-% Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
-
-for iD = 1:length(VPC.Timeprofile)
-    FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),PopRunSet,FP);
-end
-
-
-% pk parameter
-% Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','pKParameter'),WSettings.printFormatList);
-
-for iD = 1:length(VPC.PKParameter)
-    FP = plotLoopPopulationVPCPKparameter(WSettings,VPC.textFunctionHandle,VPC.PKParameter(iD),PopRunSet,FP);
-end
-
-
-writeToLog(sprintf('Finalized Population VPC \n'),WSettings.logfile,true,false);
-
+    
 return
 
 

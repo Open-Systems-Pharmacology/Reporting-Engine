@@ -36,12 +36,20 @@ lgh = [];
 for iPop=1:nPop
     for iPrc=1:nPrc
         
+             
+        if nPop==1
+            col = colorVector(iPrc,:);
+        else
+            col = colorVector(iPop,:);
+        end
+
+        
         if nPop*nPrc >1
-            tmp = plot([sens{iPop,iPrc}(sortSumSensIx(1:iCut)).slope],[1:iCut],...
-                marker(iPrc),'color',colorVector(iPop,:),'markerfacecolor',colorVector(iPop,:)); %#ok<NBRAK>
+            tmp = plot([sens{iPrc,iPop}(sortSumSensIx(1:iCut)).slope],[1:iCut],...
+                marker(iPrc),'color',col,'markerfacecolor',col); %#ok<NBRAK>
         else
             for iPar = 1:iCut
-                patch([0 1 1 0].*sens{iPop,iPrc}(sortSumSensIx(iPar)).slope,iPar + [-0.4 -0.4 0.4 0.4],colorVector(iPop,:),'facealpha',0.5)
+                patch([0 1 1 0].*sens{iPrc,iPop}(sortSumSensIx(iPar)).slope,iPar + [-0.4 -0.4 0.4 0.4],colorVector(iPop,:),'facealpha',0.5)
             end
         end
         
@@ -50,9 +58,9 @@ for iPop=1:nPop
             lgh = addToLegendPopulationSensitivity(lgh,tmp,popLabels,lgtxtPrctl,iPop,iPrc);
         end
 
-        plot([[sens{iPop,iPrc}(sortSumSensIx(1:iCut)).slopeCILower];[sens{iPop,iPrc}(sortSumSensIx(1:iCut)).slopeCIUpper]],...
+        plot([[sens{iPrc,iPop}(sortSumSensIx(1:iCut)).slopeCILower];[sens{iPrc,iPop}(sortSumSensIx(1:iCut)).slopeCIUpper]],...
             repmat([1:iCut],2,1),...
-            'color',colorVector(iPop,:),'linewidth',1); %#ok<NBRAK>
+            'color',col,'linewidth',1); %#ok<NBRAK>
 
 
         
@@ -74,7 +82,7 @@ set(ax,'yticklabel',[])
 set(ax,'Xlim',xl);
 
 for iPar=1:iCut
-    text(xl(1)-0.05*(xl(2)-xl(1)),iPar,parameterList{iPar,1},'horizontalalignment','right','interpreter','none','fontsize',8)
+    text(xl(1)-0.05*(xl(2)-xl(1)),iPar,parameterList{sortSumSensIx(iPar),4},'horizontalalignment','right','interpreter','none','fontsize',8)
 end
 
 if ~isempty(popLabels)

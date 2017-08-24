@@ -44,7 +44,7 @@ for iU = 1:length(unit)
         case 'none'
             unitFactor = 1;
         otherwise
-            unitFactor = getUnitFactorForUnknownDimension(WSettings,unit{iU},parPathSelection{iU,2});
+            unitFactor = getUnitFactorForUnknownDimension(unit{iU},parPathSelection{iU,2});
     end
     
     parValuesFinal(:,iU) = parValuesFinal(:,iU).*unitFactor;

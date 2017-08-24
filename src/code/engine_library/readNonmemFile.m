@@ -38,13 +38,17 @@ for iCol = 1:nCol
     % less string then numrich values
     % todo ausgabe wenn gemischte spalten sind
     if sum(jj) < nRow/2
-        tmp = contentnum; %#ok<NASGU>
+        tmp = contentnum; 
+        doTransfer = any(~isnan(tmp));
     else
-        tmp = content(:,iCol); %#ok<NASGU>
+        tmp = content(:,iCol); 
+        doTransfer = any(~cellfun(@isempty,tmp));
     end
     
     % transfer to variable
-    eval(sprintf('%s = tmp;',header{iCol}));
+    if doTransfer
+        eval(sprintf('%s = tmp;',header{iCol}));
+    end
 end
 clear content;
 clear tmp;
@@ -58,7 +62,7 @@ manadatoryfields = getMandatoryFieldsbyType(Dict,dataType);
 % check if necessary filed are available
 for iM = 1:size(manadatoryfields,2)
     if ~exist(manadatoryfields{2,iM},'var')
-        writeToLog(sprintf('%s column is missing in %s',manadatoryfields{2,iM},dataFile{1}),WSettings.logfile,true,false);
+        writeToReportLog('ERROR',sprintf('%s column is missing in %s',manadatoryfields{2,iM},dataFile{1}),false);
         success = false;
     end
 end
@@ -83,7 +87,7 @@ filter = filter(jj,:);
 for iF = 1:length(Dict)
 
     if ~exist(Dict(iF).nonmenColumn,'var')
-        writeToLog(sprintf('%s column is missing in %s, but wanted by Dictionary',Dict(iF).nonmenColumn,dataFile{1}),WSettings.logfile,true,false);
+        writeToReportLog('WARNING',sprintf('%s column is missing in %s, but wanted by Dictionary',Dict(iF).nonmenColumn,dataFile{1}),false);
     else
         eval(sprintf('X.(Dict(iF).matlabID) =  %s(jj);',Dict(iF).nonmenColumn));
     end
@@ -92,7 +96,7 @@ end
 return
 
 
-function [content,header,success] = readtable(WSettings,dataFile)
+function [content,header,success] = readtable(~,dataFile)
 
 success = true;
 
@@ -143,7 +147,7 @@ for  iLine =1:lcount
         ncol=ncoltmp;
     else
         if ncoltmp~=ncol
-            writeToLog(sprintf('Line %d: inconsistent number of columns in %s',iLine,dataFile),WSettings.logfile,true,false);
+            writeToReportLog('ERROR',sprintf('Line %d: inconsistent number of columns in %s',iLine,dataFile),false);
             success = false;
             return
         end
@@ -160,7 +164,7 @@ end
 
 fclose(fid);
 
-writeToLog(sprintf('Read  file %s with %d rows',dataFile,lcount),WSettings.logfile,true,false);
+writeToReportLog('INFO',sprintf('Read  file %s with %d rows',dataFile,lcount),false);
 
 return
 

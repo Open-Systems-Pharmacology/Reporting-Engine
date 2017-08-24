@@ -1,10 +1,12 @@
-function writeWorkflowHeader(fid)
+function writeWorkflowHeader(fid,workflowType,workflowMode)
 % WRITEWORKFLOWHEADER write header of a wrokflow script
 %
-% writeWorkflowHeader(fid)
+% writeWorkflowHeader(fid,workflowType,workflowMode)
 %
 % Inputs
-% fid (double) id of file
+%       fid (double) id of file
+%       workflowMode (string) chararcetrises type of workflow
+%       workflowMode (string) chararcetrises mode of workflow
 
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
@@ -12,6 +14,8 @@ function writeWorkflowHeader(fid)
 
 % write header
 fprintf(fid,'%% Script to start a workflow');
+fprintf(fid,'\r\n');
+fprintf(fid,'%% Type: %s',workflowModeToText(workflowType,workflowMode));
 fprintf(fid,'\r\n');
 fprintf(fid,'%% Purpose:');
 fprintf(fid,'\r\n');
@@ -46,7 +50,7 @@ fprintf(fid,'%% global settings');
 fprintf(fid,'\r\n'); 
 fprintf(fid,'%% there are globale settings which are used in all functions.');
 fprintf(fid,'\r\n');
-fprintf(fid,'WSettings = getDefaultWorkflowSettings;');
+fprintf(fid,'WSettings = getDefaultWorkflowSettings(''%s'',''%s'');',workflowType,workflowMode);
 fprintf(fid,'\r\n');
 fprintf(fid,'\r\n');
 

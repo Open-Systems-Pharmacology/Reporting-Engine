@@ -13,18 +13,26 @@ function runMeanModelVPC(WSettings,VPC,MeanModelSet)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
-writeToLog(sprintf('Start Mean Model VPC'),WSettings.logfile,true,false);
-
-% time profiles
-% Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
-
-for iD = 1:length(VPC.Timeprofile)
-    FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),MeanModelSet,FP);
+try
+    writeToReportLog('INFO',sprintf('Start Mean Model VPC'),false);
+    
+    % time profiles
+    % Initialize figureDir
+    FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
+    
+    for iD = 1:length(VPC.Timeprofile)
+        FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),MeanModelSet,FP);
+    end
+    
+    
+    writeToReportLog('INFO',sprintf('Finalized Mean Model VPC \n'),false);
+catch exception
+        
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Mean Model  VPC  finished with error \n'),false);
+        
 end
-
-
-writeToLog(sprintf('Finalized Mean Model VPC \n'),WSettings.logfile,true,false);
 
 return
 

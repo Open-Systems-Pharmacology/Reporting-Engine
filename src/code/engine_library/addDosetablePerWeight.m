@@ -1,4 +1,4 @@
-function [targetParameterValues]  = addDosetablePerWeight(WSettings,targetParameterList,parPaths,parValues,SplitCondition)
+function [targetParameterValues]  = addDosetablePerWeight(WSettings,targetParameterList,parPaths,parValues,SplitCondition) %#ok<INUSL>
 % add new lines to the population, which overwrites the dose in the applicationprotocol
 %
 % [targetParameterValues]  = addDosetablePerWeight(WSettings,targetParameterList,parPaths,parValues,SplitCondition)
@@ -39,14 +39,14 @@ end
 % check if some individuals are outside bound
 jj = weight< min([SplitCondition.BWmin]);
 if any(jj)
-    writeToLog(sprintf('%d individual(s) have/has a bodyweight less than %g, and are not covered by the weight dependent dosetable',...
-        sum(jj),min([SplitCondition.BWmin])),WSettings.logfile,true,false);
+    writeToReportLog('WARNING',sprintf('%d individual(s) have/has a bodyweight less than %g, and are not covered by the weight dependent dosetable',...
+        sum(jj),min([SplitCondition.BWmin])),false);
      targetParameterValues(jj,:) = 0;
 end
 jj = weight >= max([SplitCondition.BWmax]);
 if any(jj)
-    writeToLog(sprintf('%d individual(s) have/has a bodyweight greater equal than %g, and are not covered by the weight dependent dosetable',...
-        sum(jj),max([SplitCondition.BWmax])),WSettings.logfile,true,false);
+    writeToReportLog('WARNING',sprintf('%d individual(s) have/has a bodyweight greater equal than %g, and are not covered by the weight dependent dosetable',...
+        sum(jj),max([SplitCondition.BWmax])),false);
 
     targetParameterValues(jj,:) = 0;
 

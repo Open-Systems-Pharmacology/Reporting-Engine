@@ -1,8 +1,0 @@
-Percentile of t_{max} of C1 plasma.;;;;;
-;;;;;
-t_{max} [h];;;;;
-;5^{th} precentile;25^{th} precentile;50^{th} precentile;75^{th} precentile;95^{th} precentile
-adult;0.05;0.05;0.05;0.05;0.05
-0-3y;0.05;0.05;0.05;0.05;0.05
-3-6y;0.05;0.05;0.05;0.05;0.05
-6-9y;0.05;0.05;0.05;0.05;0.05

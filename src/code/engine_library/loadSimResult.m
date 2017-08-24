@@ -1,4 +1,4 @@
-function [simTime,simValues,pathID,outputUnit,individualIdVector] = loadSimResult(simulationName,iO,pathID,simResultPrefix)
+function [simTime,simValues,pathID,outputUnit,individualIdVector,sensitivities] = loadSimResult(simulationName,iO,pathID,simResultPrefix)
 % LOADSIMRESULT load the simulated result for one sepcific output
 %
 % [simTime,simValues,pathID,outputUnit,individualIdVector] = loadSimResult(simulationName,iO,pathID)
@@ -9,6 +9,7 @@ function [simTime,simValues,pathID,outputUnit,individualIdVector] = loadSimResul
 %       individualIdVector (double vector):  vector with the individual ids
 %       pathID (string):  pathname of the modeloutput
 %       outputUnit (string):   unit of the modeloutput
+%       sensitivities (double matrix nPar x nTimePOints): sensitivty vs optimized parameters
 %
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
@@ -60,10 +61,17 @@ for iBunch = 1:nBunch
         outputUnit = SimResult.outputUnit{iO};
         simValues = SimResult.values{iO};
         
+        if isfield(SimResult,'sensitivity')
+            sensitivities = SimResult.sensitivity{iO};
+        else
+            sensitivities = [];
+        end
+        
     else
     % add variables, which changes between bunches
         individualIdVector = [individualIdVector;SimResult.individualIdVector];  %#ok<AGROW>
         simValues = [simValues,SimResult.values{iO}];  %#ok<AGROW>
+
     end
     
 end

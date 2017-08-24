@@ -2,7 +2,7 @@
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 10-Aug-2017 16:21:25
+% Original author: ZTCOK 16-Aug-2017 15:36:25
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -39,7 +39,7 @@ PopRunSet(4) = struct('name','children_6_9y','reportName','single IV administrat
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',1,'doSensitivityAnalysis',1);
+TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',1,'doSensitivityAnalysis',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
@@ -53,5 +53,10 @@ else
     VPC = [];
 end
 
+% List of Parameters for sensitivity analysis:
+% set to {}, if not needed
+%  columns: 1. path, 2. number of steps, 3. variation range, 4. minValue 5. maxValue
+sensParameterList = {};
+
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,'parallelComparison',VPC,dataFiles,sensParameterList);

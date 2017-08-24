@@ -11,40 +11,49 @@ function runPopulationSimulation(WSettings,PopRunSet)
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
+try
 
-
-writeToLog(sprintf('Start Simulation of %s',PopRunSet.name),WSettings.logfile,true,false);
-
-% read population 
-load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
-
-% load OutpulList
-load(fullfile('tmp',PopRunSet.name,'outputList.mat'),'OutputList');
-
-% get individual ids
-nInd = size(parValues,1); %#ok<NODEF>
-individualIdVector = parValues(:,strcmp(parPaths,'IndividualId')); 
-
-% prepare bunches
-bunches = unique([1:WSettings.nIndPerSimResult:nInd nInd+1]);
-nBunch = length(bunches)-1;
-
-for iBunch = 1:nBunch
+    writeToReportLog('INFO',sprintf('Start Simulation of %s',PopRunSet.name),false);
     
-    indVector = bunches(iBunch):(bunches(iBunch+1)-1);
+    % read population
+    load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
     
-    % do the simulation    
-    [SimResult] = generateSimResult(WSettings,PopRunSet,nan,parPaths,parValues(indVector,:),...
-        {OutputList.pathID},length(indVector),individualIdVector(indVector));
+    % load OutpulList
+    load(fullfile('tmp',PopRunSet.name,'outputList.mat'),'OutputList');
+    
+    % get individual ids
+    nInd = size(parValues,1); %#ok<NODEF>
+    individualIdVector = parValues(:,strcmp(parPaths,'IndividualId'));
+    
+    % prepare bunches
+    bunches = unique([1:WSettings.nIndPerSimResult:nInd nInd+1]);
+    nBunch = length(bunches)-1;
+    
+    for iBunch = 1:nBunch
         
-    % export results to  new result file
-    exportResult(SimResult,PopRunSet.name,iBunch);
-    
-    % save as temporary file
-    save(fullfile('tmp',PopRunSet.name,sprintf('simResult_%d.mat',iBunch)),'SimResult');
-    
+        indVector = bunches(iBunch):(bunches(iBunch+1)-1);
+        
+        % do the simulation
+        [SimResult] = generateSimResult(WSettings,PopRunSet,nan,parPaths,parValues(indVector,:),...
+            {OutputList.pathID},length(indVector),individualIdVector(indVector));
+        
+        % export results to  new result file
+        exportResult(SimResult,PopRunSet.name,iBunch);
+        
+        % save as temporary file
+        save(fullfile('tmp',PopRunSet.name,sprintf('simResult_%d.mat',iBunch)),'SimResult');
+        
+    end
+    writeToReportLog('INFO',sprintf('Simulation finished \n'),false);
+
+catch exception
+        
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Simulation finished with error \n'),false);
+        
 end
-writeToLog(sprintf('Simulation finished \n'),WSettings.logfile,true,false);
+
 
 return
 
