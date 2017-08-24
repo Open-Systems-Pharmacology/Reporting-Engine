@@ -26,6 +26,7 @@
                     <Directory Id="CODE_DIR" Name="code"/>
                     <Directory Id="MATLAB_TOOLBOX_DIR" Name="matlab_toolbox"/>
                     <Directory Id="LIB_DIR" Name="lib"/>
+					<Directory Id="TEST_INSTALLATION_DIR" Name="testInstallation"/>
                 </Directory>
             </Directory>            
         </Directory>
