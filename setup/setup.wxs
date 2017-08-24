@@ -41,6 +41,7 @@
             <ComponentGroupRef Id="code"/>
             <ComponentGroupRef Id="matlab_toolbox"/>
             <ComponentGroupRef Id="lib"/>
+			<ComponentGroupRef Id="testInstallation"/>
         </Feature>
 
         <InstallExecuteSequence>
