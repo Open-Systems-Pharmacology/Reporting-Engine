@@ -10,7 +10,8 @@ PRODUCT_ID = Utils.uuid.to_s
 WIX = {
   code: 'CODE_DIR', 
   matlab_toolbox: 'MATLAB_TOOLBOX_DIR', 
-  lib: 'LIB_DIR'
+  lib: 'LIB_DIR',
+  testInstallation: 'TEST_INSTALLATION_DIR'
 }
 
 task :create_setup,[:product_version] do |t, args|
