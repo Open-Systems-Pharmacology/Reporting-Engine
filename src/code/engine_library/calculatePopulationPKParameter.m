@@ -20,7 +20,7 @@ try
     load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
     
     % reduce to demographic
-    [jj,ix] = ismember({'IndividualId','Organism|Weight','Organism|Height','Organism|BMI'},parPaths); %#ok<NODEF>
+    [jj,ix] = ismember(WSettings.demographicParameters,parPaths); %#ok<NODEF>
     parPaths = parPaths(ix(jj));
     parValues = parValues(:,ix(jj)); %#ok<NODEF>
     

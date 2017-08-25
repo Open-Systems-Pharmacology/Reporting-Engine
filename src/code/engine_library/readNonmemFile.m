@@ -201,7 +201,17 @@ tmp = cell(length(data{3,1})+1,sum(jj));
 k=0;
 for iCol = find(jj)
     k=k+1;
-    tmp(:,k) = [data(1,iCol); data{3,iCol}];
+    switch data{2,iCol}
+        case 'string'
+            tmp(:,k) = [data(1,iCol); data{3,iCol}];
+        case 'double'
+            if all(isnan(data{3,iCol}))
+                tmp(:,k) = [data(1,iCol); repmat({''},size(data{3,iCol}))];
+            else
+                writeToReportLog('Error','dictionary has numeric columns',false);
+            end
+    end
+
 end
 
 dict = cell2struct(tmp(2:end,:),tmp(1,:),2);

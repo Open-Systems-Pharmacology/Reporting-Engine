@@ -1,4 +1,4 @@
-function PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,simTime,simValues,weight,height)
+function PKParameterTemplate = calculatePKParameterForApplicationProtocol_my(WSettings,ApplicationProtocol,simTime,simValues,parPaths,parValues)
 %CALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL calculates PK Parameter, same List as in PK-Sim, for multi or single application
 %  for initialsiation of the availabel PK Parameters call function 
 %
@@ -21,6 +21,7 @@ function PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSetti
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
+
 % get start times of applications
 [startingTimes] =  unique([ApplicationProtocol.startTime]);
 
@@ -40,6 +41,12 @@ if nargin ==2
 end
 
 %% start calculation
+
+jj = strcmp('Organism|Weight',parPaths);
+weight =  parValues(:,jj);
+jj = strcmp('Organism|Height',parPaths);
+height =  parValues(:,jj);
+
 
 % get List of Intervals
 [intervalList,~,ix_PK] = unique({PKParameterTemplate.timeRange});

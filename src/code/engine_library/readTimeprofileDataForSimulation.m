@@ -155,6 +155,8 @@ for iSet = 1:length(RunSet)
     % save data
     if exist('DataTP','var')
         save(fullfile(tmpDir,'dataTp.mat'),'DataTP','TP','Dict');
+        
+        clear DataTP;
     end
 end
 

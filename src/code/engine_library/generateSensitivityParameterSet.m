@@ -75,7 +75,7 @@ for iPar=1:size(sensParameterList,1)
         SensPointer(iPar).relValuesPar = relValues(jj);
         k = k + nInd;
     else
-         writeToReportLog('WARNING',sprintf('Parameter is without the allowed limits %s', sensParameterList{iPar,1}),false);
+         writeToReportLog('WARNING',sprintf('Parameter %s is outside the allowed definition range', sensParameterList{iPar,1}),false);
     end
 end
 

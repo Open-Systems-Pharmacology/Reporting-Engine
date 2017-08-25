@@ -49,7 +49,7 @@ if ~isempty(calculatePKParameterFh)
             [simTime,simValues,~,~,individualIdVector]  = loadSimResult(simulationName,iO,'',simResultPrefix);
             
             tmp = feval(calculatePKParameterFh,WSettings,ApplicationProtocol,simTime,simValues,parPaths,parValues);
-            [jj,ix] = ismember(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
+            [jj,ix] = ismember(OutputList(iO).pKParameterList(1,:),{PKParameterTemplate.name});
             PKPList{iO} = tmp(ix(jj));
         end
         

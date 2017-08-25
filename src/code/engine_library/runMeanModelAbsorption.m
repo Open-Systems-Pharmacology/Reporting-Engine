@@ -65,11 +65,11 @@ for iComp = 1:length(R)
     lgh(2) = plot(time(2:end),R(iComp).fAbs(2:end),'r--','linewidth',2,'displayname','absorbed to mucosa');
     lgh(3) = plot(time(2:end),R(iComp).fGI(2:end),'g:','linewidth',2,'displayname','absorbed to portal vein');
     lgh(4) = plot(time(2:end),R(iComp).fBio(2:end),'b-.','linewidth',2,'displayname','absorbed to venous blood');
-    lgh(5) = plot(time(2:end),R(iComp).fExcreted(2:end),'c-','linewidth',2,'displayname','excretd to feces');
+    lgh(5) = plot(time(2:end),R(iComp).fExcreted(2:end),'c-','linewidth',2,'displayname','excreted to feces');
     
     setAxesScaling(ax,'timeUnit',displayUnit,'xlim',[time(1) time(end)]);
-    xlabel(sprintf('time [%s]',displayUnit));
-    ylabel('fraction of drugmass');
+    xlabel(sprintf('Time [%s]',displayUnit));
+    ylabel('Fraction of drugmass');
     
     % set legend
     jj = lgh>0;
@@ -79,7 +79,7 @@ for iComp = 1:length(R)
     figtxt = sprintf('Absorption of %s',R(iComp).compound);
     
     csv = [{sprintf('time [%s]',displayUnit),'fraction dissolved','fraction absorbed','fraction absorbed to portal vein',...
-        'fraction absorbed to venous blood','fraction excretd to feces'};
+        'fraction absorbed to venous blood','fraction excreted to feces'};
     num2cell([time;R(iComp).fDiss;R(iComp).fAbs;R(iComp).fGI;R(iComp).fBio;R(iComp).fExcreted])'];
     
     

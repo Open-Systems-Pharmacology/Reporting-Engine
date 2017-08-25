@@ -50,6 +50,8 @@ switch workflowType
         
         % name of Reference Population
         Timeprofile.ixRunSetRef = [];
+    otherwise 
+        error('unknown workflowtype')
 end
 
 % display Unit for tim

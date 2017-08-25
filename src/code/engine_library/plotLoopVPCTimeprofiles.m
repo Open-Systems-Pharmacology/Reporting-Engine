@@ -51,8 +51,17 @@ for iSet = Def.ixOfRunSets
     load(fullfile('tmp',RunSet(iSet).name,'outputList.mat'));
     
     % load data if available
-    [~,TP,~] = loadMergedData(WSettings,{RunSet(iSet).name});
+    [~,TP,Dict] = loadMergedData(WSettings,{RunSet(iSet).name});
     dataReportName = RunSet(iSet).dataReportName;
+    
+    % get Unitfactor factor for data
+    if ~isempty(Dict)
+        jj = strcmp({Dict.matlabID},'time');
+        dataTimeUnitFactor = getUnitFactor(Dict(jj).nonmemUnit,Def.timeDisplayUnit,'Time');
+    else
+        dataTimeUnitFactor = nan;
+    end
+    
     
     % initialize residual vector for all outputs
     residuals = [];
@@ -67,40 +76,42 @@ for iSet = Def.ixOfRunSets
         [simTime,simValues,~,~,~,sensitivities] = loadSimResult(RunSet(iSet).name,iO);
         
         % prepare residualOveralPlot
-        if  ~isempty(TP{iO})
+        if  ~isempty(TP) 
+            if ~isempty(TP{iO})
         
-            % get Y values for time range
-            y = simValues.*OutputList(iO).unitFactor;                        
-            % get data for this timelimit           
-            [DataTP] = prepareDataForTimeRange(WSettings,TP,iO,[0 simTime(end)],simTime.*timeUnitFactor,y);
-        
-            ixRes = [];
-
-            
-            for iInd = 1:length(DataTP)
+                % get Y values for time range
+                y = simValues.*OutputList(iO).unitFactor;
+                % get data for this timelimit
+                [DataTP] = prepareDataForTimeRange(WSettings,TP,iO,[0 simTime(end)],simTime.*timeUnitFactor,y,dataTimeUnitFactor);
                 
-                offset = size(residuals,1);
+                ixRes = [];
                 
-                switch OutputList(iO).residualScale
-                    case 'lin'
-                        jj = ~isnan(DataTP(iInd).y) & ~isnan(DataTP(iInd).predicted);
-                        residualsUnScaled(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj))./OutputList(iO).unitFactor; %#ok<AGROW>
-                        residuals(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                    case 'log'
-                        jj = DataTP(iInd).y > 0 & DataTP(iInd).predicted > 0;
-                        residualsUnScaled(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                        residuals(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                    otherwise
-                        error('scale');
-
+                
+                for iInd = 1:length(DataTP)
+                    
+                    offset = size(residuals,1);
+                    
+                    switch OutputList(iO).residualScale
+                        case 'lin'
+                            jj = ~isnan(DataTP(iInd).y) & ~isnan(DataTP(iInd).predicted);
+                            residualsUnScaled(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj))./OutputList(iO).unitFactor; %#ok<AGROW>
+                            residuals(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj)); %#ok<AGROW>
+                        case 'log'
+                            jj = DataTP(iInd).y > 0 & DataTP(iInd).predicted > 0;
+                            residualsUnScaled(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
+                            residuals(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
+                        otherwise
+                            error('scale');
+                            
+                    end
+                    residuals(offset+[1:sum(jj)],2) = iO; %#ok<AGROW>
+                    ixRes(offset+[1:sum(jj)]) = round(interp1(simTime.*timeUnitFactor,1:length(simTime),DataTP(iInd).time(jj)));%#ok<AGROW>
                 end
-                residuals(offset+[1:sum(jj)],2) = iO; %#ok<AGROW>
-                ixRes(offset+[1:sum(jj)]) = round(interp1(simTime.*timeUnitFactor,1:length(simTime),DataTP(iInd).time(jj)));%#ok<AGROW>
-            end
-            
-           
-            if ~isempty(sensitivities)
-                Jacob = [Jacob,sensitivities(ixRes,:)]; %#ok<AGROW>
+                
+                
+                if ~isempty(sensitivities)
+                    Jacob = [Jacob,sensitivities(ixRes,:)]; %#ok<AGROW>
+                end
             end
             
         end
@@ -123,7 +134,7 @@ for iSet = Def.ixOfRunSets
         
         if ~isempty(Jacob)
                 % todo check calculation, and put outside loop of outputs
-                VPCresult = getVPCRange(simValues,sensitivities,residualsUnScaled,Jacob);
+                VPCresult = getVPCRange(simValues,sensitivities,residualsUnScaled,Jacob,OutputList(iO).residualScale);
         else 
             VPCresult = [];
         end            
@@ -201,7 +212,7 @@ for iSet = Def.ixOfRunSets
 
             
             % get data for this timelimit           
-            [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit(1,:),time,y);
+            [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit(1,:),time,y,dataTimeUnitFactor);
             
             % loop on scale
             for iScale = 1:length(yscale)
@@ -443,7 +454,7 @@ writetab(fname, data, ';', 0, 0, 1,0);
 
 return
 
-function  [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit,time,y)
+function  [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit,time,y,dataTimeUnitFactor)
 
 
 if size(y,2)>1
@@ -472,10 +483,11 @@ end
     
 % get stucture to plot
 for iInd = 1:length(TP{iO})
-    
-    jjT = TP{iO}(iInd).time >= timelimit(1,1) & TP{iO}(iInd).time <= timelimit(1,2);
+        
+    jjT = TP{iO}(iInd).time.*dataTimeUnitFactor >= timelimit(1,1) & ...
+        TP{iO}(iInd).time.*dataTimeUnitFactor <= timelimit(1,2);
 
-    DataTP(iInd).time = TP{iO}(iInd).(timefield)-timeoffset; %#ok<AGROW>
+    DataTP(iInd).time = TP{iO}(iInd).(timefield).*dataTimeUnitFactor-timeoffset; %#ok<AGROW>
     DataTP(iInd).y(:,1) = TP{iO}(iInd).dv(jjT); %#ok<AGROW>
     
     % set lloq
