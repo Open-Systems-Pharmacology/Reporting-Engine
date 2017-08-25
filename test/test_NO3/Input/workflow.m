@@ -1,8 +1,9 @@
 % Script to start a workflow
+% Type: Population workflow, with project specific mode parallelComparison
 % Purpose:
 % M&S activity:
 % Validation level:
-% Original author: ZTCOK 16-Aug-2017 15:27:39
+% Original author: ZTCOK 25-Aug-2017 09:41:10
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -17,7 +18,7 @@
 
 % global settings
 % there are globale settings which are used in all functions.
-WSettings = getDefaultWorkflowSettings;
+WSettings = getDefaultWorkflowSettings('popModel','parallelComparison');
 
 % Definitions of sets of Populations
 clear PopRunSet
@@ -25,11 +26,11 @@ OutputList(1) = struct('pathID','Organism|PeripheralVenousBlood|C1|Plasma (Perip
 OutputList(1).pKParameterList = {'C_max','C_max_norm','t_max','C_tEnd','AUC','AUC_norm','AUC_inf','AUC_inf_norm','MRT','Thalf','FractionAucLastToInf','CL','Vss','Vd';'µmol/l','µg/l','h','µg/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','h','h','','ml/min/kg','ml/kg','ml/kg'};
 OutputList(2) = struct('pathID','Organism|Bone|Intracellular|C1|Concentration in container','reportName','C1 bone intracellular','displayUnit','µg/l','dataTpFilter','','residualScale','log','unitFactor',NaN,'pKParameterList',[]);
 OutputList(2).pKParameterList = {'C_max','C_max_norm','t_max','C_tEnd','AUC','AUC_norm','AUC_inf','AUC_inf_norm','MRT','Thalf','FractionAucLastToInf','CL','Vss','Vd';'µg/l','mg/l','h','µg/l','µmol*min/l','µg*min/l','µmol*min/l','µg*min/l','h','h','','ml/min/kg','ml/kg','ml/kg'};
-PopRunSet(1) = struct('name','SingleIvBolus','reportName','single IV application','boxwhiskerLabel','','xml','SimplePop_Single_IVBolus.xml','studyDesign','','isReference',0,'popcsv','SimplePop_Single_IVBolus.csv','popReportName','virtual test population','calculatePKParameterFh','','dataTpFilter','','dataReportName','','OutputList',OutputList);
+PopRunSet(1) = struct('name','SingleIvBolus','reportName','single IV application','boxwhiskerLabel','','xml','SimplePop_Single_IVBolus.xml','studyDesign','','isReference',0,'popcsv','SimplePop_Single_IVBolus.csv','popReportName','virtual test population','calculatePKParameterFh','myCalculatePKParameterForApplicationProtocol','dataTpFilter','','dataReportName','','OutputList',OutputList);
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',0,'doSensitivityAnalysis',0);
+TaskList = struct('simulatePopulation',0,'calculatePKParameter',1,'doVPC',0,'doSensitivityAnalysis',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
@@ -38,7 +39,7 @@ dataFiles = {};
 
 % get Definition of default plots
 if TaskList.doVPC
-    VPC = getDefaultVPCPopulationSettings(PopRunSet,'parallelComparison');
+    VPC = getDefaultVPCSettings(WSettings,PopRunSet);
 else
     VPC = [];
 end
@@ -49,4 +50,4 @@ end
 sensParameterList = {};
 
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,'parallelComparison',VPC,dataFiles,sensParameterList);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles,sensParameterList);

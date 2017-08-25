@@ -1,5 +1,6 @@
-function PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,simTime,simValues,weight,height)
-%CALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL calculates PK Parameter, same List as in PK-Sim, for multi or single application
+function PKParameterTemplate = myCalculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,simTime,simValues,parPaths,parValues)
+%MYCALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL template for preoject specifci PK Parameter calculation
+%           based on CALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL
 %  for initialsiation of the availabel PK Parameters call function 
 %
 % PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol);
@@ -20,6 +21,9 @@ function PKParameterTemplate = calculatePKParameterForApplicationProtocol(WSetti
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
+%% Initialisation phase --------------------------------------------------------
+% generates PKParameterTemplate
+% for this function is called at the beginning with two inputs: ApplicationProtocol and WSettings
 
 % get start times of applications
 [startingTimes] =  unique([ApplicationProtocol.startTime]);
@@ -32,6 +36,7 @@ else
 end
 
 % get PKParameter template corresponding to flag
+% change here the PK Parameter selection
 PKParameterTemplate = iniPKParameterTemplateList(flag);
 
 % check if  initialiation
@@ -39,7 +44,15 @@ if nargin ==2
     return
 end
 
-%% start calculation
+%% start calculation ----------------------------------
+% now all inputs are given
+
+% get demographic parameters you need for calculation:
+jj = strcmp('Organism|Weight',parPaths);
+weight =  parValues(:,jj);
+jj = strcmp('Organism|Height',parPaths);
+height =  parValues(:,jj);
+
 
 % get List of Intervals
 [intervalList,~,ix_PK] = unique({PKParameterTemplate.timeRange});

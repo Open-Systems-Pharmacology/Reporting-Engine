@@ -294,8 +294,16 @@ save(fullfile(tmpDir,'simResult_1.mat'),'SimResult');
 
 % start the PKParameter caluclation
 parPaths = {'Organism|Weight','Organism|Height'};
-parValues(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
-parValues(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');
+if existsParameter('*Organism|Weight',1,'parametertype','readonly');
+    parValues(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
+else
+    parValues(1,1) = nan;
+end
+if existsParameter('*Organism|Height',1,'parametertype','readonly');
+    parValues(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');
+else
+    parValues(1,2) = nan;
+end
 PKPList = calculatesPKParameterList(WSettings,MeanModelSet.name,MeanModelSet.calculatePKParameterFh,parPaths,parValues); %#ok<NASGU>
 
 % save as temporary file

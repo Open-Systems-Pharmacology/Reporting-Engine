@@ -9,9 +9,7 @@ function writeToReportLog(type,logText,isNewFile)
 %           true:   a new file is created 
 %
 
-% author: Bayer AG;  support@systems-biology.com
-% Date: 26-Nov-2010%%
-%%
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
 disp(sprintf('%s: %s',type,logText));

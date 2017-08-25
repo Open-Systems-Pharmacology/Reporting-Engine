@@ -71,6 +71,9 @@ WSettings.restart = false;
 % minimal number for rangeplots
 WSettings.rangePlotsMin = 20000;
 
+% list of demographic parameters
+WSettings.demographicParameters = {'IndividualId','Organism|Weight','Organism|Height','Organism|BMI'};
+
 %% properties which are set internaly during inistialisation, so do not change them
 % check if the workflow runs on a validated system
 WSettings.isValidatedSystem = false;
