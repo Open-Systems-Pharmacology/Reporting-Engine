@@ -1,5 +1,7 @@
 function success = testOSPLib_02(pathToReportingEngine, simulationFile)
 
+warning('off', 'MATLAB:mex:deprecatedExtension')
+
 %ODE system used for test is taken from the CVODES example "A serial dense example: cvsRoberts_FSA_dns"
 %s. https://computation.llnl.gov/sites/default/files/public/cvs_examples.pdf
 

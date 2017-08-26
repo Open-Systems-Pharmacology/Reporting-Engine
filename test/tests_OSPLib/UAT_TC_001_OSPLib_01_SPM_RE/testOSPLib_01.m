@@ -1,5 +1,7 @@
 function success = testOSPLib_01(pathToReportingEngine, simulationFile)
 
+warning('off', 'MATLAB:mex:deprecatedExtension')
+
 success = 0;
 
 %setup environment
