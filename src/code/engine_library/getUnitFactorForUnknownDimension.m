@@ -46,11 +46,11 @@ if isempty(ixDim)
             case 'AUC (mass)'
                 unitFactorMolar = getUnitFactor(unit,'µmol*min/l','AUC (molar)');
                 unitFactorMass = getUnitFactor('µg*min/l',targetUnit,'AUC (mass)');
-                unitFactor = unitFactorMolar.*MW.*unitFactorMass;
+                unitFactor = unitFactorMolar.*MW*1e9.*unitFactorMass;
             case 'AUC (molar)'
-                unitFactorMass = getUnitFactor(targetUnit,'µg*min/l','AUC (mass)');
-                unitFactorMolar = getUnitFactor('µmol*min/l',unit,'AUC (molar)');
-                unitFactor = unitFactorMolar./MW.*unitFactorMass;
+                unitFactorMass = getUnitFactor(unit,'µg*min/l','AUC (mass)');
+                unitFactorMolar = getUnitFactor('µmol*min/l',targetUnit,'AUC (molar)');
+                unitFactor = unitFactorMolar./(MW*1e9).*unitFactorMass;
             otherwise
                 error('unknown dimension');
 

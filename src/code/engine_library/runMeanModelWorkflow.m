@@ -282,9 +282,23 @@ SimResult = generateSimResult(WSettings,'',simulationIndex,{},[],{OutputList.pat
 if ~isempty(VPC) && ~isempty(VPC.optimizedParameters)
 
     for iO = 1:length(OutputList)
+        
+        simValues = SimResult.values{iO};
+        jj = simValues~=0;
+
+        
         for iPar = 1:length(VPC.optimizedParameters)
             [~,v(:,iPar)] = getSimulationSensitivityResult(['*|' OutputList.pathID],['*|' VPC.optimizedParameters{iPar}],simulationIndex); %#ok<AGROW>
+            % ( d log(y(p))/dp = 1/y(p) * dy(p)/dp
+            if strcmp(OutputList(iO).residualScale,'log')
+                v(jj,iPar) = v(jj,iPar)./simValues(jj);
+            end
         end
+        
+        
+
+        
+        
         SimResult.sensitivity{iO} = v;
     end
     

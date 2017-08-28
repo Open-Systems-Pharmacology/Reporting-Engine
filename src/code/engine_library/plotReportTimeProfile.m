@@ -62,7 +62,7 @@ csv = getCsvArray(yMin,yMean,yMax,yLabel,yUnit,timeLabel,timeUnit,time,csvHeader
 
 time = reshape(time,size(yMean));
 
-% for yscal log transfer valiues to logscale
+% for yscal log transfer values to logscale
 if strcmp(yscale,'log')
     yMin = log10(yMin);
     yMax = log10(yMax);
@@ -83,17 +83,25 @@ if strcmp(yscale,'log')
     end
     
     if ~isempty(DataTP)
+        ylimD = inf;
         for iInd = 1:length(DataTP)
             DataTP(iInd).y = log10(DataTP(iInd).y);
             DataTP(iInd).lloq = log10(DataTP(iInd).lloq);
             jj = ~isinf(DataTP(iInd).y);
-            ylim = min([ylim;DataTP(iInd).y(jj)]);
+            ylimD = min([ylimD;DataTP(iInd).y(jj)]);
+        end
+        
+        if ylim < ylimD/3
+            ylim = ylimD/3;
+        else
+            ylim = min(ylim,ylimD);
         end
     end
     
     ylim = ylim*0.8;
-else
-    ylim = 0;
+    
+else    
+    ylim = 0;    
     
 end
 
