@@ -17,8 +17,6 @@ function [R] = getVPCRange(y,sensitivities,residuals,Jacob,scale)
 %   rangeTxt (string) description how upper and lower limits are calculated
 %   csvHeader (cellarray of string) dscription of all outputs {min,mean,max}
 
-load test;
-
 R = [];
 
 % degrees of freedom
