@@ -106,7 +106,7 @@ def copy_to_lib_dir(target_lib_dir)
     copy_dimensions_xml
   end
 
-  architecture = '/**/x86/**/Release'
+  architecture = '/**/x64/**/Release'
   packages_dir =  File.join(solution_dir, 'packages')
 
   copy_depdencies packages_dir, target_lib_dir do
