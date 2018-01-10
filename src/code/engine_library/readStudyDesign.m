@@ -57,7 +57,7 @@ targetParameterValues  = feval(functionHandle,WSettings,targetParameterList,parP
 % check if path already exist
 [jj_target,ix_target] = ismember(targetParameterList,parPaths);
 % get indices
-ixChanged = [ix_target(jj_target) length(parPaths)+[1:sum(~jj_target)]];
+ixChanged = [ix_target(jj_target) length(parPaths)+[1:sum(~jj_target)]]; %#ok<NBRAK>
 
 % set values
 parPaths(ixChanged) = targetParameterList; 

@@ -28,7 +28,7 @@ else
     yMax=prctile(y(jjNonan,:), WSettings.displayPercentiles(end),1);
     switch WSettings.shadedAreaMeanType
         case 'median'
-            yMean=median(y,1);
+            yMean=quantile(y,0.5,1);
             legendTextMean='median';
         case 'geomean'
             yMean=geomean(y,1);

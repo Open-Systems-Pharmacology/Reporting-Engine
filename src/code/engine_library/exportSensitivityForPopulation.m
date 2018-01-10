@@ -1,4 +1,4 @@
-function exportSensitivityForPopulation(WSettings,analysisName,sens,sensParameterList,individualVector,prctileSelection,simulationName) %#ok<INUSL>
+function exportSensitivityForPopulation(WSettings,analysisName,sens,sensParameterList,individualVector,prctileSelection,simulationName) 
 % EXPORTSENSITIVITYFORPOPULATION export list of all caclualted sensitivities
 %
 % exportSensitivityForPopulation(WSettings,analysisName,sens,sensParameterList,individualVector,prctileSelection,simulationName)
@@ -25,15 +25,6 @@ function exportSensitivityForPopulation(WSettings,analysisName,sens,sensParamete
 
 % initialize export structure
 data(1,:) = {'simulationName','Individual','Parameter','sensitivity value','lower CI 95','upper CI 95','R-square','pValue'};
-data(2,:) = {'string','string','string','double','double','double','double','double'};
-for iCol = 1:size(data,2)
-    switch data{2,iCol}
-        case 'string'
-            data{3,iCol} = {};
-        case 'double'
-            data{3,iCol} = [];
-    end
-end
 
 % fill structure
 for iPop = 1:size(sens,2)
@@ -44,17 +35,17 @@ for iPop = 1:size(sens,2)
         
         if ~isempty(sens{iInd,iPop})
         
-            offset = length(data{3,1});
+            offset = size(data,1);
             nPar = size(sensParameterList,1);
             
-            data{3,1}(offset+[1:nPar],1) = simulationName(iPop);
-            data{3,2}(offset+[1:nPar],1) = {individualname};
-            data{3,3}(offset+[1:nPar],1) = sensParameterList(:,4);
-            data{3,4}(offset+[1:nPar],1) = [sens{iInd,iPop}.slope];
-            data{3,5}(offset+[1:nPar],1) = [sens{iInd,iPop}.slopeCILower];
-            data{3,6}(offset+[1:nPar],1) = [sens{iInd,iPop}.slopeCIUpper];
-            data{3,7}(offset+[1:nPar],1) = [sens{iInd,iPop}.rSquare];
-            data{3,8}(offset+[1:nPar],1) = [sens{iInd,iPop}.pValue];
+            data(1,offset + (1:nPar)) = simulationName(iPop);
+            data(2,offset + (1:nPar)) = {individualname};
+            data(3,offset + (1:nPar)) = num2cell(sensParameterList(:,4));
+            data(4,offset + (1:nPar)) = num2cell([sens{iInd,iPop}.slope]);
+            data(5,offset + (1:nPar)) = num2cell([sens{iInd,iPop}.slopeCILower]);
+            data(6,offset + (1:nPar)) = num2cell([sens{iInd,iPop}.slopeCIUpper]);
+            data(7,offset + (1:nPar)) = num2cell([sens{iInd,iPop}.rSquare]);
+            data(8,offset + (1:nPar)) = num2cell([sens{iInd,iPop}.pValue]);
         end
         
     end
@@ -62,7 +53,7 @@ for iPop = 1:size(sens,2)
 end
 
 % write file
-fname = fullfile('figures','sensitivity',[analysisName,'.csv']);
+fname = fullfile(WSettings.figures,'sensitivity',[analysisName,'.csv']);
+writeTabCellArray(data,fname)
 
-writetab(fname, data, ';', 0, 0, 1,0);
 return

@@ -24,8 +24,9 @@ function  plotReportPredictedVsObserved(WSettings,figureHandle,DataTP,yLabel,yUn
 % get maxima and minima
 switch yscale
     case 'lin'
-        yMin = min(min(cellfun(@min,{DataTP.y})),min(cellfun(@min,{DataTP.predicted})))*0.8;
-        yMax = max(max(cellfun(@max,{DataTP.y})),max(cellfun(@max,{DataTP.predicted})))*1.2;
+        jj = ~cellfun(@isempty,{DataTP.y});
+        yMin = min(min(cellfun(@min,{DataTP(jj).y})),min(cellfun(@min,{DataTP(jj).predicted})))*0.8;
+        yMax = max(max(cellfun(@max,{DataTP(jj).y})),max(cellfun(@max,{DataTP(jj).predicted})))*1.2;
     case 'log'
         yMin = inf;
         for iData = 1:length(DataTP)
@@ -33,23 +34,25 @@ switch yscale
             yMin =  min([DataTP(iData).y(jj);DataTP(iData).predicted(jj);yMin]);
         end
         yMin = yMin/2;
-        yMax = max(max(cellfun(@max,{DataTP.y})),max(cellfun(@max,{DataTP.predicted})))*2;
+        jj = ~cellfun(@isempty,{DataTP.y});
+        yMax = max(max(cellfun(@max,{DataTP(jj).y})),max(cellfun(@max,{DataTP(jj).predicted})))*2;
     otherwise
         error('unknown flag');
 
 end
 
 % create figure
-ax = getReportFigure(WSettings,1,1,figureHandle);
+ax = getReportFigure(WSettings,1,1,figureHandle,'figureformat','square');
 
 % line of identity
 lgh(2) = plot([yMin yMax],[yMin yMax],'k-','displayname',legendEntries{2});
-
 [col,mk] = getcolmarkForMap(WSettings.colormapData,length(DataTP));
     
 for iInd = 1:length(DataTP)
-    lgh(1) = plot(DataTP(iInd).y,DataTP(iInd).predicted,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),'displayname',legendEntries{1});
-    plot(DataTP(iInd).lloq,DataTP(iInd).predicted,mk(iInd),'color',col(iInd,:),'linewidth',2);
+    if ~isempty(DataTP(iInd).y)
+        lgh(1) = plot(DataTP(iInd).y,DataTP(iInd).predicted,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),'displayname',legendEntries{1});
+        plot(DataTP(iInd).lloq,DataTP(iInd).predicted,mk(iInd),'color',col(iInd,:),'linewidth',2);
+    end
 end
 
 set(ax,'xscale',yscale,'yscale',yscale,'DataAspectRatio',[1 1 1]);
@@ -66,6 +69,6 @@ xlabel({'observed',getLabelWithUnit(yLabel,yUnit)});
 ylabel({'predicted',getLabelWithUnit(yLabel,yUnit)});
 
 
-legend(lgh,get(lgh,'displayname'),'location','eastoutside');
+legend(lgh,get(lgh,'displayname'),'location','northoutside');
 
 return

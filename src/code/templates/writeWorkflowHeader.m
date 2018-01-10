@@ -1,4 +1,4 @@
-function writeWorkflowHeader(fid,workflowType,workflowMode)
+function writeWorkflowHeader(fid,workflowType,workflowMode,documentation)
 % WRITEWORKFLOWHEADER write header of a wrokflow script
 %
 % writeWorkflowHeader(fid,workflowType,workflowMode)
@@ -17,12 +17,10 @@ fprintf(fid,'%% Script to start a workflow');
 fprintf(fid,'\r\n');
 fprintf(fid,'%% Type: %s',workflowModeToText(workflowType,workflowMode));
 fprintf(fid,'\r\n');
-fprintf(fid,'%% Purpose:');
-fprintf(fid,'\r\n');
-fprintf(fid,'%% M&S activity:');
-fprintf(fid,'\r\n');
-fprintf(fid,'%% Validation level:');
-fprintf(fid,'\r\n');
+for iDoc = 1:size(documentation,1)
+    fprintf(fid,'%% %s: %s',documentation{iDoc,1}{1},documentation{iDoc,2}{1});
+    fprintf(fid,'\r\n');
+end
 fprintf(fid,'%% Original author: %s %s',getenv('Username'),datestr(now));
 fprintf(fid,'\r\n');
 fprintf(fid,'%% \r\n');
@@ -39,7 +37,7 @@ fprintf(fid,'\r\n');
 fprintf(fid,'%%  start the script');
 fprintf(fid,'\r\n');
 fprintf(fid,'%% \r\n');
-fprintf(fid,'%%  ! SPM reporting engine runs with Matlab 2013b (linux cluster)');
+fprintf(fid,'%%  Script is intendended to run with Matlab 2017b ');
 fprintf(fid,'\r\n');
 fprintf(fid,'%% \r\n');
 fprintf(fid,'\r\n');

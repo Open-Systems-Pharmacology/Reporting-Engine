@@ -38,13 +38,16 @@ WSettings.BSA_calculationmethode = 'DuBois';
 %% figure properties
 % select output format possible
 WSettings.printFormatList = {'EMF','FIG','CSV'};
+% set name of figure directory
+WSettings.figures = 'figures';
 
 % define colors
 %  (3x3) first color population, second color reference; third color data
 colormap('default');
-WSettings.colorVector = [0.0784    0.4314    0.6275;  0  0.5882  0;  0.6151    0.3844    0.2448];
+WSettings.colorVector = [[43,131,186]./255;  [171,221,164]./255;  [215,25,28]./255];
 WSettings.colormapData = copper;
 WSettings.colormapSimulation = winter;
+WSettings.FaceAlpha = 0.5;
 
 % used haded area and tiemprofile plots ( first and last) and for boxwhisker (all 5) 
 WSettings.displayPercentiles = [5 25 50 75 95];
@@ -55,6 +58,11 @@ WSettings.shadedAreaMeanType = 'median';
 
 % decide if boxwhsikers are plote with extremas
 WSettings.boxwhiskerWithExtrema = false;
+% angle of xlabel
+WSettings.boxwhiskerXlabelRotation = 0;
+
+% format for table export
+WSettings.csvFormat = '%.3g';
 
 % sensitivity analysis
 WSettings.sensitivityCutoff = 0.9;
@@ -69,14 +77,20 @@ WSettings.nIndPerSimResult = 1000;
 WSettings.restart = false;
 
 % minimal number for rangeplots
-WSettings.rangePlotsMin = 20000;
+WSettings.rangePlotsMin = 2000;
 
 % list of demographic parameters
 WSettings.demographicParameters = {'IndividualId','Organism|Weight','Organism|Height','Organism|BMI'};
 
 %% properties which are set internaly during inistialisation, so do not change them
 % check if the workflow runs on a validated system
-WSettings.isValidatedSystem = false;
+% getComputername
+computerName = getenv('COMPUTERNAME');
+
+% check if is a validated system % add Reporting engine version
+TRE = ReportingEngineVersionInfo;
+WSettings.isValidatedSystem = ismember(computerName,TRE.ListOfValidatedComputers);
+
 
 return
 

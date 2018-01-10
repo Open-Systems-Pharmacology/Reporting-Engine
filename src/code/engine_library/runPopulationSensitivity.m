@@ -25,7 +25,7 @@ try
     
     % create resultdirector
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','sensitivity'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'sensitivity'),WSettings.printFormatList);
     
     % get outputs and PKPList
     load(fullfile('tmp',PopRunSet(setList(1)).name,'outputList.mat'),'OutputList');
@@ -43,6 +43,7 @@ try
             if WSettings.restart
                 if exist(sensFilename,'file')
                     load(sensFilename,'sens');
+                    writeToReportLog('INFO',sprintf('restart: reload %s',sensFilename),false);
                 end
             end
 
@@ -57,7 +58,7 @@ try
                 % get corresponding population
                 load(fullfile(tmpDir,'pop.mat'),'parPaths','parValues');
                 jj = strcmp(parPaths,'IndividualId');
-                individualVector = parValues(:,jj); %#ok<NODEF>
+                individualVector = parValues(:,jj); %#ok<IDISVAR,NODEF>
                 jj = strcmp('Organism|Weight',parPaths);
                 weight =  parValues(:,jj);
                 jj = strcmp('Organism|Height',parPaths);
@@ -68,11 +69,16 @@ try
                 load(fullfile(tmpDir,'sensitivity.mat'),'sensParameterList');
                 
                 % get percentile individual
-                tmp = prctile(PKParameterList(iPK).value,prctileSelection);
+                PKrefValues = [PKParameterList(:,iPK).value];
+                tmp = prctile(PKrefValues,prctileSelection);
                 ixInd = nan(size(prctileSelection));
                 for iPct = 1:length(tmp)
-                    [~,ixInd(iPct)] = min(abs(tmp(iPct)-PKParameterList(iPK).value));
+                    [~,ixInd(iPct)] = min(abs(tmp(iPct)-PKrefValues));
                 end
+                
+                writeToReportLog('INFO',sprintf('start sensitivity simulation for %s, %s %s',...
+                    PopRunSet(iSet).name,OutputList(iO).reportName,OutputList(iO).pKParameterList{1,iPK}),false);
+
                 
                 % loop on Ind
                 for iInd = 1:length(ixInd)
@@ -84,37 +90,44 @@ try
                             sensParameterList,parPaths,parValues(ixInd(iInd),:));
                         nInd = size(parValuesSens,1);
                         
+                        writeToReportLog('INFO',sprintf('start simulations for percentile %g individual ID %d with %d simulations',...
+                            prctileSelection(iInd),ixInd(iInd),nInd),false);
+
                         % get result
                         SimResult = generateSimResult(WSettings,PopRunSet(iSet),nan,parPathsSens,parValuesSens,{OutputList(iO).pathID},...
                             nInd,ones(1,nInd).*individualVector(ixInd(iInd)));
                         
                         % start the PKParameter calculation
                         if ~isempty(PopRunSet(iSet).calculatePKParameterFh)
-                            tmp = feval(PopRunSet(iSet).calculatePKParameterFh,WSettings,ApplicationProtocol,SimResult.time,SimResult.values{1},parPaths,parValues);
+                            tmp = feval(PopRunSet(iSet).calculatePKParameterFh,WSettings,ApplicationProtocol,SimResult.time,SimResult.values{1},parPaths,parValues(ixInd(iInd),:));
                         else
                             tmp = calculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,...
                                 SimResult.time,SimResult.values{1},weight(ixInd(iInd)),height(ixInd(iInd)));
                         end
-                        [jj,ix] = ismember(OutputList(iO).pKParameterList(1,:),{PKParameterTemplate.name});
+                        [jj,ix] = ismember(OutputList(iO).pKParameterList(1,iPK),{PKParameterTemplate.name});
                         PKPListSens = {tmp(ix(jj))};
                         
-                        tmp = calculateSensitivity(WSettings,PKPList(iO),PKPListSens,SensPointer,ixInd(iInd));
-                        sens{iInd,iSet} =  tmp{1,iPK}; 
+                        % construct referecne PK Parameter
+                        PKPRef = PKPList{iO}(1,iPK);
+                        PKPRef.value = PKrefValues(ixInd(iInd));
+                        
+                        tmp = calculateSensitivity(WSettings,{PKPRef},PKPListSens,SensPointer,1);
+                        sens{iInd,iSet} =  tmp{1}; 
                     end
                     
-                    save(fullfile(tmpDir,sprintf('sens_O%d_PK%d.mat',iO,iPK)),'sens'); 
+                    save(sensFilename,'sens'); 
                 end
             end
             
             % export results to csv
-            analysisName = sprintf('%s_%s',removeForbiddenLetters(OutputList(iO).reportName),PKParameterList(iPK).name);
+            analysisName = sprintf('O%d_%s',iO,PKParameterList(1,iPK).name);
             exportSensitivityForPopulation(WSettings,[analysisName '_detail'],sens(:,setList),sensParameterList,individualVector(ixInd),prctileSelection,{PopRunSet(setList).name});
             
             
             jj = strcmp(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
             PKReportName = PKParameterTemplate(jj).reportName;
             
-            header = sprintf('sensitivity analysis of %s of %s',PKReportName,OutputList(iO).reportName);
+            header = sprintf('Sensitivity analysis of %s for %s',PKReportName,OutputList(iO).reportName);
             FP = FP.iniCaptiontextFigtextArray(header,analysisName);
             
             FP = plotSensitivityForPopulation(WSettings,FP,sens(:,setList),sensParameterList,prctileSelection,PopRunSet(setList),...
@@ -178,7 +191,7 @@ FP = plotSensSortedValues(WSettings,allSensValues,sortSumSensIx,FP,marker,colorV
 
 % get name and figure description
 figureName = sprintf('%s_SortedAbsolute',analysisName);
-figtxt = sprintf('sorted absloute sensitivity for %s for %s', PKParameterReportName,OutputReportName);
+figtxt = sprintf('Sorted absolute sensitivity for %s for %s', PKParameterReportName,OutputReportName);
 % save figure
 FP = FP.printFigure(figureName,figtxt);
 
@@ -187,7 +200,7 @@ FP = plotSensCumSortedValues(WSettings,CsortSumSensPop,FP,marker,colorVectorPop,
 
 % get name and figure description
 figureName = sprintf('%s_CumSortedAbsolute',analysisName);
-figtxt = sprintf('cumulated sorted absloute sensitivity for %s for %s', PKParameterReportName,OutputReportName);
+figtxt = sprintf('Cumulated sorted absolute sensitivity for %s for %s', PKParameterReportName,OutputReportName);
 % save figure
 FP = FP.printFigure(figureName,figtxt);
   
@@ -197,7 +210,7 @@ plotSensListMostSensitive(WSettings,FP,sensPop,sortSumSensIx,iCut,...
 
 % get name and figure description
 figureName = sprintf('%s_ListMostSensitive',analysisName);
-figtxt = sprintf('Most sensitiv parameter for %s for %s', PKParameterReportName,OutputReportName);
+figtxt = sprintf('Most sensitive parameter for %s for %s', PKParameterReportName,OutputReportName);
 % save figure
 FP = FP.printFigure(figureName,figtxt);
 
@@ -234,7 +247,8 @@ for iPop=1:nPop
         tmp = plot(meanSens,allSensValues(:,k,1),marker(iPrc),'color',col,'markerfacecolor',col);
         
         % set legend
-         lgh = addToLegendPopulationSensitivity(lgh,tmp,popLabels,lgtxtPrctl,iPop,iPrc);
+        lgh(end+1) = tmp; %#ok<AGROW>
+        set(tmp,'displayname',sprintf('%s %s',popLabels{iPop},lgtxtPrctl{iPrc}));
     end
 end
 
@@ -293,7 +307,9 @@ for iPop=1:nPop
         tmp = plot(abs(allSensValues(sortSumSensIx,k,1)),marker(iPrc),'color',col,'markerfacecolor',col);
         
         % set legend
-         lgh = addToLegendPopulationSensitivity(lgh,tmp,popLabels,lgtxtPrctl,iPop,iPrc);
+        lgh(end+1) = tmp; %#ok<AGROW>
+        set(tmp,'displayname',sprintf('%s %s',popLabels{iPop},lgtxtPrctl{iPrc}));
+
                  
     end
 end
@@ -344,7 +360,9 @@ for iPop=1:nPop
         hold on;
         
         % set legend
-         lgh = addToLegendPopulationSensitivity(lgh,tmp,popLabels,lgtxtPrctl,iPop,iPrc);
+        lgh(end+1) = tmp; %#ok<AGROW>
+        set(tmp,'displayname',sprintf('%s %s',popLabels{iPop},lgtxtPrctl{iPrc}));
+
         
         yMin=min(yMin,CsortSumSensPop(iPrc,iPop).slope(end));
         yMax=max(yMax,CsortSumSensPop(iPrc,iPop).slope(1));

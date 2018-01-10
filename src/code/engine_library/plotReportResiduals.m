@@ -22,11 +22,11 @@ function   [goodness] = plotReportResiduals(WSettings,figureHandle,DataTP,timeLa
 
 
 % create figure
-ax = getReportFigure(WSettings,1,1,figureHandle);
+ax = getReportFigure(WSettings,1,1,figureHandle,'figureformat','landscape');
 
 % get properties of xAxes
 switch xAxesFlag
-    case 'vsTime',
+    case 'vsTime'
         xField = 'time';
         xLabelTxt = getLabelWithUnit(timeLabel,timeUnit);
         xscale = 'lin';
@@ -48,23 +48,26 @@ gX = [];
 gY = [];
 
 for iInd = 1:length(DataTP)
-    % calculate residulas according yscale % ToDo Normalisation
-    switch yscale
-        case 'lin'
-            res = DataTP(iInd).y-DataTP(iInd).predicted;
-        case 'log'
-            res = log(DataTP(iInd).y)-log(DataTP(iInd).predicted);
-        otherwise
-            error('unknown scale');
-
+    if ~isempty(DataTP(iInd).time)
+    
+        % calculate residulas according yscale % ToDo Normalisation
+        switch yscale
+            case 'lin'
+                res = DataTP(iInd).y-DataTP(iInd).predicted;
+            case 'log'
+                res = log(DataTP(iInd).y)-log(DataTP(iInd).predicted);
+            otherwise
+                error('unknown scale');
+                
+        end
+        
+        lgh(1) = plot(DataTP(iInd).(xField),res,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),'displayname',legendEntries{1});
+        %     plot(DataTP(iInd).(xField),resLloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
+        
+        % construct vectors for goodness fit
+        gX = [gX; DataTP(iInd).(xField)]; %#ok<AGROW>
+        gY = [gY; res]; %#ok<AGROW>
     end
-    
-    lgh(1) = plot(DataTP(iInd).(xField),res,mk(iInd),'color',col(iInd,:),'markerfacecolor',col(iInd,:),'displayname',legendEntries{1});
-    %     plot(DataTP(iInd).(xField),resLloq,mk(iInd),'color',col(iInd,:),'linewidth',2);
-    
-    % construct vectors for goodness fit
-    gX = [gX; DataTP(iInd).(xField)]; %#ok<AGROW>
-    gY = [gY; res]; %#ok<AGROW>
 
 end
 

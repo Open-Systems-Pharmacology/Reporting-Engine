@@ -49,7 +49,7 @@ for iPop=1:nPop
                 marker(iPrc),'color',col,'markerfacecolor',col); %#ok<NBRAK>
         else
             for iPar = 1:iCut
-                patch([0 1 1 0].*sens{iPrc,iPop}(sortSumSensIx(iPar)).slope,iPar + [-0.4 -0.4 0.4 0.4],colorVector(iPop,:),'facealpha',0.5)
+                patch([0 1 1 0].*sens{iPrc,iPop}(sortSumSensIx(iPar)).slope,iPar + [-0.4 -0.4 0.4 0.4],colorVector(iPop,:),'FaceAlpha',WSettings.FaceAlpha)
             end
         end
         
@@ -87,6 +87,8 @@ end
 
 if ~isempty(popLabels)
     legend(lgh,get(lgh,'displayname'),'location','northoutside','fontsize',8)
+else
+    legend(ax,'off');
 end
 
 return

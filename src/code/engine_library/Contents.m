@@ -12,11 +12,10 @@
 %   runMeanModelVPC                            - runs the visual predictive check for VPC
 %   runMeanModelAbsorption                     - gets absorption characteristic of the applications at time 0
 %   runMeanModelSensitivity                    - runs the sensitivity analysis for all mean models defined in set
+%   runMeanModelCheckMassbalance               - gets absorption characteristic of the applications at time 0
 %
 %  functions, which defines default inputs used in the workflow script
-%   getDefaultOutput                           - defines the properties of an Output
 %   getDefaultWorkflowSettings                 - definition of properties used in all workflow functions
-%   runMeanModelCheckMassbalance               - gets absorption characteristic of the applications at time 0
 %   getDefaultVPCSettings                      - GETDEFAULTVPCPOPULATIONSETTINGS get Settings for visual predicitve check
 %   getDefaultMassbalanceSettings              - GETDEFAULTVPCMEANMODELSETTINGS get WSettings for visual predicitve check
 %

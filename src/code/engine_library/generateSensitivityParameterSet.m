@@ -31,7 +31,7 @@ function  [parPathsNew,parValuesNew,SensPointer] = generateSensitivityParameterS
 [jj,ij] = ismember(sensParameterList(:,1),parPaths);
 parPathsNew = parPaths;
 % find new ones
-ixPar = length(parPaths)+[1:sum(~jj)];
+ixPar = length(parPaths) + 1:sum(~jj);
 parPathsNew(ixPar) = sensParameterList(~jj,1);
 parValues(1,ixPar) = cell2mat(sensParameterList(~jj,5));
 
@@ -52,7 +52,7 @@ for iPar=1:size(sensParameterList,1)
     nSteps = sensParameterList{iPar,2};
     vRange = sensParameterList{iPar,3};
     
-    relValues =[1./(1+vRange*[1:nSteps]./nSteps) (1+vRange*[1:nSteps]./nSteps)];
+    relValues =[1./(1+vRange* [1:nSteps]./nSteps) (1+vRange*[1:nSteps]./nSteps)]; %#ok<NBRAK>
     
     newValues = parValues(1,ix(iPar)).*relValues;
     
@@ -68,8 +68,8 @@ for iPar=1:size(sensParameterList,1)
         
         nInd = sum(jj);
         
-        parValuesNew(k+[1:nInd],:) = repmat(parValues,nInd,1);
-        parValuesNew(k+[1:nInd],ix(iPar)) = newValues(jj);
+        parValuesNew(k + [1:nInd],:) = repmat(parValues,nInd,1); %#ok<NBRAK>
+        parValuesNew(k + [1:nInd],ix(iPar)) = newValues(jj); %#ok<NBRAK>
         
         SensPointer(iPar).indxInd = [k+1,k+nInd];
         SensPointer(iPar).relValuesPar = relValues(jj);

@@ -30,9 +30,9 @@ else
 end
 
 % get Minor ticks of yt
-yMinorTicks = 10.^(ytNew(1)).*[0.1:0.1:1];
+yMinorTicks = 10.^(ytNew(1)).*[0.1:0.1:1]; %#ok<NBRAK>
 for iT = min(ytNew):max(ytNew)
-    yMinorTicks = [yMinorTicks 10.^(iT).*[2:1:10]]; %#ok<AGROW>
+    yMinorTicks = [yMinorTicks 10.^(iT).*[2:1:10]]; %#ok<NBRAK,AGROW>
 end
 jj = log10(yMinorTicks) >= yl(1) &  log10(yMinorTicks) <= yl(end);
 yMinorTicks = log10(yMinorTicks(jj));

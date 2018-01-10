@@ -15,15 +15,32 @@ try
 
     writeToReportLog('INFO',sprintf('Start Simulation of %s',PopRunSet.name),false);
     
-    % read population
-    load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
+    % check if siluation directory already exist
+    if ~exist(fullfile(cd,'simulations'),'dir')
+        mkdir('simulations')
+    end
+    
     
     % load OutpulList
     load(fullfile('tmp',PopRunSet.name,'outputList.mat'),'OutputList');
+
+    % generate meanModel Result
+    resultfile = fullfile('simulations',[PopRunSet.name '-MeanModel.csv']);
+    if ~WSettings.restart || ~exist(fullfile(cd,resultfile),'file')
+        SimResult = generateSimResult(WSettings,PopRunSet,nan,{},[],{OutputList.pathID},1,-1); 
+        save(fullfile('tmp',PopRunSet.name,'meanModel_simResult_1.mat'),'SimResult');
+        
+        % export results to  new result file
+        exportResult(SimResult,resultfile);
+    end
+    
+    % read population
+    load(fullfile('tmp',PopRunSet.name,'pop.mat'),'parPaths','parValues');
+    
     
     % get individual ids
     nInd = size(parValues,1); %#ok<NODEF>
-    individualIdVector = parValues(:,strcmp(parPaths,'IndividualId'));
+    individualIdVector = parValues(:,strcmp(parPaths,'IndividualId')); %#ok<IDISVAR>
     
     % prepare bunches
     bunches = unique([1:WSettings.nIndPerSimResult:nInd nInd+1]);
@@ -31,17 +48,30 @@ try
     
     for iBunch = 1:nBunch
         
-        indVector = bunches(iBunch):(bunches(iBunch+1)-1);
+        % get name of resultfile
+        if iBunch==1
+            resultfile = fullfile('simulations',[PopRunSet.name '-Results.csv']);
+        else
+            resultfile = fullfile('simulations',sprintf('%s-%d-Results.csv',PopRunSet.name,iBunch));
+        end
+        % simulate only if not restart and file does not exist
+        if WSettings.restart && exist(fullfile(cd,resultfile),'file')
+            writeToReportLog('INFO',sprintf('simulation for %s part %d already exist \n',PopRunSet.name,iBunch),false);
+        else
+            
+            indVector = bunches(iBunch):(bunches(iBunch+1)-1);
         
-        % do the simulation
-        [SimResult] = generateSimResult(WSettings,PopRunSet,nan,parPaths,parValues(indVector,:),...
-            {OutputList.pathID},length(indVector),individualIdVector(indVector));
-        
-        % export results to  new result file
-        exportResult(SimResult,PopRunSet.name,iBunch);
-        
-        % save as temporary file
-        save(fullfile('tmp',PopRunSet.name,sprintf('simResult_%d.mat',iBunch)),'SimResult');
+
+            % do the simulation
+            [SimResult] = generateSimResult(WSettings,PopRunSet,nan,parPaths,parValues(indVector,:),...
+                {OutputList.pathID},length(indVector),individualIdVector(indVector));
+            
+            % export results to  new result file
+            exportResult(SimResult,resultfile);
+            
+            % save as temporary file
+            save(fullfile('tmp',PopRunSet.name,sprintf('simResult_%d.mat',iBunch)),'SimResult');
+        end
         
     end
     writeToReportLog('INFO',sprintf('Simulation finished \n'),false);
@@ -57,18 +87,7 @@ end
 
 return
 
-function exportResult(SimResult,simulationName,iBunch)
-
-% get name of resultfile
-if iBunch==1
-    resultfile = fullfile('simulations',[simulationName '-Results.csv']);
-else
-    resultfile = fullfile('simulations',sprintf('%s-%d-Results.csv',simulationName,iBunch));
-end
-% check if siluation directory already exist
-if ~exist('simulations','dir')
-    mkdir('simulations')
-end
+function exportResult(SimResult,resultfile)
 
 
 % get dimensions
@@ -79,20 +98,18 @@ nO = length(SimResult.outputPathList);
 
 % construct result cell array
 csvResult(1,:) = {'IndividualId','Time [min]'};
-for iO = 1:nO;
+for iO = 1:nO
     csvResult{1,iO+2} = sprintf('%s [%s]',SimResult.outputPathList{iO},SimResult.outputUnit{iO});
 end
-% unit type
-csvResult(2,:) = repmat({'double'},1,nO+2);
 
 % values
-csvResult{3,1} = reshape(repmat(SimResult.individualIdVector',nT,1),nT*nInd,1);
-csvResult{3,2} = repmat(SimResult.time',nInd,1);
-for iO = 1:length(SimResult.outputPathList);
-    csvResult{3,2+iO} = reshape(SimResult.values{iO},nInd*nT,1);
+csvResult(2:(nT*nInd+1),1) = num2cell(reshape(repmat(SimResult.individualIdVector',nT,1),nT*nInd,1));
+csvResult(2:(nT*nInd+1),2) = num2cell(repmat(SimResult.time',nInd,1));
+for iO = 1:length(SimResult.outputPathList)
+    csvResult(2:(nT*nInd+1),2+iO) = num2cell(reshape(SimResult.values{iO},nInd*nT,1));
 end
 
 % write result
-writetab(resultfile,csvResult,';',0,0,1,0);
+writeTabCellArray(csvResult,resultfile);
 
 return

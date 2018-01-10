@@ -28,7 +28,12 @@ if isempty(Def.xList)
     end
 else
     
-    FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP);
+    FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP,'absolute');
+    
+    if ~isempty(Def.ixPopRunSetRef)
+        FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP,'ratio');
+    end
+
 end
 
 return
@@ -36,7 +41,7 @@ return
 function FP = doBWhiskers(WSettings,Def,textFunctionHandle,PopRunSet,FP,flag)
 
 % collect all simulated PK Parameter of interst
-o = collectPK(PopRunSet(Def.ixOfPopRunSets),'matrix');
+o = collectPK(PopRunSet,'matrix');
 
 % get Reference simulation
 if ~isempty(Def.ixPopRunSetRef)
@@ -47,34 +52,74 @@ else
     reportNameRef = '';
 end
 
-reportNames = {PopRunSet(Def.ixOfPopRunSets).reportName};
-popReportNames = {PopRunSet(Def.ixOfPopRunSets).popReportName};
-xLabels = {PopRunSet(Def.ixOfPopRunSets).boxwhiskerLabel};
+switch flag
+        case 'absolute'
+            reportNames = {PopRunSet.reportName};
+            popReportNames = {PopRunSet.popReportName};
+            xLabels = {PopRunSet.boxwhiskerLabel};
+    case 'ratio'
+            reportNames = {PopRunSet(Def.ixOfPopRunSets).reportName};
+            popReportNames = {PopRunSet(Def.ixOfPopRunSets).popReportName};
+            xLabels = {PopRunSet(Def.ixOfPopRunSets).boxwhiskerLabel};        
+    otherwise
+        error('unknown flag');
+end
 
 yscale = {'lin','log'};
 
 for iO = 1:length(o)
     
     %initialize new sheet
-    header = sprintf('PK parameter of %s',o(iO).reportName);
-    sheet = removeForbiddenLetters(header);
+    switch flag
+        case 'absolute'
+            header = sprintf('PK parameter of %s',o(iO).reportName);
+            sheet = removeForbiddenLetters(header);
+        case 'ratio'
+            header = sprintf('PK parameter of %s as fraction of %s',o(iO).reportName,lower(reportNameRef));
+            sheet = removeForbiddenLetters(sprintf('PK_%s_as_fraction',o(iO).reportName));
+        otherwise
+            error('unknown flag');
+    end
     FP = FP.iniCaptiontextFigtextArray(header,sheet);
     
     for iPK = 1:size(o(iO).pKParameterList,2)
          
+         FP = FP.addSubSection(o(iO).pKParameterList{4,iPK},2);
+        
         switch flag
             case 'absolute'
+                % get Vector of PK Parameter
                 y = squeeze(o(iO).values(:,:,iPK));
                 yLabel = o(iO).pKParameterList{4,iPK};
                 yUnit = o(iO).pKParameterList{2,iPK};
+                
+                % get popPKValues
+                popPKValues = nan;
+                popPKReference = '';
+                if isfield(Def,'popPK')
+                    jjO = [Def.popPK.values(:).iO] == iO;
+                    jj = strcmp(o(iO).pKParameterList{1,iPK},{Def.popPK.values(jjO).par});
+                    if any(jj)
+                        popPKValues = Def.popPK.values(jj).v;
+                        popPKReference = Def.popPK.reference;
+                    end
+                end
+                
+                
+                
             case 'ratio'
                 
-                jPKref = strcmp(o(iO).pKParameterList{1,iPK},oRef(iO).pKParameterList{1,iPK});
+                % get popPKValues
+                popPKValues = nan;
+                popPKReference = '';
+
+                
+                jPKref = strcmp(o(iO).pKParameterList{1,iPK},oRef(iO).pKParameterList(1,:));
                 
                 if any(jPKref)
-                    y = squeeze(o(iO).values(:,:,iPK))./squeeze(oRef(iO).values(:,:,jPKref));
+                    y = squeeze(o(iO).values(:,Def.ixOfPopRunSets,iPK))./repmat(squeeze(oRef(iO).values(:,:,iPK)),1,length(Def.ixOfPopRunSets));
                     yLabel = o(iO).pKParameterList{4,iPK};
-                    yUnit = o(iO).pKParameterList{2,iPK};
+                    yUnit = sprintf('fraction of %s',lower(reportNameRef));
                 else
                     y=[];
                 end
@@ -92,7 +137,7 @@ for iO = 1:length(o)
                         % get name and figure description
                         figureName = sprintf('bw%d_%s_%s',iPK,removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
                         [figtxt,figtxtTable] = feval(textFunctionHandle,WSettings,'pkBW',...
-                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale}});
+                            {yLabel,o(iO).reportName,reportNames,popReportNames,yscale{iScale},popPKReference});
                         
                     case 'ratio'
                         % get name and figure description
@@ -107,10 +152,10 @@ for iO = 1:length(o)
                 end
                 
                 % do figure
-                [csv] = plotReportBoxwhisker(WSettings,FP.figureHandle,y,yLabel,yUnit,yscale{iScale},xLabels);
+                [csv] = plotReportBoxwhisker(WSettings,FP.figureHandle,y,yLabel,yUnit,yscale{iScale},xLabels,popPKValues,popPKReference);
                 
                 % save figure
-                if iScale ==1
+                if iScale == length(yscale)
                     FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
                 else
                     FP = FP.printFigure(figureName,figtxt);
@@ -127,7 +172,7 @@ end
 return
 
     
-function FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP)
+function FP = doShadedArea(WSettings,Def,textFunctionHandle,PopRunSet,FP,flag)
 
 o = collectPK(PopRunSet(Def.ixOfPopRunSets),'vector');
 
@@ -160,51 +205,130 @@ for iO = 1:length(o)
     for iX = 1:size(Def.xList,1)
 
         %initialize new sheet
-        header = sprintf('%s-dependence of %s',Def.xList{iX,2},o(iO).reportName);
-        sheet = sprintf('%s_%s',Def.xList{iX,2},o(iO).reportName);
+        switch flag
+            case 'absolute'
+                header = sprintf('%s%s-dependence of %s',upper(Def.xList{iX,2}(1)),Def.xList{iX,2}(2:end),o(iO).reportName);
+                sheet = sprintf('%s_%s',Def.xList{iX,2},o(iO).reportName);
+            case 'ratio'
+                header = sprintf('%s%s-dependence of %s as fraction of %s',...
+                    upper(Def.xList{iX,2}(1)),Def.xList{iX,2}(2:end),o(iO).reportName,reportNameRef);                
+                sheet = removeForbiddenLetters(sprintf('%s-dependence of %s_fraction',Def.xList{iX,2},o(iO).reportName));
+        end
         FP = FP.iniCaptiontextFigtextArray(header,sheet);
+
         
         jX = strcmp(Def.xList{iX,1},parPathSelection);
         x = parValues(:,jX);
         
         for iPK = 1:size(o(iO).pKParameterList,2)
             
-            y = o(iO).values(:,iPK);                
-            yLabel = o(iO).pKParameterList{4,iPK};
-            yUnit = o(iO).pKParameterList{2,iPK};
+            % add new subheader
+             FP = FP.addSubSection(o(iO).pKParameterList{4,iPK},2);
             
             if isempty(oRef)
                 yRef = [];
             else
-                yRef = oRef(iO).values(:,iPK);         
+                jPKref = strcmp(o(iO).pKParameterList{1,iPK},oRef(iO).pKParameterList(1,:));
+                if any(jPKref)
+                    yRef = oRef(iO).values(:,jPKref);
+                else
+                    yRef = [];
+                end
             end
        
+            
+            y = o(iO).values(:,iPK);
+            yLabel = o(iO).pKParameterList{4,iPK};
+            switch flag
+                case 'absolute'
+                    yUnit = o(iO).pKParameterList{2,iPK};
+                case 'ratio'
+                    
+                    if ~isempty(yRef)
+                        [~,yMeanRef,~,legendTextMean] = getRangePlotPercentiles(WSettings,yRef);
+                        y = y./yMeanRef*100;
+                        yUnit = '%';                        
+                    else
+                        y=[];
+                    end
+                otherwise
+                    error('unknown flag');
+                    
+            end
+            
+            
+            
+            
             if warningflagRangePlots
                 writeToReportLog('WARNING',sprintf(['you are creating Rangeplots with %d individuals, recommended are at least %d individuals. ',...
                     'Statistic might be not sufficient'],length(y),WSettings.rangePlotsMin),false);
                 warningflagRangePlots = false;
             end
+            
+            % get popPKValues
+            popPKValues = nan;
+            popPKReference = '';
+            if isfield(Def,'popPK')
+                popPKReference = Def.popPK.reference;
+                jjO = [Def.popPK.values(:).iO] == iO;
+                jj = strcmp(o(iO).pKParameterList{1,iPK},{Def.popPK.values(jjO).par});
+                if any(jj)
+                    popPKValues = Def.popPK.values(jj).v;
+                    popPKReference = Def.popPK.reference;
+                end
+            end
 
             % loop on scale
             for iScale = 1:length(yscale)
 
-                % get name and figure description
-                figureName = sprintf('shA%d_%d_%s_%s_%s',iX,iPK,removeForbiddenLetters(Def.xList{iX,2}),...
-                    removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
-                [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'pkShA',...
-                    {Def.xList{iX,2},yLabel,o(iO).reportName,Def.reportName,reportNameRef,yscale{iScale}});
+                
+                switch flag
+                    case 'absolute'
+                        % get name and figure description
+                        figureName = sprintf('shA%d_%d_%s_%s_%s',iX,iPK,removeForbiddenLetters(Def.xList{iX,2}),...
+                            removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
+                        
+                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'pkShA',...
+                            {Def.xList{iX,2},yLabel,o(iO).reportName,Def.reportName,reportNameRef,...
+                            [length(y),length(yRef)],yscale{iScale},popPKReference});
+                        
+                        csv = plotReportShadedArea(WSettings,FP.figureHandle,x,y,yRef,Def.xList{iX,2},Def.xList{iX,3},...
+                            yLabel,yUnit,yscale{iScale},legendEntries,popPKValues);
 
-                csv = plotReportShadedArea(WSettings,FP.figureHandle,x,y,yRef,Def.xList{iX,2},Def.xList{iX,3},...
-                    yLabel,yUnit,yscale{iScale},legendEntries);
+                        
+                    case 'ratio'
+                        % get name and figure description
+                        figureName = sprintf('shARatio%d_%d_%s_%s_%s',iX,iPK,removeForbiddenLetters(Def.xList{iX,2}),...
+                            removeForbiddenLetters(o(iO).pKParameterList{1,iPK}),yscale{iScale});
+
+                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'pkShARatio',...
+                            {Def.xList{iX,2},yLabel,o(iO).reportName,Def.reportName,reportNameRef, ...
+                            [length(y),length(yRef)],yscale{iScale},'',legendTextMean});
+                                                
+                        csv = plotReportShadedArea(WSettings,FP.figureHandle,x,y,[],Def.xList{iX,2},Def.xList{iX,3},...
+                            yLabel,yUnit,yscale{iScale},legendEntries,nan);
+
+                    otherwise
+                        error('unknown flag');
+                end
+
+                
+
                 
                 % save figure
-                FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
+                if iScale == length(yscale)                    
+                    FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
+                else
+                    FP = FP.printFigure(figureName,figtxt);
+                end
             end
 
             
         end
         
-        
+        % save caption array for this sheet
+        FP.saveCaptiontextArray;
+
     end
 end
 
@@ -224,7 +348,7 @@ for iSet = 1:length(PopRunSet)
 
     if isempty(o)
         
-        for iO = 1:length(PKPList); 
+        for iO = 1:length(PKPList)
             
             o(iO).reportName = OutputList(iO).reportName; %#ok<AGROW>
             
@@ -240,10 +364,10 @@ for iSet = 1:length(PopRunSet)
                 for iPK = 1:length(PKPList{iO})
                     switch flag
                         case 'matrix'
-                            o(iO).values(:,iSet,iPK) = PKPList{iO}(iPK).value.*OutputList(iO).pKParameterList{3,iPK};%#ok<AGROW>
+                            o(iO).values(:,iSet,iPK) = [PKPList{iO}(:,iPK).value].*OutputList(iO).pKParameterList{3,iPK};
                         case 'vector'
-                            o(iO).values(1:length(PKPList{iO}(iPK).value),iPK) = ...
-                                PKPList{iO}(iPK).value.*OutputList(iO).pKParameterList{3,iPK}; %#ok<AGROW>
+                            o(iO).values(1:length([PKPList{iO}(:,iPK).value]),iPK) = ...
+                                [PKPList{iO}(:,iPK).value].*OutputList(iO).pKParameterList{3,iPK}; 
                         otherwise
                             error('unknown flag');
                     end
@@ -253,7 +377,7 @@ for iSet = 1:length(PopRunSet)
                 
         end
     else
-        for iO = 1:length(PKPList); 
+        for iO = 1:length(PKPList)
             
             if ~isempty(PKPList{iO})
                 % get indices
@@ -273,7 +397,7 @@ for iSet = 1:length(PopRunSet)
                 end
                 
                 % add values
-                nInd = length(PKPList{iO}(1).value);
+                nInd = length([PKPList{iO}(:,1).value]);
                 nIndOld = size(o(iO).values,1);
                 if strcmp(flag,'matrix')
                         if nInd > nIndOld
@@ -284,13 +408,13 @@ for iSet = 1:length(PopRunSet)
                 end
 
                 for k = 1:length(ixTarget)
-                    tmp(1:nInd) = PKPList{iO}(ixSource(k)).value...
+                    tmp(1:nInd) = [PKPList{iO}(:,ixSource(k)).value]...
                         .*OutputList(iO).pKParameterList{3,ixTarget(k)};
                     switch flag
                         case 'matrix'                            
                             o(iO).values(:,iSet,ixTarget(k)) = tmp; %#ok<AGROW>
                         case 'vector'
-                            o(iO).values(nIndOld+[1:nInd],ixTarget(k)) = tmp; %#ok<AGROW>
+                            o(iO).values(nIndOld + [1:nInd],ixTarget(k)) = tmp; %#ok<NBRAK,AGROW>
                             
                         otherwise
                             error('unknown flag');
@@ -310,7 +434,7 @@ function PKPList = loadPKPList(simulationName)
 fname = fullfile('tmp',simulationName,'pKPList.mat');
 
 if exist(fname,'file')
-    load(fname);
+    load(fname); %#ok<LOAD>
 else
     PKPList = readPKParameter(simulationName);
 end

@@ -1,9 +1,12 @@
-function nBunch = readPopulationResultfile(simulationName)
+function nBunch = readPopulationResultfile(simulationName,simulationType,simResultPrefix)
 %READPOPULATIONRESULTFILE reads a simulation result file exported by PK-SIM
 % and converts it to the temporary matfile
 %
 % Inputs: 
 %   - simulationName (string) name of the simulation 
+%   - simulationType (string) "Results" for population, 
+%                             "MeanModel" for a MeanModel simulation
+%   - simResultPrefix (string) prefix for matfile
 % 
 % Outputs  nBunch (double) number of files, simulation is result is splitted into different bunches
 %
@@ -23,16 +26,19 @@ function nBunch = readPopulationResultfile(simulationName)
 
 
 % getName of the csvfile
-csvfile = fullfile('simulations',[simulationName '-Results.csv']); 
+csvfile = fullfile('simulations',sprintf('%s-%s.csv',simulationName,simulationType)); 
 
 iBunch = 1;
 while exist(csvfile,'file')
-    
+   
     % read data
-    data = readtab(csvfile,';',0,0,1,0);
-    
+    t = readtable(csvfile);
     % outputs
-    outputPathList = data(1,3:end);
+    varNames = strrep(strrep(t.Properties.VariableDescriptions,'Original column heading: ',''),'''','');
+    jj = cellfun(@isempty,varNames);
+    varNames(jj) = t.Properties.VariableNames(jj);
+    outputPathList = varNames(3:end);
+        
     
     % split path and unit
     for iP=1:length(outputPathList)
@@ -48,30 +54,29 @@ while exist(csvfile,'file')
     end
     
     % read numeric data
-    individualIdVector = unique(data{3,1},'stable');
-    time = unique(data{3,2});
+    individualIdVector = unique(t.IndividualId);
+    time = unique(t{:,2});
     
     % get values for each output
-    for iO=3:size(data,2)
-        values{iO-2}=reshape(data{3,iO},length(time),length(individualIdVector)); %#ok<AGROW>
+    for iO=3:size(t,2)
+        values{iO-2}=reshape(t{:,iO},length(time),length(individualIdVector)); %#ok<AGROW>
     end
-    
     
     % collect infos in Structure
     SimResult.name = simulationName;
-    SimResult.time = time;
-    SimResult.values = values;
+    SimResult.time = time';
+    SimResult.values = values';
     SimResult.individualIdVector = individualIdVector;
     SimResult.outputPathList = outputPathList;
     SimResult.outputUnit = outputUnit;
     
     % save as temporary file
-    save(fullfile('tmp',simulationName,sprintf('simResult_%d.mat',iBunch)),'SimResult');
+    save(fullfile('tmp',simulationName,sprintf('%ssimResult_%d.mat',simResultPrefix,iBunch)),'SimResult');
     
     
     % get name of resultfile
     iBunch = 1 + iBunch;
-    csvfile = fullfile('simulations',sprintf('%s-%d-Results.csv',simulationName,iBunch));
+    csvfile = fullfile('simulations',sprintf('%s-%d-%s.csv',simulationName,iBunch,simResultPrefix));
 
 end
 

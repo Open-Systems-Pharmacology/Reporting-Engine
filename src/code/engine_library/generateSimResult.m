@@ -66,7 +66,7 @@ for iInd=1:nInd
         
         rowIndex=nan(size(parPaths));
         for iPar=1:length(parPaths)
-            if existsParameter(['*|' parPaths{iPar}],simulationIndex);
+            if existsParameter(['*|' parPaths{iPar}],simulationIndex)
                  tmp = setParameter(parValues(iInd,iPar),[ '*|' parPaths{iPar}],simulationIndex);
                  
                 rowIndex(iPar) =tmp(1);
@@ -87,7 +87,8 @@ for iInd=1:nInd
                 % check if is a demographic parameter which is not an xml
                 % parameter, otherwise,  set a warning
                 if ~ismember(parPaths{iPar},{'IndividualId','Gender','RaceIndex','Population Name',...
-                        'Organism|Weight','Organism|BMI','Organism|BSA'})                
+                        'Organism|Weight','Organism|BMI','Organism|BSA'}) && ...
+                        ~startsWith(parPaths{iPar},'DependentParameter')
                     writeToReportLog('WARNING',sprintf(' %s is parameter of the population csv, but not available as parameter in the xml', ...
                         parPaths{iPar}),false);
                 end

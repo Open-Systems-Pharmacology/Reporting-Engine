@@ -31,7 +31,11 @@ fileList = dir(fullfile('tmp',simulationName,sprintf('%ssimResult*.mat',simResul
 % convert csv file to temporary variables
 nBunch = length(fileList);
 if nBunch == 0
-    nBunch = readPopulationResultfile(simulationName);
+    if isempty(simResultPrefix) % defualt population simulation
+        nBunch = readPopulationResultfile(simulationName,'Results','');
+    else
+        nBunch = readPopulationResultfile(simulationName,[upper(simResultPrefix(1)),simResultPrefix(2:end-1)],simResultPrefix);
+    end
 end
 
 % if no simulation result is found, somethin weird happend
@@ -46,7 +50,7 @@ for iBunch = 1:nBunch
     % get all retunr variables from first buch
     if iBunch ==1
         % get Output index
-        if ~exist('pathID','var') || isempty(pathID);
+        if ~exist('pathID','var') || isempty(pathID)
             pathID = SimResult.outputPathList{iO};
         else
             iO = find(strcmp(SimResult.outputPathList,pathID));

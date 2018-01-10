@@ -22,18 +22,22 @@ end
 unitFactor = nan;
 success = true;
 
-
+% nor transfer necessary as unit is target Unit
+if strcmpi(unit,targetUnit)
+    unitFactor=1;
+    return
+end
 
 % check if taregt unit exist, and get index of dimension
-ixDimDisplay = find(cellfun(@(x) any(strcmp(x,targetUnit)),{unitList.unit_txt}));
+ixDimDisplay = find(cellfun(@(x) any(strcmpi(x,targetUnit)),{unitList.unit_txt}));
 if isempty(ixDimDisplay)
-    writeToReportLog('ERROR',sprintf('unit "%s" for seems to be no default OSPSuite unit',targetUnit),false);
+    writeToReportLog('ERROR',sprintf('unit "%s" seems to be no default OSPSuite unit',targetUnit),false);
     success = false;
     return
 end
     
 % get index of dimension for internal unit
-ixDimInternal = find(cellfun(@(x) any(strcmp(x,unit)),{unitList.unit_txt}));
+ixDimInternal = find(cellfun(@(x) any(strcmpi(x,unit)),{unitList.unit_txt}));
 
 % target unit and internal unit should have a common dimension
 ixDim = intersect(ixDimDisplay,ixDimInternal);

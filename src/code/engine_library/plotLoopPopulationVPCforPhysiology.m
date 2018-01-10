@@ -23,7 +23,7 @@ function     FP = plotLoopPopulationVPCforPhysiology(WSettings,textFunctionHandl
 
 % get selectionList of population parameter
 if isempty(Def.xList)
-    parPathSelection = [Def.yList(:,[1 3])];
+    parPathSelection = Def.yList(:,[1 3]);
 else
     parPathSelection = [Def.yList(:,[1 3]); Def.xList(:,[1 3])];
 end
@@ -39,7 +39,7 @@ end
 
 % get loopIndices depending on popRunSetMerger
 switch Def.popRunSetMerger
-    case 'merged'
+    case {'merged','totalMerge'}
         nOuterLoop = 1;
         nInnerLoop = length(Def.ixOfPopRunSets);
         sheetNameList = {Def.name};
@@ -61,9 +61,13 @@ for iSet = 1:nOuterLoop
     header = sprintf('Physiology of %s',populationReportName{iSet});
     FP = FP.iniCaptiontextFigtextArray(header,sheetNameList{iSet});
     
-    % merge population if necessary
+    % merge population if necessary but take only different pop.csvs
     ixSet = Def.ixOfPopRunSets(iSet:max(nInnerLoop,iSet));
-    [parValues,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,{PopRunSet(ixSet).name},parPathSelection);
+    [~,ixUnique] = unique({PopRunSet(ixSet).popcsv},'stable');
+    [parValues,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,{PopRunSet(ixSet(ixUnique)).name},parPathSelection);
+    if strcmp(Def.popRunSetMerger,'totalMerge')
+        sourceIndex = ones(size(sourceIndex));
+    end
     
     if size(parValues,1) < WSettings.rangePlotsMin
         warningflagRangePlots = true;
@@ -72,7 +76,7 @@ for iSet = 1:nOuterLoop
     end
 
     % load data if available
-    [Data,~,Dict] = loadMergedData(WSettings,{PopRunSet(ixSet).name});
+    [Data,~,Dict,dataReportName,dataPopIndex] = loadMergedData(WSettings,PopRunSet(ixSet),Def.popRunSetMerger);
     
     for iY = 1:size(Def.yList,1)
 
@@ -96,7 +100,6 @@ for iSet = 1:nOuterLoop
                 end
             end
         end
-        dataReportName = PopRunSet(ixSet(1)).dataReportName;
         
         % if no property for x is given or if it a
         % categoric property like gender do a histogramm
@@ -106,16 +109,25 @@ for iSet = 1:nOuterLoop
             % add ref as additional population
             y = [y;yRef]; %#ok<AGROW>
             sourceIndexWithRef = [sourceIndex; repmat(max(sourceIndex+1),length(yRef),1)];
-            popLabels = [{PopRunSet(ixSet).boxwhiskerLabel},{PopRunSet(Def.ixPopRunSetRef).boxwhiskerLabel}];
-            nPop = arrayfun(@(x) sum(sourceIndexWithRef==x),[1:max(sourceIndexWithRef)]);
+            switch Def.popRunSetMerger
+                case 'totalMerge'
+                    popLabels = {Def.reportName,PopRunSet(Def.ixPopRunSetRef).boxwhiskerLabel};
+                    dataReportName = {};
+                case {'serial','merged'}
+                    popLabels = [{PopRunSet(ixSet(ixUnique)).boxwhiskerLabel},{PopRunSet(Def.ixPopRunSetRef).boxwhiskerLabel}];
+                otherwise
+                    error('unknonw merger');
+            end
+            nPop = arrayfun(@(x) sum(sourceIndexWithRef==x),[1:max(sourceIndexWithRef)]); %#ok<NBRAK>
+            nData = arrayfun(@(x) sum(dataPopIndex==x),[1:max(dataPopIndex)]); %#ok<NBRAK>
             
             % get name and figure description
             figureName = sprintf('h%d_%s',iY,removeForbiddenLetters(Def.yList{iY,2}));
             [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'physHist',...
-                {Def.yList{iY,2},populationReportName{iSet},dataReportName,popLabels,nPop,length(yData)});
+                {Def.yList{iY,2},populationReportName{iSet},dataReportName,popLabels,nPop,nData});
             
             % do figure
-            csv = plotReportHistogram(WSettings,FP.figureHandle,y,sourceIndexWithRef,yData,Def.yList{iY,2},...
+            csv = plotReportHistogram(WSettings,FP.figureHandle,y,sourceIndexWithRef,yData,dataPopIndex,Def.yList{iY,2},...
                 Def.yList{iY,3},Def.yList{iY,4},legendEntries);
             
             
@@ -138,8 +150,8 @@ for iSet = 1:nOuterLoop
                 end
                 
                 
-                % get name and figure description
-                figureName = sprintf('shA%d_%d_%s_%s',iY,iX,removeForbiddenLetters(Def.yList{iY,2}),...
+                % get name and figure description                
+                figureName = sprintf('shA%d_%d_%s_%s',iY,iX,removeForbiddenLetters(Def.yList{iY,5}),...
                     removeForbiddenLetters(Def.xList{iX,2}));
 
                 [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'physShA',...

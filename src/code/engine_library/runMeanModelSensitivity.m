@@ -16,7 +16,7 @@ try
     
     % create resultdirector
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','sensitivity'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'sensitivity'),WSettings.printFormatList);
     
     for iSet = 1:length(MeanModelSet)
 
@@ -47,7 +47,7 @@ try
             parPathsDM = {'Organism|Weight','Organism|Height'};
             parValuesDM(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
             parValuesDM(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');
-            PKPListSens = calculatesPKParameterList(WSettings,MeanModelSet.name,MeanModelSet.calculatePKParameterFh,parPathsDM,parValuesDM,'sens_');
+            PKPListSens = calculatesPKParameterList(WSettings,MeanModelSet(iSet).name,MeanModelSet(iSet).calculatePKParameterFh,parPathsDM,parValuesDM,'sens_');
             
             save(fullfile(tmpDir,'sens_pKPList.mat'),'PKPListSens','SensPointer');
             load(fullfile(tmpDir,'pKPList.mat'),'PKPList');
@@ -58,15 +58,15 @@ try
         end
         
         % export results to csv
-        load(fullfile('tmp',MeanModelSet.name,'outputList.mat'),'OutputList');
-        exportSensitivity(WSettings,MeanModelSet.name,sens,OutputList,sensParameterList);
+        load(fullfile('tmp',MeanModelSet(iSet).name,'outputList.mat'),'OutputList');
+        exportSensitivity(WSettings,MeanModelSet(iSet).name,sens,OutputList,sensParameterList);
         
         
-        header = sprintf('sensitivity analysis of %s ',MeanModelSet.reportName);
-        FP = FP.iniCaptiontextFigtextArray(header,MeanModelSet.name);
+        header = sprintf('Sensitivity analysis of %s ',MeanModelSet(iSet).reportName);
+        FP = FP.iniCaptiontextFigtextArray(header,MeanModelSet(iSet).name);
         
         % create sensitivity Plots
-        FP = plotSensitivity(WSettings,MeanModelSet.name,sens,OutputList,sensParameterList,FP,PKParameterTemplate);
+        FP = plotSensitivity(WSettings,MeanModelSet(iSet).name,sens,OutputList,sensParameterList,FP,PKParameterTemplate);
         
         FP.saveCaptiontextArray;
     end
@@ -98,8 +98,8 @@ for iO = 1:length(OutputList)
         jj = strcmp(OutputList(iO).pKParameterList{1,iPK},{PKParameterTemplate.name});
         PKReportName = PKParameterTemplate(jj).reportName;
 
-        figureName = sprintf('%s_%s_%s_List',analysisName,PKReportName,OutputList(iO).reportName);
-        figtxt = sprintf('Most sensitiv parameter for %s for %s', PKReportName,OutputList(iO).reportName);
+        figureName = removeForbiddenLetters(sprintf('%s_%s_%s_List',analysisName,PKParameterTemplate(jj).name,OutputList(iO).reportName));
+        figtxt = sprintf('Most sensitive parameter for %s for %s', PKReportName,OutputList(iO).reportName);
         % save figure
         FP = FP.printFigure(figureName,figtxt);
 
@@ -110,7 +110,7 @@ end
 return
 
 
-function exportSensitivity(WSettings,analysisName,sens,OutputList,sensParameterList) %#ok<INUSL>
+function exportSensitivity(WSettings,analysisName,sens,OutputList,sensParameterList) 
 % EXPORTSENSITIVITY export list of all caclualted sensitivities
 %
 % exportSensitivity(WSettings,analysisName,sens,OutputList,sensParameterList)
@@ -136,42 +136,34 @@ function exportSensitivity(WSettings,analysisName,sens,OutputList,sensParameterL
 
 % initialize export structure
 data(1,:) = {'Output','PK-Parameter','Parameter','sensitivity value','lower CI 95','upper CI 95','R-square','pValue'};
-data(2,:) = {'string','string','string','double','double','double','double','double'};
-for iCol = 1:size(data,2)
-    switch data{2,iCol}
-        case 'string'
-            data{3,iCol} = {};
-        case 'double'
-            data{3,iCol} = [];
-    end
-end
 
 % fill structure
 for iO = 1:length(OutputList)
     
     for iPK =   1:size(OutputList(iO).pKParameterList,2)
         
-        offset = length(data{3,1});
+        offset = size(data,1);
         nPar = size(sensParameterList,1);
         
-        data{3,1}(offset+[1:nPar],1) = {OutputList(iO).reportName};
-        data{3,2}(offset+[1:nPar],1) = OutputList(iO).pKParameterList(1,iPK);
-        data{3,3}(offset+[1:nPar],1) = sensParameterList(:,1);
-        data{3,4}(offset+[1:nPar],1) = [sens{iO,iPK}.slope];
-        data{3,5}(offset+[1:nPar],1) = [sens{iO,iPK}.slopeCILower];
-        data{3,6}(offset+[1:nPar],1) = [sens{iO,iPK}.slopeCIUpper];
-        data{3,7}(offset+[1:nPar],1) = [sens{iO,iPK}.rSquare];
-        data{3,8}(offset+[1:nPar],1) = [sens{iO,iPK}.pValue];            
+        data(1,offset + (1:nPar)) = {OutputList(iO).reportName};
+        data(2,offset + (1:nPar)) = {OutputList(iO).pKParameterList(1,iPK)};
+        data(3,offset + (1:nPar)) = num2cell(sensParameterList(:,4));
+        data(4,offset + (1:nPar)) = num2cell([sens{iO,iPK}.slope]);
+        data(5,offset + (1:nPar)) = num2cell([sens{iO,iPK}.slopeCILower]);
+        data(6,offset + (1:nPar)) = num2cell([sens{iO,iPK}.slopeCIUpper]);
+        data(7,offset + (1:nPar)) = num2cell([sens{iO,iPK}.rSquare]);
+        data(8,offset + (1:nPar)) = num2cell([sens{iO,iPK}.pValue]);
         
     end
     
 end
 
 % write file
-if ~exist(fullfile('figures','sensitivity'),'dir')
-    mkdir(fullfile('figures','sensitivity'));
+if ~exist(fullfile(cd,WSettings.figures,'sensitivity'),'dir')
+    mkdir(fullfile(WSettings.figures,'sensitivity'));
 end
-fname = fullfile('figures','sensitivity',[analysisName,'.csv']);
+fname = fullfile(WSettings.figures,'sensitivity',[analysisName,'.csv']);
 
-writetab(fname, data, ';', 0, 0, 1,0);
+writeTabCellArray(data,fname);
+
 return

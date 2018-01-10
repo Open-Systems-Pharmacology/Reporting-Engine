@@ -1,9 +1,9 @@
 function [parPaths,parValues] = readPopulationCSV(csvfile)
-%READPOPULATIONCSV reads a poulation csv file 
+%READPOPULATIONCSV reads a poulation csv file
 %
-% Inputs 
+% Inputs
 %   - csvfile (string) name of the exported file
-% Outputs 
+% Outputs
 %   - parPaths (cellarray):  pathnames of the exported parameters
 %   - parValues (double matrix):  values of the exported parameters and individuals
 
@@ -14,14 +14,19 @@ if ~exist(csvfile,'file')
     error('This file does no exist: %s',csvfile)
 end
 
-% read data
-data = readtab(csvfile,';',0,0,1,0);
-parPaths = data(1,:);
-parValues = nan(length(data{3,1}),size(parPaths,1));
+    
+% read table
+t = readtable(csvfile);
 
-% get numeric columns
-jj = strcmp(data(2,:),'double');
-parValues(:,jj) = cell2mat(data(3,jj));
+parPaths = strrep(strrep(t.Properties.VariableDescriptions,'Original column heading: ',''),'''','');
+jj = cellfun(@isempty,parPaths);
+parPaths(jj) = t.Properties.VariableNames(jj);
 
+% get numeric values
+C =  table2cell(t);
+jj = cellfun(@(x) isnumeric(x),C);
+jjCol = all(jj);
+parValues = nan(size(C));
+parValues(:,jjCol) = cell2mat(C(:,jjCol));
 
 return

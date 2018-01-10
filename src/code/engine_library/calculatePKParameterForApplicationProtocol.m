@@ -96,7 +96,7 @@ for iInt = 1:length(intervalList)
     % get infusion time
     infusionTime = unique([ApplicationProtocol(jjApp).infusionTime]);
     if length(infusionTime)>1 
-        if ismember('MRT',{PKParameterTemplate(jj_PK).fnPK});
+        if ismember('MRT',{PKParameterTemplate(jj_PK).fnPK})
             writeToReportLog('WARNING',sprintf('WARNING for the time slot %d - %d infusion time was not unique MRT will be nan',...
                 timeRange(1),timeRange(end)),false);
         end
@@ -155,7 +155,7 @@ switch flag
         PKParameterTemplate(end+1) = iniPKParameterTemplate('F_tEnd','F_{max}','','1','cend','total');
         
         
-    case 'multiDose';
+    case 'multiDose'
         % PK Parameter for concentrations
         PKParameterTemplate = iniPKParameterTemplate('C_max','C_{max}','µmol/l','1','cMax','total');
         PKParameterTemplate(end+1) = iniPKParameterTemplate('C_max_norm','C_{max} norm','mg/l','1./dose_per_weight*1e6', 'cMax','total');

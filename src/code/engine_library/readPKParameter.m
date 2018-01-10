@@ -23,12 +23,12 @@ while exist(csvfile,'file')
 
 
     % read data
-    data = readtab(csvfile,';',0,0,1,0);
+    tTmp = readtable(csvfile,'Filetype','text','Delimiter',';');
     
-    outputPathList = data{3,2};
-    PKParameter = data{3,3};
-    value = data{3,4};
-    unit = data{3,5};
+    outputPathList = tTmp.QuantityPath;
+    PKParameter = tTmp.Parameter;
+    value = tTmp.Value;
+    unit = tTmp.Unit;
     
     for iO = 1:length(OutputList)
         

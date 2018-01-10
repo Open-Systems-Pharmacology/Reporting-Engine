@@ -13,12 +13,12 @@ function BSA = calculateBodySurfaceArea(WSettings,weight,height)
 
 
 switch WSettings.BSA_calculationmethode
-
+    
     case 'DuBois'        
-        BSA = (0.007184.*(height.*10).^0.725 .*weight.^0.425).*100;
+        BSA = (0.007184.*(height.*10).^0.725 .*weight.^0.425);
         
     case 'Haycock'
-        BSA = (0.024265.* (height.*10).^0.3964.* weight.^0.5378).*100;
+        BSA = (0.024265.* (height.*10).^0.3964.* weight.^0.5378);
     otherwise
         
         error('unknonw BSA caluclationmethode');

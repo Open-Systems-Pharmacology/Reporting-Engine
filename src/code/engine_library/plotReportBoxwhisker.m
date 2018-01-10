@@ -1,4 +1,4 @@
-function [csv] = plotReportBoxwhisker(WSettings,figureHandle,y,yLabel,yUnit,yscale,xLabel)
+function [csv] = plotReportBoxwhisker(WSettings,figureHandle,y,yLabel,yUnit,yscale,xLabel,popPKValues,popPKReference)
 %PLOTREPORTBOXWHISKER creates box whisker plot
 %
 %   plotReportBoxwhisker(X,Y,Y_ref,...
@@ -9,6 +9,8 @@ function [csv] = plotReportBoxwhisker(WSettings,figureHandle,y,yLabel,yUnit,ysca
 %   yLabel (string)  text beside the Y-axis
 %   yUnit (string)   text beside the Y-axis
 %   yscale (string): may be 'lin' or 'log' scale of the Y axes
+%   xLabel: (cellarray of strings) description of groups on x axes
+%   popPKValues: (cellarray of strings) description of groups on x axes
 %   xLabel: (cellarray of strings) description of groups on x axes
 % Output
 %   csv (cellarray) table with numeric information to the plot
@@ -44,7 +46,7 @@ ji_plot=find(~all(isnan(pct)));
 
 
 % do the Plot
-ax = getReportFigure(WSettings,1,1,figureHandle);
+ax = getReportFigure(WSettings,1,1,figureHandle,'figureformat','landscape');
 
 % horizontal lines
 for iY = 1:5
@@ -67,6 +69,13 @@ if WSettings.boxwhiskerWithExtrema
     plot(outlier(:,1),outlier(:,2),'o','color',WSettings.colorVector(1,:),'linewidth',2,'markersize',6);
 end
 
+if ~isnan(popPKValues)
+    posX = x(end)+0.75;
+    errorbar(posX,popPKValues(2),popPKValues(2)-popPKValues(1),popPKValues(3)-popPKValues(2),'o','color','k',...
+        'linewidth',2,'markersize',6);
+    xlim(end) = posX+widthBox;
+end
+
 % set layout
 setAxesScaling(ax,'xlim',xlim,'yscale',yscale);
     
@@ -78,14 +87,48 @@ set(ax,'YMinorGrid','off')
 ylabel(getLabelWithUnit(yLabel,yUnit));
     
 % Xlabels
-set(ax,'xtick',x,'xticklabel',xLabel)
+if ~isfield(WSettings,'boxwhiskerXlabelRotation') || WSettings.boxwhiskerXlabelRotation ==0
+    set(ax,'xtick',x,'xticklabel',xLabel)
+else
+    set(ax,'xtick',1:length(xLabel),'xticklabel',[]);
+    yl = get(ax,'ylim');
+    switch yscale
+        case 'lin'
+                ytext = yl(1)-0.05*(yl(2)-yl(1));
+        case 'log'
+                ytext = exp(log(yl(1))-0.05*(log(yl(2))-log(yl(1))));
+        otherwise
+            error('unknown scale')
+    end
+    if ~isnan(popPKValues)
+        text(posX,ytext,popPKReference,'rotation',WSettings.boxwhiskerXlabelRotation,'horizontalAlignment','right');
+        set(ax,'xtick',[1:length(xLabel) posX],'xticklabel',[]);
+    end
+    for iX = 1:length(xLabel) 
+        tmp = xLabel{iX};
+        if length(tmp)>1
+            ix =  strfind(tmp,'with');
+            if isempty(ix)
+                ix =  strfind(tmp,' ');
+            end
+            [~,ixPos] = min(abs(ix-length(tmp)/2));
+            tmp = {strtrim(tmp(1:ix(ixPos)-1)),strtrim(tmp(ix(ixPos):end))};
+        end
+        text(x(iX),ytext,tmp,'rotation',WSettings.boxwhiskerXlabelRotation,'horizontalAlignment','right');
+    end
+    p = get(ax,'position');
+    set(ax,'position',p+[0 0.2 0 -0.2]);
+end
+
+% no legend
+legend(ax,'off')
 
 % csv    
 
 csv{1,1} = getLabelWithUnit(yLabel,yUnit);
 % percentiles
 for iPrct=1:length(WSettings.displayPercentiles)
-    csv{2,1+iPrct} = sprintf('%s precentile',getPercentilePotenzText(WSettings.displayPercentiles(iPrct)));
+    csv{2,1+iPrct} = sprintf('%s prctl.',getPercentilePotenzText(WSettings.displayPercentiles(iPrct)));
 end
 
 % get current size
@@ -93,10 +136,24 @@ iRow = size(csv,1);
 
     
 % header for differnt sets
-csv((iRow+1:iRow+size(y,2)),1) = xLabel;
+winY = (iRow+1:iRow+size(y,2));
+csv(winY,1) = xLabel;
 
 % percentiles
-csv((iRow+1):(iRow+size(y,2)),2:(1+size(pct,1))) = num2cell(pct)';
+csv(winY,2:(1+size(pct,1))) = num2cell(pct)';
+
+% add additional numbers
+csv{2,end+1} = 'arith. mean';
+csv(winY,end) = num2cell(nanmean(y));
+csv{2,end+1} = 'std';
+csv(winY,end) = num2cell(nanstd(y));
+csv{2,end+1} = 'geo. mean';
+csv(winY,end) = num2cell(exp(nanmean(log(y))));
+csv{2,end+1} = 'geo. CV';
+s = nanstd(log(y));
+csv(winY,end) = num2cell(sqrt(exp(s.^2)-1));
+
+
 
 return
 

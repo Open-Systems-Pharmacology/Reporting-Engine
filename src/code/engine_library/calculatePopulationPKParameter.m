@@ -49,7 +49,7 @@ return
 function exportPKParameter(WSettings,simulationName,PKPList,individualIdVector,outputPathList)
 
 % check if siluation directory already exist
-if ~exist('simulations','dir')
+if ~exist(fullfile(cd,'simulations'),'dir')
     mkdir('simulations')
 end
 
@@ -71,11 +71,6 @@ for iBunch = 1:nBunch
     end
     
     
-    % construct result cell array
-    csvResult(1,:) = {'IndividualId','Quantity Path','Parameter','Value','Unit'};
-    % unit type
-    csvResult(2,:) = {'double','string','string','double','string'};
-
     % get Dimensions
     nInd = length(indVector);
     nO = length(PKPList);
@@ -87,25 +82,22 @@ for iBunch = 1:nBunch
         
         for iPKP = 1:length(PKParameter)
             
+                IndividualId = individualIdVector(indVector);
+                QuantityPath = repmat(outputPathList(iO),nInd,1);
+                Parameter = repmat({PKParameter(iPKP).name},nInd,1);
+                Value = PKParameter(iPKP).value(indVector)';
+                Unit = repmat({PKParameter(iPKP).unit},nInd,1);
             if iO*iPKP ==1
-                csvResult{3,1} = individualIdVector(indVector);
-                csvResult{3,2} = repmat(outputPathList(iO),nInd,1);
-                csvResult{3,3} = repmat({PKParameter(iPKP).name},nInd,1);
-                csvResult{3,4} = PKParameter(iPKP).value(indVector)';
-                csvResult{3,5} = repmat({PKParameter(iPKP).unit},nInd,1);
+                tTmp = table(IndividualId,QuantityPath,Parameter,Value,Unit);
             else
-                csvResult{3,1} = [csvResult{3,1}; individualIdVector(indVector)];
-                csvResult{3,2} = [csvResult{3,2}; repmat(outputPathList(iO),nInd,1)];
-                csvResult{3,3} = [csvResult{3,3}; repmat({PKParameter(iPKP).name},nInd,1)];
-                csvResult{3,4} = [csvResult{3,4}; PKParameter(iPKP).value(indVector)'];
-                csvResult{3,5} = [csvResult{3,5}; repmat({PKParameter(iPKP).unit},nInd,1)];
+                tTmp = [tTmp;table(IndividualId,QuantityPath,Parameter,Value,Unit)]; %#ok<AGROW>
             end
             
         end
     end
 
     % write result
-    writetab(resultfile,csvResult,';',0,0,1,0);
+    writetable(tTmp,resultfile,'fileType','text','delimiter',';');
 end
 
 return

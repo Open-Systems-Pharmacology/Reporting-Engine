@@ -1,4 +1,4 @@
-function [parValuesFinal,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection)
+function [parValuesFinal,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection) %#ok<INUSL>
 % LOADSELECTEDPATHSOFPOPULATION load values for selected paths for one or a merged population
 % 
 % parValuesFinal = loadSelectedPathsOfPopulation(WSettings,listOfname,parPathSelection)
@@ -18,7 +18,7 @@ function [parValuesFinal,sourceIndex] = loadSelectedPathsOfPopulation(WSettings,
 
 for iName = 1:length(listOfname)
 
-    load(fullfile('tmp',listOfname{iName},'pop.mat'));
+    load(fullfile('tmp',listOfname{iName},'pop.mat')); %#ok<LOAD>
     [jj,ix] = ismember(parPathSelection(:,1),parPaths);
     
     if sum(jj) < size(parPathSelection,1)
@@ -27,7 +27,7 @@ for iName = 1:length(listOfname)
 
     if iName ==1
         % initialize parValuesFinal
-        parValuesFinal = parValues(:,ix(jj)); %#ok<NODEF>
+        parValuesFinal = parValues(:,ix(jj)); %#ok<IDISVAR,NODEF>
         sourceIndex = ones(size(parValuesFinal,1),1);
     else
         parValuesFinal = [parValuesFinal;parValues(:,ix(jj))]; %#ok<NODEF,AGROW>

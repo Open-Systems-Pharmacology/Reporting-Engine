@@ -20,7 +20,7 @@ try
     % demographic
     % loop on demographic definitions
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','physiology'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'physiology'),WSettings.printFormatList);
     
     for iD = 1:length(VPC.PhysProperties)
         FP = plotLoopPopulationVPCforPhysiology(WSettings,VPC.textFunctionHandle,VPC.PhysProperties(iD),PopRunSet,FP);
@@ -28,19 +28,19 @@ try
     
     % time profiles
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'timeprofile'),WSettings.printFormatList);
     
     for iD = 1:length(VPC.Timeprofile)
-        FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),PopRunSet,FP);
+        FP = plotLoopVPCTimeprofiles(WSettings,VPC(iD).textFunctionHandle,VPC(iD).Timeprofile(iD),PopRunSet,FP);
     end
     
     
     % pk parameter
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','pKParameter'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'pKParameter'),WSettings.printFormatList);
     
     for iD = 1:length(VPC.PKParameter)
-        FP = plotLoopPopulationVPCPKparameter(WSettings,VPC.textFunctionHandle,VPC.PKParameter(iD),PopRunSet,FP);
+        FP = plotLoopPopulationVPCPKparameter(WSettings,VPC(iD).textFunctionHandle,VPC(iD).PKParameter(iD),PopRunSet,FP);
     end
     
     

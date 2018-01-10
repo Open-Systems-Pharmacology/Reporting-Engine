@@ -1,4 +1,4 @@
-function [ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,xml,parPathsStudyDesign,parValuesStudyDesign)
+function [ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,xmlOrIndex,parPathsStudyDesign,parValuesStudyDesign)
 % GETAPPLICATIONPROTOCOLLFROMXML get properties of the applicationsprotocol
 %       defined within an exported simulationfile (.xml)
 %
@@ -7,7 +7,7 @@ function [ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSetting
 % Inputs:
 %       WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   xml (string) name of xmlfile
+%   xmlOrIndex (string/double) name of xmlfile or if already initialized simulatin Index
 %   parPathsStudyDesign (cellarray of strings) optional, list of studedsign parameters
 %   parValuesStudyDesign (double matrix) optional, values of studedsign parameters
 % 
@@ -38,8 +38,12 @@ ApplicationProtocol = getDefaultApplicationProtocol('');
 
 
 % initialize simulation file
-initSimulation(xml,'none');
-simulationIndex=1;
+if isnumeric(xmlOrIndex)
+    simulationIndex = xmlOrIndex;
+else
+    initSimulation(xmlOrIndex,'none');
+    simulationIndex=1;
+end
 
 % get list of paths added by studydesign
 if exist('parPathsStudyDesign','var') && ~isempty(parPathsStudyDesign)
@@ -84,6 +88,10 @@ if ise
                 
         % get CompoundName
         tmp = getParameter(pathCompound,simulationIndex,'parametertype','readonly','property','path');
+        if iscell(tmp) && length(tmp)>1
+            jj = cellfun(@(x) ~contains(x,'InsolubleDrug'),tmp);
+            tmp = tmp{jj};
+        end
         tmp = regexp(tmp,'\|','split');
         ApplicationProtocol(iApp).compound = tmp{end-1};
         
@@ -150,14 +158,14 @@ return
  function [ApplicationProtocol,isValid,isIndividualized] = addParameter(~,ApplicationProtocol,pathID,...
          fieldNameStructure,simulationIndex,studyDesignPathId,parValuesStudyDesign,isValid,isIndividualized)
          
-if existsParameter(pathID,simulationIndex,'parametertype','readonly');
+if existsParameter(pathID,simulationIndex,'parametertype','readonly')
     ApplicationProtocol.(fieldNameStructure) = getParameter(pathID,simulationIndex,'parametertype','readonly');
 
     % check formulas
     if strcmp(fieldNameStructure,'dose')
             formula = getParameter(pathID,simulationIndex,'parametertype','readonly','property','Formula');
-            ApplicationProtocol.isDosePerBodyweight = ~isempty(strfind(formula,'DosePerBodyweight'));
-            ApplicationProtocol.isDosePerBodySurfaceArea = ~isempty(strfind(formula,'DosePerBodySurfaceArea'));
+            ApplicationProtocol.isDosePerBodyweight = contains(lower(formula),'doseperbodyweight');
+            ApplicationProtocol.isDosePerBodySurfaceArea = contains(lower(formula),'doseperbodysurfacearea');
                 
     end
 

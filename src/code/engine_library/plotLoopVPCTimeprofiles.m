@@ -21,24 +21,34 @@ function FP = plotLoopVPCTimeprofiles(WSettings,textFunctionHandle,Def,RunSet,FP
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % get Reference simulation
-if isfield(Def,'ixRunSetRef') &&  ~isempty(Def.ixRunSetRef)
-    popReportNameRef = RunSet(Def.ixRunSetRef).popReportName;
+if ~isempty(Def.ixRunSetRef)
     reportNameRef = RunSet(Def.ixRunSetRef).reportName;
+    reportLabelRef = RunSet(Def.ixRunSetRef).popReportName;
 else
-    popReportNameRef = '';
     reportNameRef = '';
+    reportLabelRef = '';
 end
 
 
 % get factor to translate time in  diplay units
-timeUnitFactor = getUnitFactor('',Def.timeDisplayUnit,'Time');
+% it may ba a cell array the for each Timerange a special unit is defined
+if iscell(Def.timeDisplayUnit)
+    timeUnitFactor = cellstr(@(x) getUnitFactor('',x,'Time'),Def.timeDisplayUnit);    
+else    
+    timeUnitFactor = getUnitFactor('',Def.timeDisplayUnit,'Time');
+end
 
 % set scaling for y axes
 yscale = Def.yScale;
 
 % start Loop on popsets
-for iSet = Def.ixOfRunSets
-
+for iSet = [Def.ixRunSetRef Def.ixOfRunSets]
+    
+    
+    %initialize new section per Pop runset
+    header = sprintf('Time profiles for %s',RunSet(iSet).reportName);
+    sheet = RunSet(iSet).name;
+    FP = FP.iniCaptiontextFigtextArray(header,sheet);
     
     % get population specific names
     if isfield (RunSet,'popReportName')
@@ -46,173 +56,79 @@ for iSet = Def.ixOfRunSets
     else
         popReportName = '';
     end
+
+    % get population shortname
+    if isfield (RunSet,'boxwhiskerLabel')
+        popLabelName = RunSet(iSet).boxwhiskerLabel;
+    else
+        popLabelName = popReportName;
+    end
+
     
     % load OutputList of population
-    load(fullfile('tmp',RunSet(iSet).name,'outputList.mat'));
+    OutputList = loadOutputList(RunSet(iSet).name);
     
     % load data if available
-    [~,TP,Dict] = loadMergedData(WSettings,{RunSet(iSet).name});
-    dataReportName = RunSet(iSet).dataReportName;
-    
-    % get Unitfactor factor for data
-    if ~isempty(Dict)
-        jj = strcmp({Dict.matlabID},'time');
-        dataTimeUnitFactor = getUnitFactor(Dict(jj).nonmemUnit,Def.timeDisplayUnit,'Time');
-    else
-        dataTimeUnitFactor = nan;
+    [~,TP,~,dataReportName] = loadMergedData(WSettings,RunSet(iSet));
+    if iscell(dataReportName)
+        dataReportName = dataReportName{1};
     end
     
     
     % initialize residual vector for all outputs
-    residuals = [];
-    residualsUnScaled = [];
-    Jacob = [];
+    [residuals,residualsUnScaled,Jacob] = getResidualsForAllOutputs(WSettings,OutputList,RunSet(iSet),TP,1);
+
+    % initialize goodness table for qc check
     goodness = {'output','plotType','messsage','success'};
-    
-    % Get residuals and VPC ranges
-    for iO = 1:length(OutputList)
-
-        % load Simulation
-        [simTime,simValues,~,~,~,sensitivities] = loadSimResult(RunSet(iSet).name,iO);
-        
-        % prepare residualOveralPlot
-        if  ~isempty(TP) 
-            if ~isempty(TP{iO})
-        
-                % get Y values for time range
-                y = simValues.*OutputList(iO).unitFactor;
-                % get data for this timelimit
-                [DataTP] = prepareDataForTimeRange(WSettings,TP,iO,[0 simTime(end)],simTime.*timeUnitFactor,y,dataTimeUnitFactor);
-                
-                ixRes = [];
-                
-                
-                for iInd = 1:length(DataTP)
-                    
-                    offset = size(residuals,1);
-                    
-                    switch OutputList(iO).residualScale
-                        case 'lin'
-                            jj = ~isnan(DataTP(iInd).y) & ~isnan(DataTP(iInd).predicted);
-                            residualsUnScaled(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj))./OutputList(iO).unitFactor; %#ok<AGROW>
-                            residuals(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                        case 'log'
-                            jj = DataTP(iInd).y > 0 & DataTP(iInd).predicted > 0;
-                            residualsUnScaled(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                            residuals(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<AGROW>
-                        otherwise
-                            error('scale');
-                            
-                    end
-                    residuals(offset+[1:sum(jj)],2) = iO; %#ok<AGROW>
-                    ixRes(offset+[1:sum(jj)]) = round(interp1(simTime.*timeUnitFactor,1:length(simTime),DataTP(iInd).time(jj)));%#ok<AGROW>
-                end
-                
-                
-                if ~isempty(sensitivities)
-                    Jacob = [Jacob,sensitivities(ixRes,:)]; %#ok<AGROW>
-                end
-            end
-            
-        end
-    end
-
-    
-
     
     % Plot loop on Outputs
     for iO = 1:length(OutputList)
+        
+        %add new subcaption
+        header = sprintf('Time profiles of %s',OutputList(iO).reportName);
+        FP = FP.addSubSection(header,2);
 
-        % load Simulation
-        [simTime,simValues,pathID,~,~,sensitivities] = loadSimResult(RunSet(iSet).name,iO);
-        if isfield(Def,'ixRunSetRef') &&  ~isempty(Def.ixRunSetRef)
-            [simTimeRef,simValuesRef] = loadSimResult(RunSet(Def.ixRunSetRef).name,nan,pathID);   
-        else
-            simTimeRef = [];
-            simValuesRef = [];
-        end
+
+        % load Simulation of main population, reference population and mean model
+        Sim = loadAllSimulations(RunSet,iSet,iO,Def);
+            
         
         if ~isempty(Jacob)
                 % todo check calculation, and put outside loop of outputs
-                VPCresult = getVPCRange(simValues,sensitivities,residualsUnScaled,Jacob,OutputList(iO).residualScale);
+                VPCresult = getVPCRange(Sim.values,Sim.sensitivities,residualsUnScaled,Jacob,OutputList(iO).residualScale);
         else 
             VPCresult = [];
         end            
 
         
         % check if it is a multi application to generate timeLimits
-        load(fullfile('tmp',RunSet(iSet).name,'applicationProtocol.mat'));
-        if isValid
-            startTimes = unique([ApplicationProtocol.startTime]);
-        end
+        [timelimit,timeRangetxt,startTimes] = getTimeLinits(RunSet(iSet).name,Sim.time,Def);
         
-        if ~isempty(Def.timelimit)
-            timelimit = Def.timelimit;
-            timeRangetxt = sprintf('simulation time range %g - %g %s',timelimit(1),timelimit(2),Def.timeDisplayUnit);
-        elseif ~isValid || length(startTimes) ==1
-            timelimit = [simTime(1) simTime(end)];
-            timeRangetxt = {};
-        else
-            timelimit = [simTime([1 end])';...
-                startTimes(1:2);...
-                startTimes(end) simTime(end)];
-            timeRangetxt = {'total simulation time range','first application range','last application range'};
-        end
-        
-    
-        
+        % loop on time ranges
         for iT = 1:size(timelimit,1)
 
-            % get indices for time range and adjust time
-            jjT = simTime >= timelimit(iT,1) & simTime <= timelimit(iT,2);
-            time = (simTime(jjT) - timelimit(iT,1)).*timeUnitFactor;
-
-            % get indices for time range and adjust time for reference simulation
-            if ~isempty(simTimeRef)
-                jjTRef = simTimeRef >= timelimit(iT,1) & simTimeRef <= timelimit(iT,2);
-                timeRef = (simTimeRef(jjT) - timelimit(iT,1)).*timeUnitFactor;
-            else
-                timeRef = [];
-            end
-            
-            % switch tad or Time
-            if timelimit(iT,1)>0;
-                timeLabel = 'Time after dose';
-            else
-                timeLabel = 'Time';
-            end
-            
-            
-            %initialize new sheet
-            header = sprintf('Time profiles of %s for a %s',OutputList(iO).reportName,RunSet(iSet).reportName);
-            sheet = RunSet(iSet).name;
-            if ~isempty(timeRangetxt)
-                header = sprintf('%s of the %s',header,timeRangetxt{iT});
-                sheet = sprintf('%s_%s_%s',sheet,removeForbiddenLetters(OutputList(iO).reportName),removeForbiddenLetters(timeRangetxt{iT}));
-            end
-            FP = FP.iniCaptiontextFigtextArray(header,sheet);
-
-            
-        
-            % get Y values for time range
-            y = simValues(jjT,:).*OutputList(iO).unitFactor;
-            
-            % check if  reference output exists
-            yRef = [];
-            if ~isempty(simValuesRef)
-                yRef = simValuesRef(jjTRef,:).*OutputList(iO).unitFactor;
+            %add new subcaption
+            if ~isempty(timeRangetxt{iT})
+                FP = FP.addSubSection([upper(timeRangetxt{iT}(1)),timeRangetxt{iT}(2:end)],3);
             end
 
-            % check if VPC output exists
-            if ~isempty(VPCresult)
-                VPCresult_time = VPCresult;
-                VPCresult_time.yMin = VPCresult_time.yMin(jjT,:).*OutputList(iO).unitFactor;
-                VPCresult_time.yMax = VPCresult_time.yMax(jjT,:).*OutputList(iO).unitFactor;
+            % chekc if reference population shall be plotted
+            doPlotReference = ~ismember(iSet,Def.ixRunSetRef) & ~isempty(Sim.valuesRef);
+            reportNameRefTmp = reportNameRef;
+            if ~doPlotReference
+                reportNameRefTmp = '';
             end
 
+            % get simulated time and y vectors within defined timerange and
+            % convert to Units
+            timeUnitFactorTL = timeUnitFactor(min(iT,length(timeUnitFactor)));
+            [SimTL,VPCresultTL,timeLabel,startTimeTL] = getTimeVectorForTimeLimit(timelimit(iT,:),startTimes,...
+                Sim,VPCresult,timeUnitFactorTL,OutputList(iO).unitFactor,doPlotReference);
+            
             
             % get data for this timelimit           
-            [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit(1,:),time,y,dataTimeUnitFactor);
+            [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,[startTimeTL timelimit(iT,2)],...
+                SimTL.time./timeUnitFactorTL,SimTL.y, timeUnitFactorTL);
             
             % loop on scale
             for iScale = 1:length(yscale)
@@ -224,19 +140,20 @@ for iSet = Def.ixOfRunSets
                     if strcmp(WSettings.workflowType,'popModel') || isempty(VPCresult)
                     
                         % get name and figure description
-                        figureName = sprintf('O%d_TP_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpShadedArea',...
-                            {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                            lloq,length(DataTP),...
-                            popReportName,reportNameRef, popReportNameRef});
+                        figureName = sprintf('TP_%s_O%d_%s',RunSet(iSet).name,iO,yscale{iScale});
                         
+                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpShadedArea',...
+                            {OutputList(iO).reportName,RunSet(iSet).reportName,reportNameRefTmp,dataReportName,timeRangetxt{iT},yscale{iScale},...
+                            lloq,[size(SimTL.y,2),size(SimTL.yRef,2),length(DataTP)],...
+                            popLabelName, reportLabelRef});
+                       
                         
                         % do the plot
-                        [csv,goodnessTmp] =  plotReportTimeProfile(WSettings,FP.figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,Def.timeDisplayUnit,...
+                        [csv,goodnessTmp] =  plotReportTimeProfile(WSettings,FP.figureHandle,SimTL,DataTP,timeLabel,Def.timeDisplayUnit,...
                             OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,yscale{iScale},lloq);
 
                         if ~isnan(goodnessTmp{2}) && iScale==1
-                            goodness(end+1,:) = [{OutputList(iO).reportName,'timeprofile with poulation range'}, goodnessTmp]; %#ok<AGROW>
+                            goodness(end+1,:) = [{OutputList(iO).reportName,'timeprofile with population range'}, goodnessTmp]; %#ok<AGROW>
                         end
                         
                         % save figure
@@ -248,71 +165,29 @@ for iSet = Def.ixOfRunSets
 
                     else
                         
-                        % VPC parameter uncertainty ------------------------------------------
-                        % get name and figure description
-                        figureName = sprintf('O%d_TPVPCpar_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpVPCpar',...
-                            {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                            lloq,length(DataTP),...
-                            popReportName});
+                        % VPC parameter / data /  data and parameter uncertainty ------------------------------------------
+                        VPCTypeTxt = { 'tpVPCpar','tpVPCdata','tpVPCdataPar'};
+                        for iVPCFlag = 1:length(VPCTypeTxt)
+                            % get name and figure description
+                            figureName = sprintf('%s_%s_O%d_%s',VPCTypeTxt{iVPCFlag},RunSet(iSet).name,iO,yscale{iScale});
+                            [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,VPCTypeTxt{iVPCFlag},...
+                                {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
+                                lloq,length(DataTP),...
+                                popReportName});
                         
-                        
-                        % do the plot
-                        csv =  plotReportTimeProfile(WSettings,FP.figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,Def.timeDisplayUnit,...
-                            OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,yscale{iScale},lloq,VPCresult_time,1);
-
-
-                        
-                        % save figure
-                        if iScale==1
-                            FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
-                        else
-                            FP = FP.printFigure(figureName,figtxt);
-                        end
-                        
-                        % VPC data uncertainty ------------------------------------------
-                        % get name and figure description
-                        figureName = sprintf('O%d_TPVPCdata_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpVPCdata',...
-                            {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                            lloq,length(DataTP),...
-                            popReportName});
-                        
-                        
-                        % do the plot
-                        csv =  plotReportTimeProfile(WSettings,FP.figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,Def.timeDisplayUnit,...
-                            OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,yscale{iScale},lloq,VPCresult_time,2);
-
-                        % save figure
-                        if iScale==1
-                            FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
-                        else
-                            FP = FP.printFigure(figureName,figtxt);
-                        end
-
-                        % VPC data and parameter uncertainty ------------------------------------------
-                        % get name and figure description
-                        figureName = sprintf('O%d_TPVPCdataPar_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                        [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpVPCdataPar',...
-                            {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                            lloq,length(DataTP),...
-                            popReportName});
-                        
-                        
-                        % do the plot
-                        [csv,goodnessTmp] =  plotReportTimeProfile(WSettings,FP.figureHandle,time,y,timeRef,yRef,DataTP,timeLabel,Def.timeDisplayUnit,...
-                            OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,yscale{iScale},lloq,VPCresult_time,3);
-                        
-                        if ~isnan(goodnessTmp{2}) && iScale==1
-                            goodness(end+1,:) = [{OutputList(iO).reportName,'timeprofile with uncertainty'}, goodnessTmp]; %#ok<AGROW>
-                        end
-
-                        
-                        % save figure
-                        if iScale==1
-                            FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
-                        else
-                            FP = FP.printFigure(figureName,figtxt);
+                            
+                            % do the plot
+                            csv =  plotReportTimeProfile(WSettings,FP.figureHandle,SimTL,DataTP,timeLabel,Def.timeDisplayUnit,...
+                                OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,yscale{iScale},lloq,VPCresultTL,iVPCFlag);
+                            
+                            
+                            
+                            % save figure
+                            if iScale==1
+                                FP = FP.printFigure(figureName,figtxt,csv,figtxtTable);
+                            else
+                                FP = FP.printFigure(figureName,figtxt);
+                            end
                         end
                         
                     end
@@ -320,68 +195,68 @@ for iSet = Def.ixOfRunSets
                 end
             end % iScale
 
-            %% predicted vs observed
-            if ismember('predVsObs',Def.plotTypes) && ~isempty(DataTP)
-                
-                % get name and figure description
-                figureName = sprintf('O%d_PvO_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),OutputList(iO).residualScale);
-                [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpPredVsObs',...
-                    {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                    lloq,popReportName});
-                
-                
-                % do the plot
-                plotReportPredictedVsObserved(WSettings,FP.figureHandle,DataTP,...
-                    OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,OutputList(iO).residualScale,lloq);
-                
-                % save figure
-                FP = FP.printFigure(figureName,figtxt);
-                
-            end
-            %% residuals vs time
-            if ismember('resVsTime',Def.plotTypes)  && ~isempty(DataTP)
-                
-                % get name and figure description
-                figureName = sprintf('O%d_RvT_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpResVsTime',...
-                    {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
-                    lloq,popReportName});
-                
-                % do the plot
-                goodnessTmp = plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
-                    OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsTime',legendEntries);
-                
-                if ~isnan(goodnessTmp{2}) 
-                    goodness(end+1,:) = [{OutputList(iO).reportName,'residuals vs time'}, goodnessTmp]; %#ok<AGROW>
+            % comparison plots predicted vs observed
+            if ~isempty(DataTP) && any(cellfun(@(x) any(~isnan(x)),{DataTP.predicted}))
+                %% predicted vs observed
+                if ismember('predVsObs',Def.plotTypes)
+                    
+                    % get name and figure description
+                    figureName = sprintf('PvO_%s_O%d_%s',RunSet(iSet).name,iO,yscale{iScale});
+                    [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpPredVsObs',...
+                        {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
+                        lloq,popReportName});
+                    
+                    
+                    % do the plot
+                    plotReportPredictedVsObserved(WSettings,FP.figureHandle,DataTP,...
+                        OutputList(iO).reportName,OutputList(iO).displayUnit,legendEntries,OutputList(iO).residualScale,lloq);
+                    
+                    % save figure
+                    FP = FP.printFigure(figureName,figtxt);
+                    
                 end
-                
-                % save figure
-                FP = FP.printFigure(figureName,figtxt);
-            end
-            %% residuals vs y
-            if ismember('resVsY',Def.plotTypes)  && ~isempty(DataTP)
-                
-                % get name and figure description
-                figureName = sprintf('O%d_RvY_%s_%s',iO,removeForbiddenLetters(OutputList(iO).reportName),yscale{iScale});
-                [figtxt,~,legendEntries]  = feval(textFunctionHandle,WSettings,'tpResVsY',...
-                    {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,OutputList(iO).residualScale,...
-                    lloq,popReportName});
-                
-                % do the plot
-                goodnessTmp = plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
-                    OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsY',legendEntries);
-                
-                if ~isnan(goodnessTmp{2})
-                    goodness(end+1,:) = [{OutputList(iO).reportName,'residuals vs Y'}, goodnessTmp]; %#ok<AGROW>
+                %% residuals vs time
+                if ismember('resVsTime',Def.plotTypes)
+                    
+                    % get name and figure description
+                    figureName = sprintf('RvT_%s_O%d_%s',RunSet(iSet).name,iO,yscale{iScale});
+                    [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'tpResVsTime',...
+                        {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,yscale{iScale},...
+                        lloq,popReportName});
+                    
+                    % do the plot
+                    goodnessTmp = plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
+                        OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsTime',legendEntries);
+                    
+                    if ~isnan(goodnessTmp{2})
+                        goodness(end+1,:) = [{OutputList(iO).reportName,'residuals vs time'}, goodnessTmp]; %#ok<AGROW>
+                    end
+                    
+                    % save figure
+                    FP = FP.printFigure(figureName,figtxt);
+                end
+                %% residuals vs y
+                if ismember('resVsY',Def.plotTypes)
+                    
+                    % get name and figure description
+                    figureName = sprintf('RvY_%s_O%d_%s',RunSet(iSet).name,iO,yscale{iScale});
+                    [figtxt,~,legendEntries]  = feval(textFunctionHandle,WSettings,'tpResVsY',...
+                        {OutputList(iO).reportName,RunSet(iSet).reportName,dataReportName,OutputList(iO).residualScale,...
+                        lloq,popReportName});
+                    
+                    % do the plot
+                    goodnessTmp = plotReportResiduals(WSettings,FP.figureHandle,DataTP,timeLabel,Def.timeDisplayUnit,...
+                        OutputList(iO).reportName,OutputList(iO).displayUnit,OutputList(iO).residualScale,'vsY',legendEntries);
+                    
+                    if ~isnan(goodnessTmp{2})
+                        goodness(end+1,:) = [{OutputList(iO).reportName,'residuals vs Y'}, goodnessTmp]; %#ok<AGROW>
+                    end
                 end
 
                 
                 % save figure
                 FP = FP.printFigure(figureName,figtxt);
             end
-            
-            
-            FP.saveCaptiontextArray;
             
             
             
@@ -391,70 +266,67 @@ for iSet = Def.ixOfRunSets
             
     end % iO
     
-    % histogramm of all Residuals
-    if ismember({'histRes'},Def.plotTypes)   && ~isempty(residuals)
-        
-        % get name and figure description
-        figureName = 'ResidualHist';
-        [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'histRes',...
-            {{OutputList.reportName},RunSet(iSet).reportName,popReportName});
-        
-        % do the plot
-        plotReportHistogram(WSettings,FP.figureHandle,residuals(:,1) ,residuals(:,2),[],...
-            'Residuals','',{},legendEntries,'isResiduals');
-        
-        % save figure
-        FP = FP.printFigure(figureName,figtxt);
-        
-    end
     
     % histogramm of all Residuals
-    if ismember({'qqPlotRes'},Def.plotTypes)   && ~isempty(residuals)
+    if ~isempty(residuals) && any(ismember({'histRes','qqPlotRes'},Def.plotTypes)) 
+
+        FP = FP.addSubSection('Overview on all residuals',2);
+
+    
+    
+        % histogramm of all Residuals
+        if ismember({'histRes'},Def.plotTypes)   
+            
+            % get name and figure description
+            figureName = 'ResidualHist';
+            [figtxt,~,legendEntries] = feval(textFunctionHandle,WSettings,'histRes',...
+                {{OutputList.reportName},RunSet(iSet).reportName,popReportName});
+            
+            % do the plot
+            plotReportHistogram(WSettings,FP.figureHandle,residuals(:,1) ,residuals(:,2),[],[],...
+                'Residuals','',{},legendEntries,'isResiduals');
+            
+            % save figure
+            FP = FP.printFigure(figureName,figtxt);
+            
+        end
         
-        % get name and figure description
-        figureName = 'ResidualQQplot';
-        figtxt = feval(textFunctionHandle,WSettings,'qqRes',...
-            {{OutputList.reportName},RunSet(iSet).reportName,popReportName});
-        
-        % do the plot
-        plotReportQQPlot(WSettings,FP.figureHandle,residuals(:,1));
-        
-        % save figure
-        FP = FP.printFigure(figureName,figtxt);
-        
+        % histogramm of all Residuals
+        if ismember({'qqPlotRes'},Def.plotTypes)  
+            
+            % get name and figure description
+            figureName = 'ResidualQQplot';
+            figtxt = feval(textFunctionHandle,WSettings,'qqRes',...
+                {{OutputList.reportName},RunSet(iSet).reportName,popReportName});
+            
+            % do the plot
+            plotReportQQPlot(WSettings,FP.figureHandle,residuals(:,1));
+            
+            % save figure
+            FP = FP.printFigure(figureName,figtxt);
+            
+        end
     end
+    
+    FP.saveCaptiontextArray;
+            
+            
+
     
     % write goodness
     if size(goodness,1)>1
-        writeGoodness(goodness,RunSet(iSet).name,FP.figureDir);
+        fname = fullfile(FP.figureDir,sprintf('goodnessOfFit_%s.csv',RunSet(iSet).name));
+        writeTabCellArray(goodness,fname);
     end
 
 end % iSet export
 
 
 return
-    
 
-function writeGoodness(goodness,simulationName,figureDir)
-
-data(1,:) = goodness(1,:);
-data(2,:) = {'string','string','string','double'};
-for iCol = 1:size(data,2)
-    switch  data{2,iCol}
-        case 'string'
-            data{3,iCol} =goodness(2:end,iCol);
-        case 'double'
-            data{3,iCol} = double(cell2mat(goodness(2:end,iCol)));
-        otherwise
-            error('unknown datatype')
-    end
-end
-fname = fullfile(figureDir,sprintf('goodnessOfFit_%s.csv',simulationName));
-writetab(fname, data, ';', 0, 0, 1,0);
-
-return
-
-function  [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit,time,y,dataTimeUnitFactor)
+function  [DataTP,lloq] = prepareDataForTimeRange(WSettings,TP,iO,timelimit,time,y,timeUnitFactor)
+% all input time variables, timlimit, time and TP.time are given in min
+% DataTP is returned in display units
 
 
 if size(y,2)>1
@@ -484,24 +356,215 @@ end
 % get stucture to plot
 for iInd = 1:length(TP{iO})
         
-    jjT = TP{iO}(iInd).time.*dataTimeUnitFactor >= timelimit(1,1) & ...
-        TP{iO}(iInd).time.*dataTimeUnitFactor <= timelimit(1,2);
+    jjT = TP{iO}(iInd).time >= timelimit(1,1) & ...
+        TP{iO}(iInd).time <= timelimit(1,2);
 
-    DataTP(iInd).time = TP{iO}(iInd).(timefield).*dataTimeUnitFactor-timeoffset; %#ok<AGROW>
-    DataTP(iInd).y(:,1) = TP{iO}(iInd).dv(jjT); %#ok<AGROW>
-    
-    % set lloq
-    isLloq = TP{iO}(iInd).isLloq(jjT);
-    DataTP(iInd).lloq(:,1) = nan(length(isLloq),1); %#ok<AGROW>
-    if any(isLloq)
-        DataTP(iInd).y(isLloq,1) = nan; %#ok<AGROW>
-        lloq = [TP{iO}(iInd).lloq];
-        DataTP(iInd).lloq(isLloq,1) = lloq /2; %#ok<AGROW>
+    if any(jjT)
+        DataTP(iInd).time = (TP{iO}(iInd).(timefield)(jjT)-timeoffset).*timeUnitFactor; %#ok<AGROW>
+        DataTP(iInd).y(:,1) = TP{iO}(iInd).dv(jjT); %#ok<AGROW>
+        
+        % set lloq
+        isLloq = TP{iO}(iInd).isLloq(jjT);
+        DataTP(iInd).lloq(:,1) = nan(length(isLloq),1); %#ok<AGROW>
+        if any(isLloq)
+            DataTP(iInd).y(isLloq,1) = nan; %#ok<AGROW>
+            lloq = [TP{iO}(iInd).lloq];
+            DataTP(iInd).lloq(isLloq,1) = lloq /2; %#ok<AGROW>
+        end
+        
+        % get predicted
+        DataTP(iInd).predicted(:,1) = interp1(time.*timeUnitFactor,y,DataTP(iInd).time); %#ok<AGROW>
+    else
+        DataTP(iInd).time = []; %#ok<AGROW>
+        DataTP(iInd).y = [];  %#ok<AGROW>
+        DataTP(iInd).predicted = [];  %#ok<AGROW>
+        DataTP(iInd).lloq = [];  %#ok<AGROW>
     end
-    
-    % get predicted
-    DataTP(iInd).predicted(:,1) = interp1(time,y,DataTP(iInd).time); %#ok<AGROW>
         
 end
 
 return
+
+
+
+function [residuals,residualsUnScaled,Jacob] = getResidualsForAllOutputs(WSettings,OutputList,RunSet,TP,timeUnitFactor)
+    
+residuals = [];
+residualsUnScaled = [];
+Jacob = [];
+    
+% Get residuals and Jacobian
+for iO = 1:length(OutputList)
+    
+    % load Simulation
+    [simTime,simValues,~,~,~,sensitivities] = loadSimResult(RunSet.name,iO);
+    
+    % prepare residualOveralPlot
+    if  ~isempty(TP)
+        if ~isempty(TP{iO})
+            
+            % get Y values for time range
+            y = simValues.*OutputList(iO).unitFactor;
+            % get data for this timelimit
+            [DataTP] = prepareDataForTimeRange(WSettings,TP,iO,[0 simTime(end)],simTime,y,timeUnitFactor);
+            
+            ixRes = [];
+            
+            
+            for iInd = 1:length(DataTP)
+                
+                offset = size(residuals,1);
+                
+                switch OutputList(iO).residualScale
+                    case 'lin'
+                        jj = ~isnan(DataTP(iInd).y) & ~isnan(DataTP(iInd).predicted);
+                        residualsUnScaled(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj))./OutputList(iO).unitFactor; %#ok<NBRAK,AGROW>
+                        residuals(offset+[1:sum(jj)],1) =  (DataTP(iInd).y(jj)-DataTP(iInd).predicted(jj)); %#ok<NBRAK,AGROW>
+                    case 'log'
+                        jj = DataTP(iInd).y > 0 & DataTP(iInd).predicted > 0;
+                        residualsUnScaled(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<NBRAK,AGROW>
+                        residuals(offset+[1:sum(jj)],1) =  log(DataTP(iInd).y(jj))-log(DataTP(iInd).predicted(jj)); %#ok<NBRAK,AGROW>
+                    otherwise
+                        error('scale');
+                        
+                end
+                residuals(offset+[1:sum(jj)],2) = iO; %#ok<NBRAK,AGROW>
+                ixRes(offset+[1:sum(jj)]) = round(interp1(simTime.*timeUnitFactor,1:length(simTime),DataTP(iInd).time(jj)));%#ok<NBRAK,AGROW>
+            end
+            
+            
+            if ~isempty(sensitivities)
+                Jacob = [Jacob,sensitivities(ixRes,:)]; %#ok<AGROW>
+            end
+        end
+        
+    end
+end
+
+return
+
+
+
+ % load Simulation of main population, reference population and mean model
+function Sim = loadAllSimulations(RunSet,iSet,iO,Def)
+   
+[Sim.time,Sim.values,pathID,~,~,Sim.sensitivities] = loadSimResult(RunSet(iSet).name,iO);
+        
+% load SImulation of reference simulation
+if isfield(Def,'ixRunSetRef') &&  ~isempty(Def.ixRunSetRef)
+    [Sim.timeRef,Sim.valuesRef] = loadSimResult(RunSet(Def.ixRunSetRef).name,nan,pathID);
+else
+    Sim.timeRef = [];
+    Sim.valuesRef = [];
+end
+
+% load mean model        
+if isfield(Def,'plotMeanModel') &&  Def.plotMeanModel
+    [~,Sim.valuesMeanModel] = loadSimResult(RunSet(iSet).name,iO,'','meanModel_');
+else
+    Sim.valuesMeanModel = [];
+end
+
+return
+
+
+function [timelimit,timeRangetxt,startTimes] = getTimeLinits(RunSetName,simTime,Def)
+  
+% get start times of application
+[ApplicationProtocol,isValid] = loadApplicationProtocoll(RunSetName);
+if isValid
+    startTimes = unique([ApplicationProtocol.startTime]);
+else
+    startTimes = simTime(1);
+end
+
+% user defined timelimits
+if ~isempty(Def.timelimit)
+    timelimit = Def.timelimit;
+            
+    % take only ranges where endpoint of simulationrange is larger than beginning of timelimit range
+    jj = timelimit(:,1) < simTime(end);
+    timelimit = timelimit(jj,:);
+    for ij = find(~jj)'
+        writeToReportLog('WARNING',sprintf('Time Range %d - %d outside simulation range %d %d. Will be skipped.',...
+            timelimit(ij,1),timelimit(ij,2),simTime(1),simTime(end)),false);
+    end
+    % shorten ranges where endpoint of simulationrange is less than end of timelimit range
+    jj = timelimit(:,2) > simTime(end);
+    for ij = find(jj)'
+        writeToReportLog('WARNING',sprintf('Time Range %d - %d partly outside simulation range %d %d. Will be shortened.',...
+            timelimit(ij,1),timelimit(ij,2),simTime(1),simTime(end)),false);
+        timelimit(ij,2) = simTime(end);
+    end
+    
+    % set text
+    if ~isfield(Def,'timeRangetxt')
+        for iT = 1:size(timelimit,1)
+            timeRangetxt{iT} = sprintf('Simulation time range %g - %g %s',timelimit(iT,1).*timeUnitFactor,...
+                timelimit(iT,2).*timeUnitFactor,Def.timeDisplayUnit); %#ok<AGROW>
+        end
+    else
+        timeRangetxt = Def.timeRangetxt;
+    end
+% for invalid applications or single applications take the total simulation range    
+elseif ~isValid || length(startTimes) ==1
+    timelimit = [simTime(1) simTime(end)];
+    timeRangetxt = {''};
+% for multi applciations takt the total, the first and the last applciation range    
+else
+    timelimit = [simTime([1 end]);...
+        startTimes(1:2);...
+        startTimes(end) simTime(end)];
+    timeRangetxt = {'for total simulation time range','for first application range','for last application range'};
+end
+
+return
+
+
+function [SimTL,VPCresultTL,timeLabel,startTimeTL] = getTimeVectorForTimeLimit(timelimit,startTimes,Sim,VPCresult,...
+    timeUnitFactor,OutputListUnitFactor,doPlotReference)
+            
+% find first dose in timelimit
+idxNextDose = find(startTimes >= timelimit(1,1),1);
+startTimeTL = startTimes(idxNextDose);
+
+% get indices for time range and adjust time 
+jjT = Sim.time >= timelimit(1,1) & Sim.time <= timelimit(1,2);
+SimTL.time = (Sim.time(jjT) - startTimeTL).*timeUnitFactor;
+
+% get Y values for time range
+SimTL.y = Sim.values(jjT,:).*OutputListUnitFactor;
+
+
+% get indices for time range and adjust time and y  for reference simulation
+if ~isempty(Sim.timeRef) && doPlotReference
+    jjTRef = Sim.timeRef >= timelimit(1,1) & Sim.timeRef <= timelimit(1,2);
+    SimTL.timeRef = (Sim.timeRef(jjTRef) - startTimeTL).*timeUnitFactor;
+    SimTL.yRef = Sim.valuesRef(jjTRef,:).*OutputListUnitFactor;
+else
+    SimTL.timeRef = [];
+    SimTL.yRef = [];
+end
+
+% check if Mean Model Result is loaded
+SimTL.yMeanModel = [];
+if ~isempty(Sim.valuesMeanModel)
+    SimTL.yMeanModel = Sim.valuesMeanModel(jjT,:).*OutputListUnitFactor;
+end
+
+% check if VPC output exists
+if ~isempty(VPCresult)
+    VPCresultTL = VPCresult;
+    VPCresultTL.yMin = VPCresultTL.yMin(jjT,:).*OutputListUnitFactor;
+    VPCresultTL.yMax = VPCresultTL.yMax(jjT,:).*OutputListUnitFactor;
+else
+    VPCresultTL = [];
+end
+
+% switch tad or Time
+if startTimes(idxNextDose)>0
+    timeLabel = 'time after dose';
+else
+    timeLabel = 'time';
+end
+

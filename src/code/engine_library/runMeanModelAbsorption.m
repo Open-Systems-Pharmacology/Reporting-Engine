@@ -14,7 +14,7 @@ try
     writeToReportLog('INFO',sprintf('Start generate absorption plots'),false);
     
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','absorption'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'absorption'),WSettings.printFormatList);
     FP = FP.iniCaptiontextFigtextArray('Absorption characteristics','absorption');
     
     for iSet = 1:length(MeanModelSet)
@@ -24,7 +24,7 @@ try
         if isempty(R)
             writeToReportLog('WARNING',sprintf('No compound is absorbed in %s',MeanModelSet(iSet).name),false);
         else
-            FP = plotAbsorption(WSettings,MeanModelSet.name,time,R,FP);
+            FP = plotAbsorption(WSettings,MeanModelSet(iSet).name,time,R,FP);
         end
     end
     
@@ -54,7 +54,7 @@ time = time.*timeUnitFactor;
 for iComp = 1:length(R)
 
     % create figure
-    ax = getReportFigure(WSettings,1,1,FP.figureHandle);
+    ax = getReportFigure(WSettings,1,1,FP.figureHandle,'figureformat','landscape');
     
     
     % legend handle array for plots
@@ -113,7 +113,7 @@ if isValid
     
     % get list of applicated compounds
     for iComp = 1:length(compounds)
-        jjComp = jjZero & strcmp({ApplicationProtocol(:).compound},compounds{iComp});
+        jjComp = jjZero & strcmp({ApplicationProtocol(:).compound},compounds{iComp}); %#ok<IDISVAR>
         R(iComp).compound = compounds{iComp}; %#ok<AGROW>
         R(iComp).drugmass = sum(ApplicationProtocol(jjComp).drugMass); %#ok<AGROW>
         R(iComp).fDiss = []; %#ok<AGROW>
@@ -140,6 +140,7 @@ setRelativeParameter(1,'*|Organism|Lung|Blood flow rate',simulationIndex);
 setRelativeParameter(1,'*|Organism|PortalVein|Blood flow rate',simulationIndex);
 
 processSimulation(simulationIndex);
+time = getSimulationTime(simulationIndex);
 
 % fraction dissolved
 for iComp = 1:length(R)
@@ -148,7 +149,9 @@ for iComp = 1:length(R)
     pts = sprintf('*|Organism|Lumen|%s|Fraction dissolved',R(iComp).compound);
     if existsObserver(pts,simulationIndex)
         [time,tmpValues] = getSimulationResult(pts,simulationIndex);
-        R(iComp).fDiss = tmpValues; %#ok<AGROW>
+        R(iComp).fDiss = tmpValues; 
+    else
+        R(iComp).fDiss = nan(size(time));
     end
     
     
@@ -156,14 +159,18 @@ for iComp = 1:length(R)
     pts = sprintf('*|Organism|Lumen|%s|Fraction of oral drug mass absorbed into mucosa',R(iComp).compound);
     if existsObserver(pts,simulationIndex)
         [time,tmpValues] = getSimulationResult(pts,simulationIndex);
-        R(iComp).fAbs = tmpValues; %#ok<AGROW>
+        R(iComp).fAbs = tmpValues; 
+    else
+        R(iComp).fAbs = nan(size(time));
     end
     
     % fraction excretd
     pts = sprintf('*|Organism|Lumen|Feces|%s|Fraction excreted to feces',R(iComp).compound);
     if existsObserver(pts,simulationIndex)
         [time,tmpValues] = getSimulationResult(pts,simulationIndex);
-        R(iComp).fExcreted = tmpValues; %#ok<AGROW>
+        R(iComp).fExcreted = tmpValues; 
+    else
+        R(iComp).fExcreted = nan(size(time));
     end
     
 end
