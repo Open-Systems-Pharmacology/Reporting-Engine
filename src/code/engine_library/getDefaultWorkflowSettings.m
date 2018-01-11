@@ -31,9 +31,9 @@ function WSettings = getDefaultWorkflowSettings(workflowType,workflowMode)
 WSettings.workflowType = workflowType;
 WSettings.workflowMode = workflowMode;
 
-% caluclation Methodes
-% Implemented are 'DuBois' and 'Haycock'
-WSettings.BSA_calculationmethode = 'DuBois';
+% caluclation Method
+% Implemented are 'Mosteller','DuBois' and 'Haycock'
+WSettings.BSA_calculationmethod = 'Mosteller';
 
 %% figure properties
 % select output format possible
@@ -52,7 +52,7 @@ WSettings.FaceAlpha = 0.5;
 % used haded area and tiemprofile plots ( first and last) and for boxwhisker (all 5) 
 WSettings.displayPercentiles = [5 25 50 75 95];
 
-%Defines the methode for mean calclulation valid inputs are:
+%Defines the method for mean calclulation valid inputs are:
 %       'median', 'geomean' or  'mean'  (arithmetic mean)
 WSettings.shadedAreaMeanType = 'median';
 

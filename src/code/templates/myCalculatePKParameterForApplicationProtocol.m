@@ -1,5 +1,5 @@
 function PKParameterTemplate = myCalculatePKParameterForApplicationProtocol(WSettings,ApplicationProtocol,simTime,simValues,parPaths,parValues)
-%MYCALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL template for preoject specifci PK Parameter calculation
+%MYCALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL template for project specifci PK Parameter calculation
 %           based on CALCULATEPKPARAMETERFORAPPLICATIONPROTOCOL
 %  for initialsiation of the availabel PK Parameters call function
 %

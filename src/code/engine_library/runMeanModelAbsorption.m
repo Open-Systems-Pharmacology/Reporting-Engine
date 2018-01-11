@@ -139,7 +139,10 @@ end
 setRelativeParameter(1,'*|Organism|Lung|Blood flow rate',simulationIndex);
 setRelativeParameter(1,'*|Organism|PortalVein|Blood flow rate',simulationIndex);
 
-processSimulation(simulationIndex);
+success = processSimulation(simulationIndex);
+if ~success
+    error('simulation can not be evaluated');
+end
 time = getSimulationTime(simulationIndex);
 
 % fraction dissolved

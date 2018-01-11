@@ -95,7 +95,7 @@ for iInd=1:nInd
             end                
         end
     else
-        % with row index use fast methode
+        % with row index use fast method
         for iPar=find(~isnan(rowIndex))
             setParameter(parValues(iInd,iPar),'',simulationIndex,...
                 'speedy','variable',rowIndex(iPar));

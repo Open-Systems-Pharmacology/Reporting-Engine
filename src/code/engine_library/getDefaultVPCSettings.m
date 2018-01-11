@@ -50,6 +50,8 @@ switch workflowType
                 Timeprofile.plotMeanModel = false;
             case 'parallelComparison'
                 Timeprofile.plotMeanModel = true;
+            otherwise
+                error('unknown workflowMode')
         end
         
     case 'meanModel'

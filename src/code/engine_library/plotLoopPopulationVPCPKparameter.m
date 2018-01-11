@@ -213,6 +213,8 @@ for iO = 1:length(o)
                 header = sprintf('%s%s-dependence of %s as fraction of %s',...
                     upper(Def.xList{iX,2}(1)),Def.xList{iX,2}(2:end),o(iO).reportName,reportNameRef);                
                 sheet = removeForbiddenLetters(sprintf('%s-dependence of %s_fraction',Def.xList{iX,2},o(iO).reportName));
+            otherwise
+                error('unknown flag')
         end
         FP = FP.iniCaptiontextFigtextArray(header,sheet);
 

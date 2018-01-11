@@ -1,7 +1,8 @@
 
 global MOBI_SETTINGS;
  
-% make sure you application path is known and unit datie exist by initialisation of an exemplary xml file 
+% make sure you application path is known and unit file exist by initialisation of an exemplary xml file 
+% adjust path according to yous system
 addpath(genpath('C:\Open Systems Pharmacology\Reporting Engine 1.0\'));
 testReportingEngineInstallation('C:\Open Systems Pharmacology\Reporting Engine 1.0\');
 

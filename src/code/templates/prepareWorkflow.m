@@ -30,6 +30,8 @@ switch Workflow.Type
         writePopulations(fid,SimulationSet);
     case 'meanModel'
         writeMeanModel(fid,SimulationSet);
+    otherwise
+        error('unknown workflowtype')
 end
 
 

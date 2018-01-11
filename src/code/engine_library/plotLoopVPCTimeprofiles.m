@@ -102,7 +102,7 @@ for iSet = [Def.ixRunSetRef Def.ixOfRunSets]
 
         
         % check if it is a multi application to generate timeLimits
-        [timelimit,timeRangetxt,startTimes] = getTimeLinits(RunSet(iSet).name,Sim.time,Def);
+        [timelimit,timeRangetxt,startTimes] = getTimeLimits(RunSet(iSet).name,Sim.time,Def);
         
         % loop on time ranges
         for iT = 1:size(timelimit,1)
@@ -468,7 +468,7 @@ end
 return
 
 
-function [timelimit,timeRangetxt,startTimes] = getTimeLinits(RunSetName,simTime,Def)
+function [timelimit,timeRangetxt,startTimes] = getTimeLimits(RunSetName,simTime,Def)
   
 % get start times of application
 [ApplicationProtocol,isValid] = loadApplicationProtocoll(RunSetName);

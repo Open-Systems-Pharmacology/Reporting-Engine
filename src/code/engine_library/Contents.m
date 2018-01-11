@@ -54,6 +54,8 @@
 %   exportSensitivityForPopulation             - export list of all caclualted sensitivities
 %   getListOfBestSensitivities                 - get all sensitivity above cutoff value
 %   generateSensitivityParameterSet            - generates parameter for sensitivity calulation
+%   addDependentPopulationParameter            - add additional population parameter 
+%   getDefaultOutput                           - defines the properties of an Output
 %
 %
 %  function which can be set by a function handle
@@ -80,10 +82,12 @@
 %   getcolmarkForMap                           - get colormatrix and marker-vector for a specified colormap
 %   setLogarithmicYticks                       - set yticks to an axes, where the conten where plotted as log10
 %   checkInputDatafiles                        - check if varaibale Datafiles is correctly given
-%   addToLegendPopulationSensitivity           - ADDTOLEGENDPOULATIONSENSITIVITY add legend entires to population sensitivity plots
+%   addToLegendPopulationSensitivity           - add legend entires to population sensitivity plots
 %   writeToReportLog                           - Support function: Writes text to logfile. Each entry starts with a time stamp
 %   workflowModeToText                         - generates text for logfile out of vartableworkflowMode
 %   getVPCRange                                - calcualtes ranges for VPC plots
+%   loadApplicationProtocoll                   - loads the temporary Outputlist
+%   loadOutputList                             - loads the temporary Outputlist
 %
 %  configuration function
 %   ReportingEngineVersionInfo                 - configuration function, here properties of the reporting engine are listed
