@@ -27,6 +27,9 @@ if isempty(Def.xList)
 else
     parPathSelection = [Def.yList(:,[1 3]); Def.xList(:,[1 3])];
 end
+% make sure selection is uniuqe
+[~,ix] = unique(parPathSelection(:,1),'stable');
+parPathSelection = parPathSelection(ix,:);
     
 % get Reference population
 if ~isempty(Def.ixPopRunSetRef)

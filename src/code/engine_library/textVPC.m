@@ -231,14 +231,14 @@ if nInd(2)>0
 end
 % Data
 if nInd(3)>0
-    figtxt = sprintf('%s Data %s.',figtxt(1:end-1),dataSource);
+    figtxt = sprintf('%s Data %s.',figtxt(1:end-1),dataSource{1});
 end
 
 figtxtTable = figtxt;
 
 legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',population,nInd(1)),...
     sprintf('Simulated <xxx> for %s (n=%d)',referencePopulation,nInd(2)),...
-    sprintf('Observed <xxx> for %s (n=%d)',dataSource,nInd(3))};
+    sprintf('Observed <xxx> for %s (n=%d)',dataSource{1},nInd(3))};
 
 return
 

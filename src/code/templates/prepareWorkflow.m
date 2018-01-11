@@ -8,7 +8,9 @@ function prepareWorkflow(workflowInputxls)
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % read Documentation
+warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 documentation = readtable(workflowInputxls,'Sheet','Documentation','ReadVariableNames',false);
+warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 
 [SimulationSet,TaskList,Workflow,dataFiles,sensParameterList,outputSheets] = readWorkflowInput(workflowInputxls,1);
 

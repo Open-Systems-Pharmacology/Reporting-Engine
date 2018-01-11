@@ -40,7 +40,7 @@ try
     FP = ReportFigurePrint(fullfile(WSettings.figures,'pKParameter'),WSettings.printFormatList);
     
     for iD = 1:length(VPC.PKParameter)
-        FP = plotLoopPopulationVPCPKparameter(WSettings,VPC(iD).textFunctionHandle,VPC(iD).PKParameter(iD),PopRunSet,FP);
+        FP = plotLoopPopulationVPCPKparameter(WSettings,VPC.textFunctionHandle,VPC.PKParameter(iD),PopRunSet,FP);
     end
     
     
@@ -49,7 +49,7 @@ try
 catch exception
         
     save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
-    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('ERROR',exception.message,false,exception);
     writeToReportLog('INFO',sprintf('Population VPC  finished with error \n'),false);
         
 end

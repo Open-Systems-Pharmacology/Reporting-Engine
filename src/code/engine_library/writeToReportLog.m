@@ -1,4 +1,4 @@
-function writeToReportLog(type,logText,isNewFile)
+function writeToReportLog(type,logText,isNewFile,exception)
 %WRITETOREPORTLOG Support function: Writes text to logfile. Each entry starts with a time stamp
 %
 %   writeToReportLog(type,logText,isNewFile)
@@ -46,8 +46,12 @@ fprintf(fid,'%s',[datestr(now)  ' ' logText]);
 fprintf(fid,'\r\n');
 
 if ismember(type,{'WARNRING', 'ERROR'})
-    [st] = dbstack();
-    for iSt = length(dbstack):-1:1
+    if exist('exception','var')
+        st = exception.stack;
+    else
+        [st] = dbstack();
+    end
+    for iSt = length(st):-1:1
         fprintf(fid,'   %s line %d',st(iSt).file,st(iSt).line);
         fprintf(fid,'\r\n');
     end        

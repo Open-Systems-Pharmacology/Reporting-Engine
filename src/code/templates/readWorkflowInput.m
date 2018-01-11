@@ -133,6 +133,7 @@ end
 [~,ijIdentifier] = ismember({'dataFileTimeprofile','sheetDataDictTimeprofile'},xlsIdentifier);
 dataFiles = xlsInfo(ijIdentifier,1);
 % all fields are filled
+warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 if ~all(cellfun(@isnumeric,dataFiles))
     dataFiles = {dataFiles{1}, [dataFiles{2} '.csv'],'timeprofile'};
     t = readtable(workflowInputxls,'Sheet',dataFiles{2}(1:end-4));
@@ -143,6 +144,7 @@ elseif any(cellfun(@isnumeric,tmp))
 else
     dataFiles = {};
 end
+warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 
 %% get sensitivity
 sensSheet = xlsInfo{strcmp('sheetSensitivity',xlsIdentifier),1};

@@ -23,7 +23,9 @@ Dict = []; %#ok<NASGU>
 success = true;
 
 % readtable
+warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 t = readtable(dataFile{1},'delimiter',' ','FileType','text');
+warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 header = t.Properties.VariableNames;
 
 % convert content array to column variables
@@ -102,7 +104,9 @@ return
 
 function dict = readDictionary(dataFile)
 
+warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 tTmp = readtable(dataFile,'FileType','text','Delimiter',';');
+warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 tTmp = tTmp(:,{'matlabID',	'type',	'nonmenColumn',	'nonmemUnit',	'reportName',	'pathID'});
 
 dict = table2struct(tTmp);

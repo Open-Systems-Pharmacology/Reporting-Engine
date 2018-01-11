@@ -32,7 +32,10 @@ iBunch = 1;
 while exist(csvfile,'file')
    
     % read data
+    warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
     t = readtable(csvfile);
+    warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
+
     % outputs
     varNames = strrep(strrep(t.Properties.VariableDescriptions,'Original column heading: ',''),'''','');
     jj = cellfun(@isempty,varNames);

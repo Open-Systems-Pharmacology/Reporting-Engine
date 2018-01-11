@@ -11,7 +11,7 @@ mkdir(testDir);
 logfile = fullfile(maindir,testDir,'logfile.txt');
         
 % loop on tests
-for iTest = 1:length(testList);
+for iTest = 7:length(testList)
 
     try
 
