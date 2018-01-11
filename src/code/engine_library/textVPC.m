@@ -369,7 +369,7 @@ figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the %d^{th}
     yLabel,output,WSettings.displayPercentiles(1),WSettings.displayPercentiles(2),WSettings.displayPercentiles(3),...
     WSettings.displayPercentiles(4),WSettings.displayPercentiles(5),extremaTxt);
 
-% add description for refernce popPL
+% add description for refernce popPK
 if ~isempty(refPopPK)
     figtxt = sprintf('%s in comparison to %s (symbols at the right)',figtxt,refPopPK);
 end
@@ -394,7 +394,7 @@ else
      legendEntries = strcat(popReportNames,'; ',reportNames);
 end
 
-% add description for refernce popPL
+% add description for refernce popPK
 if ~isempty(refPopPK)
     legendEntries = [{refPopPK} legendEntries];
 end

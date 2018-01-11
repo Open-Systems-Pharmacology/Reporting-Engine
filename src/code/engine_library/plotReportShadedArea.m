@@ -103,7 +103,7 @@ ax = getReportFigure(WSettings,1,1,figureHandle,'figureformat','landscape');
 ij = find(~isinf(yMin) & ~isinf(yMax));
 
 
-% Patch of referencep population
+% Patch of reference population
 % Plot before main population, so it is in background
 if ~isnan(yMinRef)
     
@@ -118,7 +118,7 @@ if ~isnan(yMinRef)
 end
 
 
-% plot PopPK Refernce
+% plot PopPK Reference
 if any(~isnan(yRefPopPK))
     lgh(5)=plot([binMedian(1) binMedian(end)],yRefPopPK(2)*[1 1],'-','color',WSettings.colorVector(3,:),'linewidth',2,...
         'displayname',strtrim(strrep(legendEntries{3},'<xxx>',legendTextMean)));
