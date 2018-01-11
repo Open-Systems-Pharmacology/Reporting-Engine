@@ -49,8 +49,14 @@ msg = sprintf('%s SimModelCompName: %s \n',msg,T.SimModelCompName);
 msg = sprintf('%s Matlab version: %s \n',msg,version);
 msg = sprintf('%s Started by: %s \n',msg,getenv('Username'));
 
-writeToReportLog('INFO',msg,true);
-copyfile('logfile.txt','errorLogfile.txt');
+if ~WSettings.restart
+    writeToReportLog('INFO',msg,true);
+    copyfile('logfile.txt','errorLogfile.txt');
+else
+    writeToReportLog('INFO','Restart:',false);
+    writeToReportLog('INFO',msg,false);
+end
+    
 
 % close all precvious figures
 close all;

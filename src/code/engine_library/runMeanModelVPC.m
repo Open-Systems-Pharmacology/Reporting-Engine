@@ -18,7 +18,7 @@ try
     
     % time profiles
     % Initialize figureDir
-    FP = ReportFigurePrint(fullfile('figures','timeprofile'),WSettings.printFormatList);
+    FP = ReportFigurePrint(fullfile(WSettings.figures,'timeprofile'),WSettings.printFormatList);
     
     for iD = 1:length(VPC.Timeprofile)
         FP = plotLoopVPCTimeprofiles(WSettings,VPC.textFunctionHandle,VPC.Timeprofile(iD),MeanModelSet,FP);

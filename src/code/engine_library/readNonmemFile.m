@@ -1,4 +1,4 @@
-function [success,X,filter,Dict] = readNonmemFile(WSettings,dataFile,dataType,filterList) 
+function [success,X,filter,Dict] = readNonmemFile(WSettings,dataFile,dataType,filterList)  %#ok<INUSL>
 %READNONMEMFILE reads nonmemfile and executes filter,
 %
 % [success,X,filter,dict] = readNonmemFile(WSettings,dataFile,dataType,filterList) 
@@ -19,39 +19,21 @@ function [success,X,filter,Dict] = readNonmemFile(WSettings,dataFile,dataType,fi
 % initialize return values
 X=[];
 filter = [];
-Dict = [];
+Dict = []; %#ok<NASGU>
+success = true;
 
 % readtable
-[content,header,success] = readtable(WSettings,dataFile{1});
-if ~success
-    return
-end
+t = readtable(dataFile{1},'delimiter',' ','FileType','text');
+header = t.Properties.VariableNames;
 
 % convert content array to column variables
-nRow = size(content,1);
-nCol = size(content,2);
+nRow = height(t);
+nCol = width(t);
 for iCol = 1:nCol
-    % check if column is numeric
-    contentnum=cellfun(@str2double,content(:,iCol));
-    jj = isnan(contentnum);
-    
-    % less string then numrich values
-    % todo ausgabe wenn gemischte spalten sind
-    if sum(jj) < nRow/2
-        tmp = contentnum; 
-        doTransfer = any(~isnan(tmp));
-    else
-        tmp = content(:,iCol); 
-        doTransfer = any(~cellfun(@isempty,tmp));
-    end
-    
-    % transfer to variable
-    if doTransfer
-        eval(sprintf('%s = tmp;',header{iCol}));
-    end
+    eval(sprintf('%s = t.%s;',header{iCol},header{iCol}));
 end
-clear content;
-clear tmp;
+clear header;
+clear t;
 
 % get dictionary
 Dict = readDictionary(dataFile{2});
@@ -96,78 +78,6 @@ end
 return
 
 
-function [content,header,success] = readtable(~,dataFile)
-
-success = true;
-
-% read table 
-fid = fopen(dataFile);
-
-% get number of columns
-lcount=1;
-line1=strtrim(fgetl(fid));
-delim = ' ';
-ncol=length(strfind(line1,delim))+1;
-
-% get number of lines to allocate space, which saves time
-while true
-    line=fgetl(fid);
-    if line==-1
-        break
-    end
-    lcount=lcount+1;
-end
-
-
-% sets the file position indicator to the beginning of the file
-frewind(fid);
-
-% allocate space
-content=cell(lcount-1,ncol);
-
-% read in
-for  iLine =1:lcount
-    
-    if mod(iLine,1000)==0;
-        disp(sprintf('%d lines of %d read in of file: %s',iLine,lcount,dataFile));
-    end
-    
-    % get the text of fthe line
-    line=fgetl(fid);
-    if line==-1
-        break;
-    end
-    line=strtrim(line);
-    
-    % split line by delimiter
-    tmp = regexp(line,delim,'split');
-    
-    ncoltmp=length(tmp);
-    if isnan(ncol)
-        ncol=ncoltmp;
-    else
-        if ncoltmp~=ncol
-            writeToReportLog('ERROR',sprintf('Line %d: inconsistent number of columns in %s',iLine,dataFile),false);
-            success = false;
-            return
-        end
-    end
-    
-    if iLine == 1
-        % save header and get rid of beginnign #
-        header = strrep(tmp,'#','');
-        
-    else
-        content(iLine-1,:)=tmp;
-    end
-end
-
-fclose(fid);
-
-writeToReportLog('INFO',sprintf('Read  file %s with %d rows',dataFile,lcount),false);
-
-return
-
 function [manadatoryfields] = getMandatoryFieldsbyType(dict,dataType)
 
 
@@ -192,29 +102,10 @@ return
 
 function dict = readDictionary(dataFile)
 
-data  = readtab(dataFile,';',0,0,1,0);
+tTmp = readtable(dataFile,'FileType','text','Delimiter',';');
+tTmp = tTmp(:,{'matlabID',	'type',	'nonmenColumn',	'nonmemUnit',	'reportName',	'pathID'});
 
-jj = ismember(data(1,:),{'matlabID',	'type',	'nonmenColumn',	'nonmemUnit',	'reportName',	'pathID'});
-
-tmp = cell(length(data{3,1})+1,sum(jj));
-
-k=0;
-for iCol = find(jj)
-    k=k+1;
-    switch data{2,iCol}
-        case 'string'
-            tmp(:,k) = [data(1,iCol); data{3,iCol}];
-        case 'double'
-            if all(isnan(data{3,iCol}))
-                tmp(:,k) = [data(1,iCol); repmat({''},size(data{3,iCol}))];
-            else
-                writeToReportLog('Error','dictionary has numeric columns',false);
-            end
-    end
-
-end
-
-dict = cell2struct(tmp(2:end,:),tmp(1,:),2);
+dict = table2struct(tTmp);
 
 return
 

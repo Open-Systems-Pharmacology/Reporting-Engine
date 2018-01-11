@@ -1,4 +1,4 @@
-function  csvArray = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,yData,xLabel,xUnit,xCategory,legendEntries,flag)
+function  csvArray = plotReportHistogram(WSettings,figureHandle,y,sourceIndex,yData,dataPopIndex,xLabel,xUnit,xCategory,legendEntries,flag)
 % PLOTREPORTHISTOGRAM creates histogramm 
 %
 % [csvArray] = plotReportHistogram(WSettings,figureHandle,y,yRef,xLabel,legendEntries)
@@ -46,10 +46,10 @@ if isempty(xCategory)
     nBin = min(20,floor(length(y)/3));
     dBin = (maxY-minY)/(nBin);
     if dBin>0
-        bins = [(minY-dBin/2):dBin:(maxY+dBin/2)];
-        mBins = [(minY):dBin:(maxY)];
+        bins = (minY-dBin/2) : dBin : (maxY+dBin/2);
+        mBins = (minY):dBin:(maxY);
     else
-        bins = [maxY-0.5:1:maxY+0.5];
+        bins = (maxY-0.5) : 1 : (maxY+0.5);
         mBins = [maxY maxY+2];
     end
 else
@@ -57,31 +57,43 @@ else
     bins = [mBins(1)-0.5; mBins+0.5];
 end
 
+% initailize arrays
+nSim = max(sourceIndex);
+if isempty(yData)
+    nData = 0;
+else
+    nData = max(dataPopIndex);
+end
+l = zeros(length(bins),nSim+nData);
+lnorm = zeros(length(bins),nSim+nData);
+lgtxt = cell(1,nSim+nData);
+
+
 % get percentage of individual per bin for population
-l = zeros(length(bins),max(sourceIndex));
-lnorm = zeros(length(bins),max(sourceIndex));
-lgtxt = cell(1,max(sourceIndex));
-for iSource = 1:max(sourceIndex)
+for iSource = 1:nSim
     jj = sourceIndex== iSource;
     l(:,iSource) = histc(y(jj),bins);
-    lnorm(:,iSource) = l(:,iSource)./sum(jj).*100;
+    lnorm(:,iSource) = l(:,iSource)./sum(jj).*100; 
     lgtxt{iSource} = legendEntries{iSource};
 end
-[colMap] = getcolmarkForMap(WSettings.colormapSimulation,max(sourceIndex));
+[colMap] = getcolmarkForMap(WSettings.colormapSimulation,nSim);
 
 
 % get percentage of individual per bin for dataPopulation
 if ~isempty(yData)
-    l(:,end+1) = histc(yData,bins);
-    lnorm(:,end+1) = l(:,end)./length(yData).*100;
-    lgtxt{end+1} = legendEntries{end};
-    [colMap] = [colMap;getcolmarkForMap(WSettings.colormapData,1)];
+    for iSource = 1:nData
+        jj = dataPopIndex== iSource;
+        l(:,iSource + nSim) = histc(yData(jj),bins);
+        lnorm(:,iSource + nSim) = l(:,iSource + nSim)./length(yData(jj)).*100; 
+        lgtxt{iSource + nSim} = legendEntries{iSource + nSim}; 
+    end
+    [colMap] = [colMap;getcolmarkForMap(WSettings.colormapData,nData)];
 
 end
 
 
 % do the Plot
-ax = getReportFigure(WSettings,1,1,figureHandle);
+ax = getReportFigure(WSettings,1,1,figureHandle,'figureformat','landscape');
 
 if isempty(xCategory)
     lgh = bar(mBins,lnorm(1:length(mBins),:),barType);
@@ -94,11 +106,10 @@ else
     end
         set(ax,'xlim',[0.5 length(mBins)+0.5]);
 end
-for iL = 1:length(lgh);
-    set(lgh(iL),'displayname',lgtxt{iL});
+for iL = 1:length(lgh)
+    set(lgh(iL),'displayname',lgtxt{iL},'FaceColor',colMap(iL,:));    
 end
 
-colormap(ax,colMap);
 
 % set labels 
 if isempty(xCategory)
@@ -138,16 +149,16 @@ end
 csvArray(1,:) = {getLabelWithUnit(xLabel,xUnit),legendEntries{1}};
 for iBin = 1:length(bins)-1
     if isempty(xCategory)
-        csvArray(iBin+1,:) = {sprintf('%.3g <= %s < %.3g',max(minY,bins(iBin)),xLabel,min(maxY,bins(iBin+1))),sprintf('%d',l(iBin,1))}; %#ok<AGROW>
+        csvArray(iBin+2,:) = {sprintf('%.3g <= %s < %.3g',max(minY,bins(iBin)),xLabel,min(maxY,bins(iBin+1))),sprintf('%d',l(iBin,1))}; 
     else
-        csvArray(iBin+1,:) = {sprintf('%s',xCategory{mBins(iBin)}),sprintf('%d',l(iBin,1))}; %#ok<AGROW>
+        csvArray(iBin+2,:) = {sprintf('%s',xCategory{mBins(iBin)}),sprintf('%d',l(iBin,1))}; 
     end
 end
 
 if ~isempty(yData)
     csvArray{1,end+1} = legendEntries{end};
     for iBin = 1:length(bins)-1
-        csvArray{iBin+1,end} = sprintf('%d',l(iBin,end)); %#ok<AGROW>
+        csvArray{iBin+2,end} = sprintf('%d',l(iBin,end)); 
     end
 end
 

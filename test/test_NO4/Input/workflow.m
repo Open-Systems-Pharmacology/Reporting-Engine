@@ -1,8 +1,9 @@
 % Script to start a workflow
-% Purpose:
-% M&S activity:
-% Validation level:
-% Original author: ZTCOK 16-Aug-2017 15:28:19
+% Type: Population workflow, with project specific mode parallelComparison
+% Purpose:: Test Case 4 Simulation and PK Parameter calculation multi application
+% M&S activity:: None
+% Validation level:: None
+% Original author: ZTCOK 14-Nov-2017 14:56:05
 % 
 %  HOW TO USE
 %  this script has to be filed in your working directory together with your input files like the simulation xml
@@ -11,13 +12,13 @@
 %  set the matlab directory to your working directory
 %  start the script
 % 
-%  ! SPM reporting engine runs with Matlab 2013b (linux cluster)
+%  Script is intendended to run with Matlab 2017b 
 % 
 
 
 % global settings
 % there are globale settings which are used in all functions.
-WSettings = getDefaultWorkflowSettings;
+WSettings = getDefaultWorkflowSettings('popModel','parallelComparison');
 
 % Definitions of sets of Populations
 clear PopRunSet
@@ -46,7 +47,7 @@ dataFiles = {};
 
 % get Definition of default plots
 if TaskList.doVPC
-    VPC = getDefaultVPCPopulationSettings(PopRunSet,'parallelComparison');
+    VPC = getDefaultVPCSettings(WSettings,PopRunSet);
 else
     VPC = [];
 end
@@ -57,4 +58,4 @@ end
 sensParameterList = {};
 
 % start the execution
-runPopulationWorkflow(WSettings,TaskList,PopRunSet,'parallelComparison',VPC,dataFiles,sensParameterList);
+runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,dataFiles,sensParameterList);

@@ -1,4 +1,4 @@
-function [SimulationSet,TaskList,workflowType,dataFiles,sensParameterList] = readWorkflowInput(workflowInputxls,sheet)
+function [SimulationSet,TaskList,Workflow,dataFiles,sensParameterList,outputSheets] = readWorkflowInput(workflowInputxls,sheet)
 % READWORKFLOWINPUT converts workflow xls to STructures
 %
 %  Inputs 
@@ -24,14 +24,34 @@ jj = ~cellfun(@isnumeric,xlsIdentifier) & ~cellfun(@isempty,xlsIdentifier);
 xlsIdentifier = xlsIdentifier(jj);
 xlsInfo = xlsInfo(jj,:);
 
+% select and sort rows
+% rows containing a referenced sheet
+jjSheet =  strncmp(xlsIdentifier,'sheet',5);
+% rows containing a Task
+jjTask =  strncmp(xlsIdentifier,'Task',4);
+% rows containing a Workflowdescription
+jjWorkflow = strncmp(xlsIdentifier,'Workflow',8);
+% rows with identifiers for simulation
+jjIdentifier =  ~jjTask  & ~jjSheet & ~jjWorkflow...
+    & ~ismember(xlsIdentifier,{'dataFileTimeprofile'});
 
-%% generate Population sets:
+%% check if refrences sheets are available
+% get rows wirh sheet references
 
-% get rows with identifiers for simulation
-jjIdentifier =  ~strncmp(xlsIdentifier,'Task',4) ...
-    & ~strncmp(xlsIdentifier,'sens',4) ...
-    & ~ismember(xlsIdentifier,{'WorkflowType','dataFileTimeprofile','dataDictTimeprofile'});
+tmp = xlsInfo(jjSheet,:);
+tmp = reshape(tmp,size(tmp,1)*size(tmp,2),1);
+jj = ~cellfun(@isnumeric,tmp);
+if any(jj)
+    referencedSheets = unique(tmp(jj));
 
+    [~,xlsSheets] = xlsfinfo(workflowInputxls);
+
+    jj = ~ismember(referencedSheets,xlsSheets);
+    if any(jj)
+        error('Missing sheets: %s',strjoin(referencedSheets(jj),'; '))        
+    end
+end
+%% generate Simulation Set:
 % get cols for simulation info
 jjCol =  ~cellfun(@isempty,xlsInfo(strcmp(xlsIdentifier,'name'),:)) & ...
      ~cellfun(@isnumeric,xlsInfo(strcmp(xlsIdentifier,'name'),:));
@@ -58,93 +78,84 @@ for iCol = find(jjCol)
     
     SimulationSet(iD) = cell2struct(tmp,xlsIdentifier(jjIdentifier)); %#ok<AGROW>
 end
-
-
-% check if outputxls is empty
-if isfield(SimulationSet,'outputxls')
-    jj = cellfun(@isempty,{SimulationSet.outputxls}) & ...
-        ~cellfun(@isempty,{SimulationSet.outputsheet});
-    
-    if any(jj)
-        for iSet  = find(jj)
-            SimulationSet(iSet).outputxls = workflowInputxls; %#ok<AGROW>
-        end
+% check for unique identifier and replace special signs
+if length(unique({SimulationSet.name})) < length(SimulationSet)
+    error( 'Name of your simulations are not unique')
+end
+forbiddenLetters = {' ','.','/','\'};
+for iD = 1:length(SimulationSet)
+    for iL = 1:length(forbiddenLetters)
+        SimulationSet(iD).name = strrep(SimulationSet(iD).name,forbiddenLetters{iL},'_');
     end
 end
+        
 
 
-
-
+%% read outputs
+outputSheets = xlsInfo(strcmp('sheetOutput',xlsIdentifier),jjCol);
 
 %% generate Tasklist
-
-% get rows with identifiers for Tasks
-jjIdentifier = ~cellfun(@isempty,xlsIdentifier) & strncmp(xlsIdentifier,'Task',4);
-
-
 % get values of first simulation
-tmp = xlsInfo(jjIdentifier,1);
+tmp = xlsInfo(jjTask,1);
 
+if any(cellfun(@isempty,tmp))
+    error('Please inset 0 or 1 to Tasks')
+end
 % convert booleans
 jj0 = cellfun(@(x) strcmp(x,'0'),tmp);
 tmp(jj0) = {false};
 jj1 = cellfun(@(x) strcmp(x,'1'),tmp);
 tmp(jj1) = {true};
 
-% get header
-header = strrep(xlsIdentifier(jjIdentifier),'Task','');
+% delete word "Task" to create header
+header = strrep(xlsIdentifier(jjTask),'Task','');
 % convert to struct
 TaskList = cell2struct(tmp,header);
 
 
-%% get Workflowtype
-workflowType = '';
-% get rows with identifiers for Tasks
-jjIdentifier = strcmp('WorkflowType',xlsIdentifier);
-if any(jjIdentifier)
-    workflowType = xlsInfo{jjIdentifier,1};
-    
-    if ~ismember(workflowType,{'pediatric','parallelComparison','ratioComparison'})
-        error('workflowType %s is invalid',workflowType);
+%% get Workflow Description
+
+tmp = xlsInfo(jjWorkflow,1);
+% delete word "Workflow" to create header
+header = strrep(xlsIdentifier(jjWorkflow),'Workflow','');
+% convert to struct
+Workflow = cell2struct(tmp,header);
+
+if ~isfield(Workflow,'Mode')
+    Workflow.Mode = 'default';
+else
+    if ~ismember(Workflow.Mode,{'pediatric','parallelComparison','ratioComparison'})
+        error('workflowMode %s is invalid',Workflow.Mode);
     end
 end
 
 %% generate Datafiles
-dataFiles = {};
-[jjIdentifier,ijIdentifier] = ismember({'dataFileTimeprofile','dataDictTimeprofile'},xlsIdentifier);
-if all(jjIdentifier)
-    tmp = xlsInfo(ijIdentifier,1);
-    if ~all(cellfun(@isnumeric,tmp));
-        dataFiles = [tmp', {'timeprofile'}] ;
-    end
+[~,ijIdentifier] = ismember({'dataFileTimeprofile','sheetDataDictTimeprofile'},xlsIdentifier);
+dataFiles = xlsInfo(ijIdentifier,1);
+% all fields are filled
+if ~all(cellfun(@isnumeric,dataFiles))
+    dataFiles = {dataFiles{1}, [dataFiles{2} '.csv'],'timeprofile'};
+    t = readtable(workflowInputxls,'Sheet',dataFiles{2}(1:end-4));
+    writetable(t,dataFiles{2},'Delimiter',';','WriteRowNames',false);
+    % only one is filled
+elseif any(cellfun(@isnumeric,tmp))
+    error('If you want to use data, fill all data fields, otherwise leave them empty')
+else
+    dataFiles = {};
 end
 
 %% get sensitivity
-[jjIdentifier,ijIdentifier] = ismember({'sensXls','sensSheet'},xlsIdentifier);
-if all(jjIdentifier)
-    tmp = xlsInfo(ijIdentifier,1);
-    jj = cellfun(@isnumeric,tmp);
-    if all(jj)  &&  all(cellfun(@isnan,tmp(jj)))
-        sensParameterList={};
-    else
-        if isnan(tmp{1})
-            sensXLS = workflowInputxls;
-        else
-            sensXLS = tmp{1};
-        end
-        if isnan(tmp{2})
-            sensSheet = 1;
-        else
-            sensSheet = tmp{2};
-        end
-        [~,~,sensParameterList] = xlsread(sensXLS,sensSheet);
-        if size(sensParameterList,2)<4
-            error('Please insert 4 columns for sensitivities: Path, number of steps, variation range,report name');
-        end
-        sensParameterList = sensParameterList(2:end,1:4);
-        jj = ~cellfun(@isnumeric,sensParameterList(:,1));
-        sensParameterList = sensParameterList(jj,:);
+sensSheet = xlsInfo{strcmp('sheetSensitivity',xlsIdentifier),1};
+if isnumeric(sensSheet)
+    sensParameterList={};
+else
+    [~,~,sensParameterList] = xlsread(workflowInputxls,sensSheet);
+    if size(sensParameterList,2)<4
+        error('Please insert 4 columns for sensitivities: Path, number of steps, variation range,report name');
     end
+    sensParameterList = sensParameterList(2:end,1:4);
+    jj = ~cellfun(@isnumeric,sensParameterList(:,1));
+    sensParameterList = sensParameterList(jj,:);
 end
 
 return

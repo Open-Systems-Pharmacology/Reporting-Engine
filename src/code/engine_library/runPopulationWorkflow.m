@@ -1,7 +1,7 @@
 function runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles,sensParameterList)
 % master routine for population workflow
 %
-% runPopulationWorkflow(TaskList,WSettings,PopRunSet,varargin)
+% runPopulationWorkflow(WSettings,TaskList,PopRunSet,VPC,Datafiles,sensParameterList)
 % 
 % Inputs:
 %       WSettings (structure)    definition of properties used in all
@@ -26,9 +26,58 @@ try
     end
 
     %% initialize workflow
+    
     [WSettings] = initializeWorkflow(WSettings);
     
     %% check if necessary inputs for task are available
+    [successInputCheck,VPC] = inputCheck(WSettings,TaskList,PopRunSet,VPC,Datafiles,sensParameterList);
+    if ~successInputCheck
+        return
+    end
+   
+    %% Tasks processing
+    
+    % simulate the poulationssimulations
+    if TaskList.simulatePopulation
+        
+        for iSet = 1:length(PopRunSet)
+            runPopulationSimulation(WSettings,PopRunSet(iSet));
+        end
+    end
+
+    % calculate PK Parameter
+    if TaskList.calculatePKParameter
+        for iSet = 1:length(PopRunSet)
+            calculatePopulationPKParameter(WSettings,PopRunSet(iSet));
+        end
+    end
+
+    % generate VPC
+    if TaskList.doVPC
+        runPopulationVPC(WSettings,VPC,PopRunSet);
+    end
+
+    % generate sesnitivity analysis
+    if TaskList.doSensitivityAnalysis
+        runPopulationSensitivity(WSettings,PopRunSet);
+    end
+    
+    writeToReportLog('INFO',sprintf('Population workflow finalized \n'),false);
+
+    
+catch exception
+    
+    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
+    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('INFO',sprintf('Population workflow finished with error \n'),false);
+  
+end
+
+
+
+return
+
+function  [successInputCheck,VPC] = inputCheck(WSettings,TaskList,PopRunSet,VPC,Datafiles,sensParameterList)
     writeToReportLog('INFO',sprintf('Start input checks'),false);
     
     successInputCheck = true;
@@ -110,10 +159,12 @@ try
         successInputCheck = success & successInputCheck;
     end
     % ontogeny factors are added now, get rid of key word
-    if ~isempty(VPC)
-        jj = strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>');
-        if any(jj)
-            VPC.PhysProperties.yList = VPC.PhysProperties.yList(~jj,:);
+    if ~isempty(VPC) && ~isempty(VPC.PhysProperties)
+        for iD = 1:length(VPC.PhysProperties)
+            jj = strcmp(VPC.PhysProperties(iD).yList(:,1),'<addOntogenyFactor>');
+            if any(jj)
+                VPC.PhysProperties(iD).yList = VPC.PhysProperties(iD).yList(~jj,:);
+            end
         end
     end
             
@@ -142,50 +193,12 @@ try
     
     writeToReportLog('INFO',sprintf('Input checks were successfully executed. \n)'),false);
 
-    %% Tasks processing
-    
-    % simulate the poulationssimulations
-    if TaskList.simulatePopulation
-        
-        for iSet = 1:length(PopRunSet)
-            runPopulationSimulation(WSettings,PopRunSet(iSet));
-        end
-    end
-
-    % calculate PK Parameter
-    if TaskList.calculatePKParameter
-        for iSet = 1:length(PopRunSet)
-            calculatePopulationPKParameter(WSettings,PopRunSet(iSet));
-        end
-    end
-
-    % generate VPC
-    if TaskList.doVPC
-        runPopulationVPC(WSettings,VPC,PopRunSet);
-    end
-
-    % generate sesnitivity analysis
-    if TaskList.doSensitivityAnalysis
-        runPopulationSensitivity(WSettings,PopRunSet);
-    end
-    
-    writeToReportLog('INFO',sprintf('Population workflow finalized \n'),false);
-
-    
-catch exception
-    
-    save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception');
-    writeToReportLog('ERROR',exception.message,false);
-    writeToReportLog('INFO',sprintf('Population workflow finished with error \n'),false);
-  
-end
-
-
-
-return
-
+return 
 
 function [successInputCheck,VPC] = preparePopulationSimulation(WSettings,PopRunSet,VPC,sensParameterList)
+
+writeToReportLog('INFO',sprintf('Prepare population: %s! \n',PopRunSet.name),false);
+
 
 % initialize return value
 successInputCheck = true;
@@ -200,27 +213,27 @@ else
     if ~WSettings.restart
         delete(fullfile(tmpDir,'*.mat'));
     else
-        writeToReportLog('WARNING',sprintf('As script is started in restart mode, temporaray results are nor deleted! \n'),false);
+        writeToReportLog('WARNING',sprintf('As script is started in restart mode, temporary results are not deleted! \n'),false);
     end
 
 end
+
+% initialize simulation file
+initSimulation(PopRunSet.xml,'none');
+simulationIndex=1;
 
 
 % read population csv
 [parPaths,parValues] = readPopulationCSV(PopRunSet.popcsv);
 
-
-% add BSA if not available
-if ~any(strcmp(parPaths,'Organism|BSA'))
-    parPaths{end+1} = 'Organism|BSA';
-    
-    jj = strcmp('Organism|Weight',parPaths);
-    weight =  parValues(:,jj);
-    jj = strcmp('Organism|Height',parPaths);
-    height =  parValues(:,jj);
-    parValues(:,end+1) = calculateBodySurfaceArea(WSettings,weight,height);
+% add aditional populations
+if ~isfield(PopRunSet,'addDependentPopulationParameterFh') || isempty(PopRunSet.addDependentPopulationParameterFh)
+    addDependentPopulationParameterFh = 'addDependentPopulationParameter';
+else
+    addDependentPopulationParameterFh = PopRunSet.addDependentPopulationParameterFh;
 end
-
+[parPaths,parValues,successTmp] = feval(addDependentPopulationParameterFh,WSettings,parPaths,parValues);
+successInputCheck = successInputCheck & successTmp;
 
 % add studyDesign if one is given
 if ~isempty(PopRunSet.studyDesign)
@@ -239,7 +252,7 @@ save(fullfile(tmpDir,'pop.mat'),'parPaths','parValues','ixStudyDesign');
 
 
 % analyse applicationProtocol
-[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,PopRunSet.xml,parPathsStudyDesign,parValuesStudyDesign);   %#ok<NASGU>
+[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,simulationIndex,parPathsStudyDesign,parValuesStudyDesign);     %#ok<ASGLU>
 save(fullfile(tmpDir,'applicationProtocol.mat'),'ApplicationProtocol','isValid');
 
 simulationIndex = 1; %Initialised in getApplicationProtocollFromXML
@@ -312,31 +325,33 @@ if ~isempty(sensParameterList)
     sensParameterList = checkSensitivityParameter(sensParameterList,simulationIndex);     %#ok<NASGU>
     save(fullfile(tmpDir,'sensitivity.mat'),'sensParameterList');
 end
-
-
+    
 % check if ontogenyFactors should be added to the physiology plotList
-if ~isempty(VPC) && ...
- any(strcmp(VPC.PhysProperties.yList(:,1),'<addOntogenyFactor>'))
-    ontogenyIDs = getParameter('*|Ontogeny factor*',1,'parametertype','readonly','property','ID');
-    jj = getParameter(ontogenyIDs,1,'parametertype','readonly','property','isFormula');
+if ~isempty(VPC) && ~isempty(VPC.PhysProperties) 
     
-    ontogenyPaths = getParameter(ontogenyIDs(~jj),1,'parametertype','readonly','property','Path');
+    for iD = 1:length(VPC.PhysProperties)
+        if any(strcmp(VPC.PhysProperties(iD).yList(:,1),'<addOntogenyFactor>'))
+            ontogenyIDs = getParameter('*|Ontogeny factor*',1,'parametertype','readonly','property','ID');
+            jj = getParameter(ontogenyIDs,1,'parametertype','readonly','property','isFormula');
     
-    for iO = 1:length(ontogenyPaths)
-        tmp = regexp(ontogenyPaths{iO},'\|','split');
-        pathID = strjoin(tmp(2:end),'|');
-        if ~ismember(pathID,VPC.PhysProperties.yList(:,1))
-            if ismember(tmp{end},{'Ontogeny factor','Ontogeny factor GI'})
-                ontogenyName = strjoin(tmp([end 2:end-1]),' ');
-            else
-                ontogenyName = tmp{end};
+            ontogenyPaths = getParameter(ontogenyIDs(~jj),1,'parametertype','readonly','property','Path');
+            
+            for iO = 1:length(ontogenyPaths)
+                tmp = regexp(ontogenyPaths{iO},'\|','split');
+                pathID = strjoin(tmp(2:end),'|');
+                if ~ismember(pathID,VPC.PhysProperties(iD).yList(:,1))
+                    if ismember(tmp{end},{'Ontogeny factor','Ontogeny factor GI'})
+                        ontogenyName = strjoin(tmp([end 2:end-1]),' ');
+                    else
+                        ontogenyName = tmp{end};
+                    end
+                    VPC.PhysProperties(iD).yList(end+1,:) = {pathID,ontogenyName,'',{},ontogenyName};
+                end
             end
-            VPC.PhysProperties.yList(end+1,:) = {pathID,ontogenyName,'',{}};
         end
     end
 end
-
-
+    
 return
     
 

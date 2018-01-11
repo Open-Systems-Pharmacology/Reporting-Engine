@@ -1,4 +1,4 @@
-function [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,pathID,targetUnit,simulationIndex)
+function [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,pathID,targetUnit,simulationIndex) %#ok<INUSL>
 % GETUNITFACTORFOROUTPUTPATH getfactor to convert output defined by path to target unit
 %
 %  [unitFactor,success,MW] = getUnitfactorForOutputPath(WSettings,pathID,targetUnit,simulationIndex)

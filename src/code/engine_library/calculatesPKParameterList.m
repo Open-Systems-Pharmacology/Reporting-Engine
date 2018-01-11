@@ -34,7 +34,7 @@ pathList = {OutputList.pathID}; %#ok<NODEF>
 % initialize PK List
 PKPList = cell(length(OutputList) ,1);
 
-if all(cellfun(@isempty,{OutputList(:).pKParameterList}))
+if all(cellfun(@isempty,{OutputList(:).pKParameterList})) %#ok<IDISVAR>
     % no PKParameter defined, so nothing to do
     return
 end

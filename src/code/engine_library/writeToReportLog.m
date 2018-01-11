@@ -12,7 +12,11 @@ function writeToReportLog(type,logText,isNewFile)
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-disp(sprintf('%s: %s',type,logText));
+% write type always in Upper cases
+type = upper(type);
+
+% display in command window
+fprintf('%s: %s\n',type,logText);
 
 % check inputs
 if ~exist('isNewFile','var')

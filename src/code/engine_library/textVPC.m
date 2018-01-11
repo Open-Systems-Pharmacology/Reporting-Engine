@@ -32,7 +32,7 @@ switch figureType
     % Time profile
     case 'tpShadedArea'
         [figtxt,figtxtTable,legendEntries] = textVPCTimeprofileTpShadedArea(inputArray{1},inputArray{2},inputArray{3},...
-            inputArray{4},inputArray{5},inputArray{6},inputArray{7},inputArray{8},inputArray{9});
+            inputArray{4},inputArray{5},inputArray{6},inputArray{7},inputArray{8},inputArray{9},inputArray{10});
 
     % Time profile with VPC
     case 'tpVPCpar'
@@ -50,7 +50,8 @@ switch figureType
         
     % Boxwhisker of PK Parmeter
     case 'pkBW'
-        [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBW(WSettings,inputArray{1},inputArray{2},inputArray{3},inputArray{4},inputArray{5});
+        [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBW(WSettings,inputArray{1},inputArray{2},inputArray{3},...
+            inputArray{4},inputArray{5},inputArray{6});
         
         
     case 'pkBWRatio'
@@ -60,8 +61,12 @@ switch figureType
     % shaded Area for PK Parameter
     case 'pkShA'
         [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShA(inputArray{1},inputArray{2},inputArray{3},inputArray{4},...
-            inputArray{5},inputArray{6});
-    
+            inputArray{5},inputArray{6},inputArray{7},inputArray{8});
+
+    case 'pkShARatio'
+        [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShARatio(inputArray{1},inputArray{2},inputArray{3},inputArray{4},...
+            inputArray{5},inputArray{6},inputArray{7},inputArray{8},inputArray{9});
+
             
     % Predicted vs observed
     case 'tpPredVsObs'
@@ -189,18 +194,28 @@ return
 function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPhysHist(physProb,population,dataSource,popLabels,nPop,nData)
 
 
-figtxt = sprintf('Percentile of %s for %s.',physProb,population);
-if nData>0
-    figtxt = sprintf('%s Data %s.',figtxt(1:end-1),dataSource);
+figtxt = sprintf('Distribution of %s for simulated %s',physProb,population);
+if any(nData>0)
+    if length(nData) ==1
+        figtxt = sprintf('%s in comparison to observed data %s',figtxt,dataSource{1});
+    else
+        figtxt = sprintf('%s in comparison to observed data',figtxt);
+    end
 end
+figtxt = sprintf('%s.',strtrim(figtxt));
 
 figtxtTable = figtxt;
 
-for iPop = 1:length(popLabels)
-    legendEntries{iPop} = sprintf('%s: n=%d',popLabels{iPop},nPop(iPop)); %#ok<AGROW>
-end
-if nData>0
-    legendEntries{end+1} = sprintf('%s: n=%d',dataSource,nData);
+if length(popLabels)>1
+    for iPop = 1:length(popLabels)
+        legendEntries{iPop} = sprintf('simulated %s (n=%d)',popLabels{iPop},nPop(iPop)); %#ok<AGROW>
+    end
+else
+    legendEntries{1} = sprintf('simulated %s (n=%d)',population,nPop(1));
+end    
+
+for iData = 1:length(nData)
+    legendEntries{end+1} = sprintf('observed data %s (n=%d)',dataSource{iData},nData(iData)); %#ok<AGROW>
 end
 
 return
@@ -209,10 +224,10 @@ return
 function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationphysShA(physProbX,physProbY,population,referencePopulation,dataSource,nInd)
 
 
-figtxt = sprintf('%s-dependence of %s for %s.',physProbX,physProbY,population);
+figtxt = sprintf('%s%s-dependence of %s for simulated %s.',upper(physProbX(1)),physProbX(2:end),physProbY,population); % Checked with ped
 % Reference
 if nInd(2)>0
-    figtxt = sprintf('%s in comparison to %s.',figtxt(1:end-1),referencePopulation);
+    figtxt = sprintf('%s in comparison to simulated %s.',figtxt(1:end-1),referencePopulation); % Checked with ped
 end
 % Data
 if nInd(3)>0
@@ -221,8 +236,9 @@ end
 
 figtxtTable = figtxt;
 
-legendEntries = {sprintf('%s: n=%d',population,nInd(1)),sprintf('%s: n=%d',referencePopulation,nInd(2)),...
-    sprintf('%s: n=%d',dataSource,nInd(3))};
+legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',population,nInd(1)),...
+    sprintf('Simulated <xxx> for %s (n=%d)',referencePopulation,nInd(2)),...
+    sprintf('Observed <xxx> for %s (n=%d)',dataSource,nInd(3))};
 
 return
 
@@ -280,28 +296,26 @@ end
 
 return
 
-function [figtxt,figtxtTable,legendEntries] = textVPCTimeprofileTpShadedArea(output,simulation,...
-    nameData,scale,lloq,nData,pop,simulationRef,popRef)
+function [figtxt,figtxtTable,legendEntries] = textVPCTimeprofileTpShadedArea(output,simulation,simulationRef,...
+    nameData,timerangetxt,scale,lloq,nInd,simLabel,refLabel)
 
-% initialize outputs            
-legendEntries={''};
 
 % get name and figure description
-if ~isempty(pop)
-    figtxtTable = sprintf('Time profile of %s for %s.',...
-        output,simulation);
-else            
-    figtxtTable = sprintf('Time profile of %s for %s for %s.',...
-        output,simulation,pop);
-end       
+figtxtTable = sprintf('Time profiles of %s for %s',...
+    output,simulation);
 
-if isempty(simulationRef)
-    figtxtTable = sprintf('%s Reference: %s for %s.',figtxtTable,simulationRef,...
-        popRef);
+if ~isempty(simulationRef)
+    figtxtTable = sprintf('%s compared to simulated %s for %s',figtxtTable,output,simulationRef);
+end
+
+if ~isempty(timerangetxt)
+    figtxtTable = sprintf('%s %s.',figtxtTable,timerangetxt);
+else
+    figtxtTable = sprintf('%s.',figtxtTable);
 end
 
 figtxt = figtxtTable;
-if nData>0
+if nInd(3)>0
     figtxt = sprintf('%s Data source: %s.',figtxt,nameData);
 end
 
@@ -320,20 +334,25 @@ end
 
 
 % legend % second entry Ref not needed for simulation
-if ~isempty(simulationRef)
-    legendEntries = {pop,popRef};
+if nInd(1)>1
+    legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',simLabel,nInd(1)),...
+        sprintf('Simulated <xxx> for %s (n=%d)',refLabel,nInd(2)),...
+        sprintf('Symbols: observed data %s (n=%d)',nameData,nInd(3)),...
+        sprintf('Simulated mean model for %s',simLabel)};
+else
+    legendEntries = {sprintf('Simulated mean individual'),...
+        '',...
+        sprintf('Symbols: observed data %s (n=%d)',nameData,nInd(3))};
 end
-if nData>0
-    legendEntries{3} = sprintf('symbols: %s',nameData);
-end
+
 if ~isnan(lloq)
-     legendEntries{end+1} = 'lower limit of quantification';
+     legendEntries{end+1} = 'Lower limit of quantification';
 end
 
 return
 
 
-function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBW(WSettings,yLabel,output,reportNames,popReportNames,scale)
+function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkBW(WSettings,yLabel,output,reportNames,popReportNames,scale,refPopPK)
 
 
 % get table header
@@ -346,9 +365,15 @@ if WSettings.boxwhiskerWithExtrema
 end
 
 % get figure description
-figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the percentiles %d, %d, %d, %d, and %d%s',...
+figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the %d^{th}, %d^{th}, %d^{th}, %d^{th}, and %d^{th} percentiles%s',...
     yLabel,output,WSettings.displayPercentiles(1),WSettings.displayPercentiles(2),WSettings.displayPercentiles(3),...
     WSettings.displayPercentiles(4),WSettings.displayPercentiles(5),extremaTxt);
+
+% add description for refernce popPL
+if ~isempty(refPopPK)
+    figtxt = sprintf('%s in comparison to %s (symbols at the right)',figtxt,refPopPK);
+end
+
 
 % set scale text
 switch scale
@@ -361,12 +386,17 @@ end
 % get xLabels
 if length(reportNames) ==1
     legendEntries = {''};
-elseif length(unique(popReportNames)) == length(popReportNames);
+elseif length(unique(popReportNames)) == length(popReportNames)
     legendEntries = popReportNames;
-elseif  length(unique(reportNames)) == length(reportNames);
+elseif  length(unique(reportNames)) == length(reportNames)
      legendEntries = reportNames;
 else
      legendEntries = strcat(popReportNames,'; ',reportNames);
+end
+
+% add description for refernce popPL
+if ~isempty(refPopPK)
+    legendEntries = [{refPopPK} legendEntries];
 end
 
 return
@@ -384,7 +414,7 @@ if WSettings.boxwhiskerWithExtrema
 end
 
 % get figure description
-figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the percentiles %d, %d, %d, %d, and %d%s',...
+figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the %d, %d, %d, %d, and %d percentiles%s',...
     yLabel,output,WSettings.displayPercentiles(1),WSettings.displayPercentiles(2),WSettings.displayPercentiles(3),...
     WSettings.displayPercentiles(4),WSettings.displayPercentiles(5),extremaTxt);
 
@@ -399,9 +429,9 @@ end
 % get xLabels
 if length(reportNames) ==1
     legendEntries = {''};
-elseif length(unique(popReportNames)) == length(popReportNames);
+elseif length(unique(popReportNames)) == length(popReportNames)
     legendEntries = popReportNames;
-elseif  length(unique(reportNames)) == length(reportNames);
+elseif  length(unique(reportNames)) == length(reportNames)
      legendEntries = reportNames;
 else
      legendEntries = strcat(popReportNames,'; ',reportNames);
@@ -410,11 +440,47 @@ end
 return
 
 
-function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShA(xPhys,yLabel,output,reportNames,refReportName,scale)
+function  [figtxt,figtxtTable,legendEntries] = textVPCPopulationPkShA(xPhys,yLabel,output,reportNames,refReportName,nInd,scale,refPopPK)
+
+% get table header
+figtxtTable = sprintf('%s%s dependency of %s %s for simulated %s in comparison to simulated %s',...
+    xPhys(1),xPhys(2:end),yLabel,output,reportNames,refReportName);
+
+if ~isempty(refPopPK)
+    figtxtTable = sprintf('%s and in comparison to %s%s',figtxtTable,lower(refPopPK(1)),refPopPK(2:end));
+end
+
+ 
+% set scale text
+switch scale
+    case 'lin'
+        figtxt = sprintf('%s in a linear scale.',figtxtTable);
+    case 'log'
+        figtxt = sprintf('%s in a logarithmic scale.',figtxtTable);
+    otherwise
+        error('unknown scale')
+
+end
+
+
+legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',reportNames,nInd(1)),...
+    sprintf('Simulated <xxx> for %s (n=%d)',refReportName,nInd(2)),...
+    refPopPK};
+
+
+return
+
+function  [figtxt,figtxtTable,legendEntries] = ...
+    textVPCPopulationPkShARatio(xPhys,yLabel,output,reportNames,refReportName,nInd,scale,refPopPK,legendTextMean)
 
 
 % get table header
-figtxtTable = sprintf('%s dependency of %s for %s for a %s',xPhys,yLabel,output,reportNames);
+figtxtTable = sprintf('%s%s dependency of %s %s for simulated %s as fraction of %s of simulated %s',...
+    xPhys(1),xPhys(2:end),yLabel,output,reportNames,legendTextMean,refReportName);
+
+if ~isempty(refPopPK)
+    figtxtTable = sprintf('%s and in comparison to %s%s',figtxtTable,lower(refPopPK(1)),refPopPK(2:end));
+end
 
 
 % set scale text
@@ -428,6 +494,9 @@ switch scale
 
 end
 
-legendEntries={reportNames,refReportName};
+legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',reportNames,nInd(1)),...
+    sprintf('Simulated <xxx> for %s (n=%d)',refReportName,nInd(2)),...
+    refPopPK};
+
 
 return

@@ -31,7 +31,7 @@ for iO=1:length(PKPList)
         for iP = 1:length(SensPointer)
         
             relValuesPar =  [SensPointer(iP).relValuesPar];
-            relValuesPK = [PKPListSens{iO}(iPK).value(SensPointer(iP).indxInd(1):SensPointer(iP).indxInd(end))./PKPList{iO}(iPK).value(ixBaseInd)];
+            relValuesPK = PKPListSens{iO}(iPK).value(SensPointer(iP).indxInd(1):SensPointer(iP).indxInd(end))./PKPList{iO}(iPK).value(ixBaseInd);
             
             
             [b,bint,~,~,stats]  = regress([relValuesPK,1]',[[relValuesPar,1]',ones(length(relValuesPar)+1,1)]);
@@ -41,6 +41,7 @@ for iO=1:length(PKPList)
             sens{iO,iPK}(iP).slopeCIUpper = bint(1,2); %#ok<AGROW>
             sens{iO,iPK}(iP).rSquare = stats(1); %#ok<AGROW>
             sens{iO,iPK}(iP).pValue = stats(3); %#ok<AGROW>
+            sens{iO,iPK}(iP).values = relValuesPK;  %#ok<AGROW>
         end        
     end
 end

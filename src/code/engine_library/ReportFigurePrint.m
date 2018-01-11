@@ -13,8 +13,8 @@ classdef ReportFigurePrint
         PNG = false;
         
         % Ps Format
-        PsOrientation='portrait';
-        PaperPosition=[0 0 20 27];
+        PsOrientation='landscape';
+        PaperPosition=[2 2 27 20];
 
         % filing directory for figures
         figureDir='';
@@ -36,10 +36,12 @@ classdef ReportFigurePrint
             
             % set figur directory and create it
             obj.figureDir=resultDir;
-            if ~exist(obj.figureDir,'dir')
+            if ~exist(fullfile(cd,obj.figureDir),'dir')
                 mkdir(obj.figureDir);
             else
-                delete(fullfile(obj.figureDir,'*'));
+                delete(fullfile(cd,obj.figureDir,'*.fig'));
+                delete(fullfile(cd,obj.figureDir,'*.emf'));
+                delete(fullfile(cd,obj.figureDir,'*.csv'));
             end
             
             % set print format
@@ -58,13 +60,13 @@ classdef ReportFigurePrint
                         obj.PaperPosition=[2 2 20 20];
                     case 'LANDSCAPE'
                         obj.PsOrientation='Landscape';
-                        obj.PaperPosition=[0 0 27 20];
+                        obj.PaperPosition=[2 2 27 20];
                     otherwise
                         error('unknonw format')
                 end
             end
 
-            
+            close all;
             obj.figureHandle=figure;
             
         end
@@ -73,8 +75,13 @@ classdef ReportFigurePrint
         function obj=printFigure(obj,figureName,figtxt,csv,figtxt_csv)
             % prints figure in selected format
             
-            figureName = sprintf('S%d_%s',obj.CaptiontextSheetNo,figureName);
-            
+            % get figurename
+            prefix = sprintf('S%d',obj.CaptiontextSheetNo(1));
+            for iSubsection = 2:length(obj.CaptiontextSheetNo)
+                prefix = sprintf('%s.%d',prefix,obj.CaptiontextSheetNo(iSubsection));
+            end
+            figureName = sprintf('%s_%s',prefix,figureName);
+                
             if isa(obj.figureHandle,'matlab.ui.Figure')
                 iFig = ['-f' num2str(obj.figureHandle.Number)];
             else
@@ -114,15 +121,15 @@ classdef ReportFigurePrint
             set(obj.figureHandle, 'PaperPosition', old_PaperPosition);
  
             % add to captiontext    
-            obj.CaptiontextFigtextArray{end+1,1}=figureName;
-            obj.CaptiontextFigtextArray{end,2}=figtxt;
+            obj.CaptiontextFigtextArray{end+1,1} = figureName;
+            obj.CaptiontextFigtextArray{end,2} = figtxt;
  
             % write figure as table
             if exist('csv','var') && ~isempty(csv)
                 
                 % add header to table
                 csv = [repmat({''},2,size(csv,2));csv];
-                csv{1,1} = strrep(figtxt_csv,';',',');
+                csv{1,1} = strrep(figtxt_csv,';',',');                
                 writeTabCellArray(csv,fullfile(obj.figureDir, [figureName '.csv']));
             end
         end
@@ -130,12 +137,24 @@ classdef ReportFigurePrint
         function obj = iniCaptiontextFigtextArray(obj,outline,sheet)
             % Initialize Structure to manage captiontext xls, used for word macro
             
-            obj.CaptiontextFigtextArray = {outline};            
-            obj.CaptiontextSheetNo = obj.CaptiontextSheetNo+1;
+            obj.CaptiontextFigtextArray = {outline,'','',1};            
+            obj.CaptiontextSheetNo = obj.CaptiontextSheetNo(1)+1;
             obj.CaptiontextSheet = sprintf('S%d__%s.csv',obj.CaptiontextSheetNo,sheet);
             
         end
         
+        function obj = addSubSection(obj,outline,level)
+            % add a subsection header in the captiontext xls, used for word macro
+            
+            obj.CaptiontextFigtextArray(end+1,:) = {outline,'','',level};            
+            if length(obj.CaptiontextSheetNo) < level
+                obj.CaptiontextSheetNo(level) = 1;
+            else
+                obj.CaptiontextSheetNo = obj.CaptiontextSheetNo(1:level);
+                obj.CaptiontextSheetNo(level) = obj.CaptiontextSheetNo(level)+1;
+            end
+            
+        end
         
         
         function saveCaptiontextArray(obj)

@@ -1,9 +1,15 @@
 function MBS = getDefaultMassbalanceSettings
-%GETDEFAULTVPCMEANMODELSETTINGS get WSettings for visual predicitve check
+%GETDEFAULTMASSBALANCESETTINGS get WSettings for massbalance plots
 %
+% MBS = getDefaultMassbalanceSettings
 %
 % Inputs:
-%       MeanModelSet (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORMEANMODELSIMULATION
+%
+% Outputs
+%   MBS.displayUnit (display unit of time)
+%   MBS.piePlotTime (defines time for pieplots (-1 is end of simulation
+%   time))
+%   MBS.excludedCompounds = {};list of compounds which should be no part of massbalance
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 

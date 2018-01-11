@@ -1,20 +1,51 @@
 function runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sensParameterList,MBS)
 %RUNMEANMODELWORKFLOW master routine for Mean Model workflow
 %
-% runMeanModelWorkflow(TaskList,WSettings,PopRunSet,varargin)
+% runMeanModelWorkflow(WSettings,TaskList,MeanModelSet,VPC,Datafiles,sensParameterList,MBS)
 % 
 % Inputs:
 %       WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%       TaskList (structure)    list of task which should be executed see GENERATEWORKFLOWINPUTFORMEANMODELSIMULATION
-%       RUNMEANMODELWORKFLOW (structure)   list of population simulations see GENERATEWORKFLOWINPUTFORMEANMODELSIMULATION
+%       TaskList (structure)    list of task which should be executed
+%           TaskList.doVPC (boolean) if true outputs are plotted
+%           TaskList.doSensitivityAnalysis (boolean) if true sensitivity analysis is executed
+%           TaskList.doAbsorptionPlots (boolean) if true absorption plots are generated
+%           TaskList.checkMassbalance (boolean) if truemassbalance plots are generated
+%       MeanModelSet (structure)   list of MeanModel simulations
+%           - name:  (string) identifier: it is used as directory or file name for the results, please avoid special signs like \
+%           - reportName:  (string) used in report figures and tables as description and legend entry
+%           - xml: (string) name of the xml file
+%           - calculatePKParameterFh: (string) name of the function to calculate the PK Parameter, 
+%                   if it is empty the default function, which calculates default OSP Suite PK Parameter is used.
+%           - dataTpFilter: (string)  filter for nonmem data file. It must be matlab readable code, 
+%                   using the nonmem headers as variable names.  If it is  empty no data are filtered, 
+%                   so if you want to use all, include a filter including all data (e.g. SID>0)
+%           - dataReportName:  (string) name used in figures for the filtered data
+%           - OutputList:  (structure) which describes the properties of the outputs to generate
+%               - pathID:  (string) pathname of the output in the mode, e.g. 
+%                   “Organism|PeripheralVenousBlood|Theophylline|Plasma (Peripheral Venous Blood)”
+%               - reportName: (string) name used in the report for the output
+%               - displayUnit:  (string) unit to display the output. 
+%                   It must be a unit known to the OSPSuite (case insensitive)
+%               - dataTpFilter: (string) filter for nonmem data file. It must be matlab readable code, 
+%                   using the nonmem headers as variable names.  If it is  empty no data are filtered, 
+%                   so if you want to use all, include a filter including all data (e.g. SID>0)
+%               - residualScale: (string) scale of residual calculation, for lin residuals are calculated as data - simulation 
+%                   for log as log(data) - log(simulation)
+%               - unitFactor: (double)  initialvalue nan, it is calculated internally to 
+%                   transfer the internal units of the outputs to the display unit
+%               - pKParameterList: (2xn cellarray) first row identifier to select the method 
+%                   within the calculate PKParameter function, second row, display unit
+%   	Datafiles (cellarray) % set to {}, if no data available, first column name of nonmem file, 
+%                   second column dictionary file , third column datatype, so far only implemented type is 'timeprofile' 
 %       VPC  (structure) contains information which plots should be
-%               generated  see GETDEFAULTVPCPOPULATIONSETTINGS
-%       sensParameterList  (cellarry) 1. column pathid of parameter,
+%               generated  see GETDEFAULTVPCSETTINGS
+%       sensParameterList  (cellarry) columns: 1. pathid of parameter,
 %                       2. number of steps
 %                       3. variation range
-%                       4. minimal value
-%                       5. maximal value
+%                       4. name used in report 
+%       MBS (structure) contains information how to generate the
+%                   Massbalance plots see GETDEFAULTMASSBALANCESETTINGS
 
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
@@ -171,13 +202,13 @@ else
     if ~WSettings.restart
         delete(fullfile(tmpDir,'*.mat'));
     else
-        writeToReportLog('WARNING',sprintf('As script is started in restart mode, temporaray results are nor deleted! \n'),false);
+        writeToReportLog('WARNING',sprintf('Script is started in restart mode, temporary results are nor deleted! \n'),false);
     end
 end
 
 
 % analyse applicationProtocol
-[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,MeanModelSet.xml);   %#ok<NASGU>
+[ApplicationProtocol,isValid] = getApplicationProtocollFromXML(WSettings,MeanModelSet.xml);    %#ok<ASGLU>
 save(fullfile(tmpDir,'applicationProtocol.mat'),'ApplicationProtocol','isValid');
 
 simulationIndex = 1; %Initialised in getApplicationProtocollFromXML
@@ -291,7 +322,7 @@ if ~isempty(VPC) && ~isempty(VPC.optimizedParameters)
             [~,v(:,iPar)] = getSimulationSensitivityResult(['*|' OutputList.pathID],['*|' VPC.optimizedParameters{iPar}],simulationIndex); %#ok<AGROW>
             % ( d log(y(p))/dp = 1/y(p) * dy(p)/dp
             if strcmp(OutputList(iO).residualScale,'log')
-                v(jj,iPar) = v(jj,iPar)./simValues(jj);
+                v(jj,iPar) = v(jj,iPar)./simValues(jj); %#ok<AGROW>
             end
         end
         
@@ -308,12 +339,12 @@ save(fullfile(tmpDir,'simResult_1.mat'),'SimResult');
 
 % start the PKParameter caluclation
 parPaths = {'Organism|Weight','Organism|Height'};
-if existsParameter('*Organism|Weight',1,'parametertype','readonly');
+if existsParameter('*Organism|Weight',1,'parametertype','readonly')
     parValues(1,1) = getParameter('*Organism|Weight',1,'parametertype','readonly');
 else
     parValues(1,1) = nan;
 end
-if existsParameter('*Organism|Height',1,'parametertype','readonly');
+if existsParameter('*Organism|Height',1,'parametertype','readonly')
     parValues(1,2) = getParameter('*Organism|Height',1,'parametertype','readonly');
 else
     parValues(1,2) = nan;

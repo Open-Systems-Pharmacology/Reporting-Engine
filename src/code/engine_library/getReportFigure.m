@@ -1,4 +1,4 @@
-function [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,varargin)
+function [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,varargin) %#ok<INUSL>
 %GETREPORTFIGURE creates new figure with and set watermark if not on validated system.
 %
 %   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
@@ -86,13 +86,13 @@ if ~exist('nCols','var')
 end
 
 % set watermark
-if WSettings.isValidatedSystem
-    timestamp = false;
-    watermark = '';
-else
-    watermark = 'Draft: for discussion only!';
+% if WSettings.isValidatedSystem
+%     timestamp = false;
+%     watermark = '';
+% else
+    watermark = 'Not QCed!';
     timestamp = true;
-end
+%end
 
 % Get the fontsize if not user defined corresponding to the numbers of
 % figures
@@ -220,7 +220,7 @@ if isnan(axes_position)
 else
     ax_handles=nan(size(axes_position,1),1);
     for iAx=1:size(axes_position,1)
-        ax_handles(iAx)=axes('position',axes_position(iAx,:)); %#ok<LAXES>
+        ax_handles(iAx)=axes('position',axes_position(iAx,:)); 
     end
     
 end

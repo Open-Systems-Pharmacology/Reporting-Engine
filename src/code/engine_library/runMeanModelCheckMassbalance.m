@@ -14,11 +14,11 @@ function runMeanModelCheckMassbalance(WSettings,MeanModelSet,MBS)
 writeToReportLog('INFO',sprintf('Start generate Massbalance plots'),false);
 
 % Initialize figureDir
-FP = ReportFigurePrint(fullfile('figures','massbalance'),WSettings.printFormatList);
+FP = ReportFigurePrint(fullfile(WSettings.figures,'massbalance'),WSettings.printFormatList);
 
 for iSet = 1:length(MeanModelSet)
 
-    [time,drugmass,R] =simulateModel(WSettings,MeanModelSet,MBS);
+    [time,drugmass,R] =simulateModel(WSettings,MeanModelSet(iSet),MBS);
 
     % start plots
     
@@ -42,7 +42,7 @@ for iSet = 1:length(MeanModelSet)
     FP = FP.printFigure(figureName,figtxt);
     
     % timprofile  fraction lin
-    plotTP(WSettings,FP.figureHandle,time,drugmass,R,'lin',MBS,'amount [µmol]',col);
+    plotTP(WSettings,FP.figureHandle,time,drugmass,R,'lin',MBS,'amount [fraction of drugmass]',col);
     
     figureName = sprintf('TPfraction_%s_lin',MeanModelSet(iSet).name);
     figtxt = sprintf('Amount of drug vs time within the different compartments normalized to applicated drugmass. Time profiles are in a linear scale.');
@@ -50,7 +50,7 @@ for iSet = 1:length(MeanModelSet)
     FP = FP.printFigure(figureName,figtxt);
 
     % timprofile  fraction log
-    plotTP(WSettings,FP.figureHandle,time,drugmass,R,'log',MBS,'amount [µmol]',col);
+    plotTP(WSettings,FP.figureHandle,time,drugmass,R,'log',MBS,'amount [fraction of drugmass]',col);
     
     figureName = sprintf('TPfraction_%s_log',MeanModelSet(iSet).name);
     figtxt = sprintf('Amount of drug vs time within the different compartments normalized to applicated drugmass. Time profiles are in a logarithmic scale.');
@@ -91,10 +91,10 @@ for iSet = 1:length(MeanModelSet)
 
     end
     
+    FP.saveCaptiontextArray;
     
     
 end
-FP.saveCaptiontextArray;
 
 
 writeToReportLog('INFO',sprintf('Finalized Massbalance plots \n'),false);
@@ -190,8 +190,8 @@ csv{1,1} = sprintf('time [%s]',MBS.displayUnit);
 csv(2:(1+length(time)),1) = cellfun(@num2str,num2cell(time),'uniformoutput',false);
 
 for iR=1:length(R)
-    csv{1,1+iR} = sprintf('%s %s [µmol]',R(iR).compound,R(iR).name); %#ok<AGROW>
-    csv(2:(1+length(time)),1+iR) = cellfun(@num2str,num2cell(R(iR).v),'uniformoutput',false); %#ok<AGROW> 
+    csv{1,1+iR} = sprintf('%s %s [µmol]',R(iR).compound,R(iR).name); 
+    csv(2:(1+length(time)),1+iR) = cellfun(@num2str,num2cell(R(iR).v),'uniformoutput',false);  
 end
 
 return
@@ -221,7 +221,7 @@ if isValid
         jjComp = ~ismember({ApplicationProtocol.compound},MBS.excludedCompounds);
     end
     
-    drugmass = sum(ApplicationProtocol(jjComp).drugMass); 
+    drugmass = sum([ApplicationProtocol(jjComp).drugMass]); 
         
 else
     error('drugmass can not be analysed')
@@ -236,7 +236,13 @@ time = getSimulationTime.*getUnitFactor('',MBS.displayUnit,'time');
 [~,desc]=existsSpeciesInitialValue('*',1,'parametertype','readonly');
 tmp = regexp(desc(2:end,strcmp(desc(1,:),'Path')),'\|','split');
 compoundList = unique(cellfun(@(x) x{end},tmp,'uniformoutput',false));
-compoundList = setdiff(compoundList,{'Liquid','Oral mass absorbed segment'});
+compoundList = setdiff(compoundList,{'Liquid','Oral mass absorbed segment','Suspension fraction Cecum',...
+    'Suspension fraction Colon Ascendens','Suspension fraction Colon Descendens',...
+    'Suspension fraction Colon Sigmoid','Suspension fraction Colon Transversum',...
+    'Suspension fraction Duodenum','Suspension fraction Lower Ileum',...
+    'Suspension fraction Lower Jejunum','Suspension fraction Rectum',...
+    'Suspension fraction Stomach','Suspension fraction Upper Ileum',...
+    'Suspension fraction Upper Jejunum','Tablet_Location'});
 
 
 % delete excluded species
@@ -249,30 +255,32 @@ R=R([]);
 for iC = 1:length(compoundList)
     
     % get vector of all IDs
-    [~,desc] = existsSpeciesInitialValue(['*|Organism|*' compoundList{iC}],1,'parametertype','readonly');
-    Sdesc = cell2struct(desc(2:end,:),desc(1,:),2);
-    tmp = regexp({Sdesc.Path},'\|','split');
-    
-    % separate Lumen
-    jjLumen = cellfun(@(x) strcmp(x{end-2},'Lumen'),tmp);
-    jjFeces = cellfun(@(x) strcmp(x{end-1},'Feces'),tmp);
+    [isExisting,desc] = existsSpeciesInitialValue(['*|Organism|*' compoundList{iC}],1,'parametertype','readonly');
+    if isExisting
+        Sdesc = cell2struct(desc(2:end,:),desc(1,:),2);
+        tmp = regexp({Sdesc.Path},'\|','split');
         
-    % get compartments
-    compartments = setdiff(unique(cellfun(@(x) x{end-1},tmp(~jjLumen),'uniformoutput',false)),{'Saliva','SalivaGland'});
-    
-     if any(jjLumen)
-        R = addSplit([Sdesc(jjLumen & ~jjFeces).ID],'Lumen',compoundList{iC},R);
-    end
-    
-    for iComp = 1:length(compartments)
-
-        jj = cellfun(@(x) strcmp(x{end-1},compartments{iComp}),tmp);
+        % separate Lumen
+        jjLumen = cellfun(@(x) strcmp(x{end-2},'Lumen'),tmp);
+        jjFeces = cellfun(@(x) strcmp(x{end-1},'Feces'),tmp);
         
-        R = addSplit([Sdesc(jj).ID],compartments{iComp},compoundList{iC},R);
+        % get compartments
+        compartments = setdiff(unique(cellfun(@(x) x{end-1},tmp(~jjLumen),'uniformoutput',false)),{'Saliva','SalivaGland'});
         
-    end
-    if any(jjFeces)
-        R = addSplit([Sdesc(jjFeces).ID],'Feces',compoundList{iC},R);
+        if any(jjLumen)
+            R = addSplit([Sdesc(jjLumen & ~jjFeces).ID],'Lumen',compoundList{iC},R);
+        end
+        
+        for iComp = 1:length(compartments)
+            
+            jj = cellfun(@(x) strcmp(x{end-1},compartments{iComp}),tmp);
+            
+            R = addSplit([Sdesc(jj).ID],compartments{iComp},compoundList{iC},R);
+            
+        end
+        if any(jjFeces)
+            R = addSplit([Sdesc(jjFeces).ID],'Feces',compoundList{iC},R);
+        end
     end
 end
 

@@ -33,14 +33,14 @@ for iSet = 1:length(RunSet)
     
     load(fullfile('tmp',RunSet(iSet).name,'outputList.mat'),'OutputList');
     
-    for iO = 1:length(OutputList);
+    for iO = 1:length(OutputList)
         
         if ~isempty(OutputList(iO).dataTpFilter)
             k=k+1;
             filterList{k,:} = OutputList(iO).dataTpFilter; %#ok<AGROW>
-            filterIndex(iSet,iO+1) = k; %#ok<AGROW>
+            filterIndex(iSet,iO+1) = k; 
         else
-            filterIndex(iSet,iO+1) = nan;%#ok<AGROW>
+            filterIndex(iSet,iO+1) = nan;
         end
 
     end
@@ -120,31 +120,31 @@ for iSet = 1:length(RunSet)
                     DataTP(indx).sid = uniSID(iSID) ; %#ok<AGROW>
                     
                     % timeprofile
-                    TP{iO}(indx).time = X.time(jj_O); %#ok<AGROW>
-                    TP{iO}(indx).dv = X.dv(jj_O); %#ok<AGROW>
+                    TP{iO}(indx).time = X.time(jj_O); 
+                    TP{iO}(indx).dv = X.dv(jj_O); 
                     if isfield(X,'tad')
-                        TP{iO}(indx).tad = X.tad(jj_O); %#ok<AGROW>
+                        TP{iO}(indx).tad = X.tad(jj_O); 
                     end
-                    TP{iO}(indx).isLloq = false(size( TP{iO}(indx).time)); %#ok<AGROW>
-                    TP{iO}(indx).lloq = nan; %#ok<AGROW>
+                    TP{iO}(indx).isLloq = false(size( TP{iO}(indx).time)); 
+                    TP{iO}(indx).lloq = nan; 
                     if isfield(X,'lloq')
                         lloq =X.lloq(jj_O);
                         jj_lloq = TP{iO}(indx).dv < lloq;
                         if any(jj_lloq)
-                            TP{iO}(indx).isLloq(jj_lloq) = true; %#ok<AGROW>
+                            TP{iO}(indx).isLloq(jj_lloq) = true; 
                             tmp =  unique(lloq(jj_lloq));
                             if length(tmp) > 1
                                 writeToReportLog('WARNING',sprintf('non unique lloq for STUD %d SID %d', ...
                                     DataTP(indx).stud ,DataTP(indx).sid),false);
                             end
-                            TP{iO}(indx).lloq = min(tmp); %#ok<AGROW>
+                            TP{iO}(indx).lloq = min(tmp); 
                         end
 
                     end
                 
                     % covariates
                     for iFn = 1:length(fn_covariate)
-                        DataTP(indx).(fn_covariate{iFn}) = X.(fn_covariate{iFn})(find(jj_SID,1)); %#ok<AGROW>
+                        DataTP(indx).(fn_covariate{iFn}) = X.(fn_covariate{iFn})(find(jj_SID,1)); 
                 
                     end
                 end
