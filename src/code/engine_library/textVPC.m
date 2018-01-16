@@ -231,14 +231,14 @@ if nInd(2)>0
 end
 % Data
 if nInd(3)>0
-    figtxt = sprintf('%s Data %s.',figtxt(1:end-1),dataSource);
+    figtxt = sprintf('%s Data %s.',figtxt(1:end-1),dataSource{1});
 end
 
 figtxtTable = figtxt;
 
 legendEntries = {sprintf('Simulated <xxx> for %s (n=%d)',population,nInd(1)),...
     sprintf('Simulated <xxx> for %s (n=%d)',referencePopulation,nInd(2)),...
-    sprintf('Observed <xxx> for %s (n=%d)',dataSource,nInd(3))};
+    sprintf('Observed <xxx> for %s (n=%d)',dataSource{1},nInd(3))};
 
 return
 
@@ -369,7 +369,7 @@ figtxt = sprintf('%s of %s shown as box whisker plot, which indicate the %d^{th}
     yLabel,output,WSettings.displayPercentiles(1),WSettings.displayPercentiles(2),WSettings.displayPercentiles(3),...
     WSettings.displayPercentiles(4),WSettings.displayPercentiles(5),extremaTxt);
 
-% add description for refernce popPL
+% add description for refernce popPK
 if ~isempty(refPopPK)
     figtxt = sprintf('%s in comparison to %s (symbols at the right)',figtxt,refPopPK);
 end
@@ -394,7 +394,7 @@ else
      legendEntries = strcat(popReportNames,'; ',reportNames);
 end
 
-% add description for refernce popPL
+% add description for refernce popPK
 if ~isempty(refPopPK)
     legendEntries = [{refPopPK} legendEntries];
 end

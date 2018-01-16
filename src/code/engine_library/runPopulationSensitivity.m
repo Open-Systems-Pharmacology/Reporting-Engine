@@ -145,7 +145,7 @@ try
 catch exception
         
     save(sprintf('exception_%s.mat',datestr(now,'ddmmyy_hhMM')),'exception')
-    writeToReportLog('ERROR',exception.message,false);
+    writeToReportLog('ERROR',exception.message,false,exception);
     writeToReportLog('INFO',sprintf('sensitivity analysis finished with error \n'),false);
         
 end  

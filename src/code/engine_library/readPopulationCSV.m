@@ -16,11 +16,18 @@ end
 
     
 % read table
+warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 t = readtable(csvfile);
+warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 
 parPaths = strrep(strrep(t.Properties.VariableDescriptions,'Original column heading: ',''),'''','');
 jj = cellfun(@isempty,parPaths);
 parPaths(jj) = t.Properties.VariableNames(jj);
+
+% get rid of unit
+ix = strfind(parPaths,' [');
+jj = ~cellfun(@isempty,ix);
+parPaths(jj) = cellfun(@(x,i) x(1:i-1),parPaths(jj),ix(jj),'uniformoutput',false);
 
 % get numeric values
 C =  table2cell(t);

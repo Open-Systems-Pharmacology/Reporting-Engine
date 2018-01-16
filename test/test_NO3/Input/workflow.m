@@ -30,7 +30,7 @@ PopRunSet(1) = struct('name','SingleIvBolus','reportName','single IV application
 clear OutputList
 
 % Definitions of TaskList
-TaskList = struct('simulatePopulation',0,'calculatePKParameter',1,'doVPC',0,'doSensitivityAnalysis',0);
+TaskList = struct('simulatePopulation',1,'calculatePKParameter',1,'doVPC',0,'doSensitivityAnalysis',0);
 
 % List of Nonmemfiles:
 % set to {}, if no data available
