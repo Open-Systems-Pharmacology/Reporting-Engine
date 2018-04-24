@@ -23,10 +23,10 @@ function FP = plotLoopVPCTimeprofiles(WSettings,textFunctionHandle,Def,RunSet,FP
 % get Reference simulation
 if ~isempty(Def.ixRunSetRef)
     reportNameRef = RunSet(Def.ixRunSetRef).reportName;
-    reportLabelRef = RunSet(Def.ixRunSetRef).popReportName;
+    popLabelNameRef = RunSet(Def.ixRunSetRef).boxwhiskerLabel;
 else
     reportNameRef = '';
-    reportLabelRef = '';
+    popLabelNameRef = '';
 end
 
 
@@ -145,7 +145,7 @@ for iSet = [Def.ixRunSetRef Def.ixOfRunSets]
                         [figtxt,figtxtTable,legendEntries] = feval(textFunctionHandle,WSettings,'tpShadedArea',...
                             {OutputList(iO).reportName,RunSet(iSet).reportName,reportNameRefTmp,dataReportName,timeRangetxt{iT},yscale{iScale},...
                             lloq,[size(SimTL.y,2),size(SimTL.yRef,2),length(DataTP)],...
-                            popLabelName, reportLabelRef});
+                            popLabelName, popLabelNameRef});
                        
                         
                         % do the plot
