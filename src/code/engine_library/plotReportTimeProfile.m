@@ -149,16 +149,27 @@ if ~isnan(yMin)
     yMin(jj) = ylim;
     ij = find(yMax>=ylim); 
     
+    if isempty(legendEntries{1})
+        displayname = rangeTxt;
+    else
+        displayname = strtrim(strrep(legendEntries{1},'<xxx>',rangeTxt));
+    end
     
     lgh(2) = patch([SimTL.time(ij), SimTL.time(ij(end:-1:1))],[yMin(ij), yMax(ij(end:-1:1))],WSettings.colorVector(1,:),...
         'linestyle','-','LineWidth',0.5,'FaceAlpha',WSettings.FaceAlpha,...
-        'EdgeColor',WSettings.colorVector(1,:),'displayname',strtrim(strrep(legendEntries{1},'<xxx>',rangeTxt)));
+        'EdgeColor',WSettings.colorVector(1,:),'displayname',displayname);
 end
 
 
 % Plot mean
+if isempty(legendEntries{1})
+    displayname = legendTextMean;
+else
+    displayname = strtrim(strrep(legendEntries{1},'<xxx>',legendTextMean));
+end
+
 lgh(1)=plot(SimTL.time,yMean,'-','color',WSettings.colorVector(1,:),'linewidth',2,...
-    'displayname',strtrim(strrep(legendEntries{1},'<xxx>',legendTextMean)));
+    'displayname',displayname);
 
 % plotMeanModel
 if ~isempty(SimTL.yMeanModel)
