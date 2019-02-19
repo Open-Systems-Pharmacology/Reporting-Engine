@@ -10,4 +10,4 @@ We encourage contribution to the Open Systems Pharmacology community. Before get
 
 
 ## License
-OSPSuite.Core is released under the [GPLv2 License](LICENSE).
+(Matlab) Reporting-Engine is released under the [GPLv2 License](LICENSE).
