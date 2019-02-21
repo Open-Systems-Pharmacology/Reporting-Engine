@@ -1,7 +1,0 @@
-Percentile of Height for virtual test population.;
-;
-Height [cm];: n=10
-127 <= Height < 136;1
-136 <= Height < 154;1
-154 <= Height < 171;5
-171 <= Height < 180;3

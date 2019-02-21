@@ -1,7 +1,0 @@
-Percentile of Age for virtual test population.;
-;
-Age [year(s)];: n=10
-9.26 <= Age < 21.4;3
-21.4 <= Age < 45.7;3
-45.7 <= Age < 69.9;2
-69.9 <= Age < 82.1;2
