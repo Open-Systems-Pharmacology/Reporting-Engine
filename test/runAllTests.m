@@ -37,14 +37,14 @@ for iTest = 1:length(testList)
             NumberOfFailedTests = NumberOfFailedTests + 1;
             testInfo.ErrorMessage = 'S. exception.mat for details';
             writeToLog(sprintf('%s exception occured',testList(iTest).name),logfile,true,false);
-        elseif exist('checkTestResult.m','file')
-            success = checkTestResult;
+        elseif exist('checkResult.m','file')
+            success = checkResult;
             if success
                 NumberOfSuccessfulTests = NumberOfSuccessfulTests + 1;
                 writeToLog(sprintf('%s was successful',testList(iTest).name),logfile,true,false);
             else
                 NumberOfFailedTests = NumberOfFailedTests + 1;
-                testInfo.ErrorMessage = 'checkTestResult failed';
+                testInfo.ErrorMessage = 'checkResult failed';
                 writeToLog(sprintf('%s automatic test failed',testList(iTest).name),logfile,true,false);
             end
         else
