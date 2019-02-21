@@ -13,10 +13,10 @@ libPath = [pathToReportingEngine filesep 'lib'];
 setenv('path', [libPath ';' getenv('path')]);
 
 %Create the component
-comp=DCIMatlabR2013b6_0('LoadComponent', [libPath filesep 'OSPSuite_SimModelComp.xml']);
+comp=DCIMatlabR2017b6_1('LoadComponent', [libPath filesep 'OSPSuite_SimModelComp.xml']);
 
 %Get parameter table
-tab=DCIMatlabR2013b6_0('GetParameterTable',comp,1);
+tab=DCIMatlabR2017b6_1('GetParameterTable',comp,1);
 
 %Simulation Schema
 tab.Variables(1).Values={[libPath filesep 'OSPSuite.SimModel.xsd']};
@@ -25,33 +25,33 @@ tab.Variables(1).Values={[libPath filesep 'OSPSuite.SimModel.xsd']};
 tab.Variables(2).Values={simulationFile};
 
 %Set parameter table into the component and calculate
-DCIMatlabR2013b6_0('SetParameterTable',comp,1,tab);
-DCIMatlabR2013b6_0('Configure',comp);
+DCIMatlabR2017b6_1('SetParameterTable',comp,1,tab);
+DCIMatlabR2017b6_1('Configure',comp);
 
 %define column indices for input parameters tables (both all and variable)
 ParamIDIdx=1; ParamPathIdx=2; ParamValueIdx=3; ParamUnitIdx=4; ParamIsFormulaIdx=5; 
 ParamFormulaIdx=6; ParamDescriptionIdx=7; ParamIsVariableIdx=8; ParamCalculateSensitivityIdx=9;
 
 %get variable parameters table
-inTab2 = DCIMatlabR2013b6_0('GetInputTable',comp,2);
+inTab2 = DCIMatlabR2017b6_1('GetInputTable',comp,2);
 
 %calculate sensitivity for parameters p1, p2, p3
 inTab2.Variables(ParamCalculateSensitivityIdx).Values(1:3)=[1 1 1];
 
 %Save input table into the component and set sensitivity parameters
-DCIMatlabR2013b6_0('SetInputTable',comp,2,inTab2);
+DCIMatlabR2017b6_1('SetInputTable',comp,2,inTab2);
 
-DCIMatlabR2013b6_0('ProcessMetaData',comp);
-DCIMatlabR2013b6_0('ProcessData',comp);
+DCIMatlabR2017b6_1('ProcessMetaData',comp);
+DCIMatlabR2017b6_1('ProcessData',comp);
 
 %Get 1st Output table (Simulation Times)
-outTabTimes=DCIMatlabR2013b6_0('GetOutputTable',comp,1);
+outTabTimes=DCIMatlabR2017b6_1('GetOutputTable',comp,1);
 
 %Get 2nd Output table (Simulation values)
-outTabValues=DCIMatlabR2013b6_0('GetOutputTable',comp,2);
+outTabValues=DCIMatlabR2017b6_1('GetOutputTable',comp,2);
 
 %Get 3rd Output table (parameter sensitivities)
-outTabSensitivities=DCIMatlabR2013b6_0('GetOutputTable',comp,3);
+outTabSensitivities=DCIMatlabR2017b6_1('GetOutputTable',comp,3);
 
 %set output time vector
 t = outTabTimes.Variables(1).Values;

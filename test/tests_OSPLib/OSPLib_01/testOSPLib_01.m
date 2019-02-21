@@ -10,10 +10,10 @@ libPath = [pathToReportingEngine filesep 'lib'];
 setenv('path', [libPath ';' getenv('path')]);
 
 %Create the component
-comp=DCIMatlabR2013b6_0('LoadComponent', [libPath filesep 'OSPSuite_SimModelComp.xml']);
+comp=DCIMatlabR2017b6_1('LoadComponent', [libPath filesep 'OSPSuite_SimModelComp.xml']);
 
 %Get parameter table
-tab=DCIMatlabR2013b6_0('GetParameterTable',comp,1);
+tab=DCIMatlabR2017b6_1('GetParameterTable',comp,1);
 
 %Simulation Schema
 tab.Variables(1).Values={[libPath filesep 'OSPSuite.SimModel.xsd']};
@@ -22,16 +22,16 @@ tab.Variables(1).Values={[libPath filesep 'OSPSuite.SimModel.xsd']};
 tab.Variables(2).Values={simulationFile};
 
 %Set parameter table into the component and calculate
-DCIMatlabR2013b6_0('SetParameterTable',comp,1,tab);
-DCIMatlabR2013b6_0('Configure',comp);
-DCIMatlabR2013b6_0('ProcessMetaData',comp);
-DCIMatlabR2013b6_0('ProcessData',comp);
+DCIMatlabR2017b6_1('SetParameterTable',comp,1,tab);
+DCIMatlabR2017b6_1('Configure',comp);
+DCIMatlabR2017b6_1('ProcessMetaData',comp);
+DCIMatlabR2017b6_1('ProcessData',comp);
 
 %Get 1st Output table (Simulation Times)
-outTabTimes=DCIMatlabR2013b6_0('GetOutputTable',comp,1);
+outTabTimes=DCIMatlabR2017b6_1('GetOutputTable',comp,1);
 
 %Get 2nd Output table (Simulation values)
-outTabValues=DCIMatlabR2013b6_0('GetOutputTable',comp,2);
+outTabValues=DCIMatlabR2017b6_1('GetOutputTable',comp,2);
 
 %set output time vector
 t = outTabTimes.Variables(1).Values;
