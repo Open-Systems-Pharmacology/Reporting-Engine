@@ -1,6 +1,8 @@
 # Reporting-Engine
 (Matlab) Reporting-Engine
 
+## Code Status
+[![Build status](https://ci.appveyor.com/api/projects/status/j7k9ar3rme1csn2p?svg=true)](https://ci.appveyor.com/project/open-systems-pharmacology-ci/reporting-engine)
 
 ## Code of conduct
 Everyone interacting in the Open Systems Pharmacology community (codebases, issue trackers, chat rooms, mailing lists etc...) is expected to follow the Open Systems Pharmacology [code of conduct](https://github.com/Open-Systems-Pharmacology/Suite/blob/master/CODE_OF_CONDUCT.md).
