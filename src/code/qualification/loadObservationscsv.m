@@ -1,11 +1,21 @@
 function Data = loadObservationscsv(csvfile, Id)
+% LOADOBSERVATIONSCSV load the observation datasets of corresponding Id
+%
+% Data = loadObservationscsv(csvfile, Id)
+%
+%
+%       Data (structure) contains all relevant information of
+%       the Dataset
+%       csvfile (string) name of the csv file to be read
+%       Id (string) of the Observation DataSet
+
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % read data
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 t = readtable(csvfile);
 warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 
-%%
 % outputs
 varNames = strrep(strrep(t.Properties.VariableDescriptions,'Original column heading: ',''),'''','');
 jj = cellfun(@isempty,varNames);
@@ -16,7 +26,7 @@ timePathList = varNames{1};
 % Rename time
 t.Properties.VariableNames{strContains(t.Properties.VariableNames,'Time')} = 'Time';
 
-%% split path and unit for variables
+% split path and unit for variables
 for iP=1:length(outputPathList)
 
     tmp=outputPathList{iP};
@@ -30,6 +40,7 @@ for iP=1:length(outputPathList)
         outputUnit{iP}=''; %#ok<AGROW>
     end
 end
+
 % For time units
 timeUnit = strtrim(timePathList(strfind(timePathList,'['):end));
 

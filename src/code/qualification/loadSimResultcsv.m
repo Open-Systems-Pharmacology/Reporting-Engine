@@ -1,4 +1,16 @@
 function SimResult = loadSimResultcsv(csvfile, Simulation)
+% LOADSIMRESULTCSV load the simulation data of corresponding Simulation
+%
+% SimResult = loadSimResultcsv(csvfile, Simulation)
+%
+%
+%       SimResult  (structure) contains all relevant information of
+%       the Simulation Datasets
+%       csvfile (string) name of the csv file to be read
+%       Simulation (string) Id of the Simulation DataSet
+
+% Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
 % read data
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
 t = readtable(csvfile);
@@ -14,7 +26,7 @@ varNames(jj) = t.Properties.VariableNames(jj);
 outputPathList = varNames(3:end);
 timePathList = varNames{2};
 
-%% split path and unit for variables
+% split path and unit for variables
 for iP=1:length(outputPathList)
 
     tmp=outputPathList{iP};
