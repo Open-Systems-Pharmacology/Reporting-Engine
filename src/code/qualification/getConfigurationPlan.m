@@ -14,11 +14,15 @@ function ConfigurationPlan = getConfigurationPlan(jsonFile)
 % Read .json file and output its structure
 
 try
+    currentEncoding = slCharacterEncoding;
+    slCharacterEncoding('UTF-8');
     jsonFileContent = fileread(jsonFile);
+    slCharacterEncoding(currentEncoding);
     ConfigurationPlan = jsondecode(jsonFileContent);
     writeToReportLog('INFO',[jsonFile ' was extracted successfully'],'true');
 catch exception
     writeToReportLog('ERROR', [jsonFile ' could not be extracted:' exception.message], 'true', exception);
+    rethrow(exception);
 end
 
 % Check if every important parts are within the .json content
@@ -27,6 +31,7 @@ mandatoryFields = {'SimulationMappings', 'ObservedDataSets', 'Plots', 'Inputs', 
 for i=1:length(mandatoryFields)
     if ~isfield(ConfigurationPlan, mandatoryFields)
         writeToReportLog('ERROR',[mandatoryFields(i) ' is missing from ' jsonFile],'false');
+        disp([mandatoryFields(i) ' is missing from ' jsonFile]);
     end
 end
 

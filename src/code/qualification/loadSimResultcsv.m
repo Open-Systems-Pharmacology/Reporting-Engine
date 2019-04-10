@@ -13,7 +13,7 @@ function SimResult = loadSimResultcsv(csvfile, Simulation)
 
 % read data
 warning('OFF', 'MATLAB:table:ModifiedAndSavedVarnames');
-t = readtable(csvfile);
+t = readtable(csvfile, 'Encoding', 'UTF-8');
 warning('ON', 'MATLAB:table:ModifiedAndSavedVarnames');
 
 % rename individual ID
@@ -28,10 +28,10 @@ timePathList = varNames{2};
 
 % split path and unit for variables
 for iP=1:length(outputPathList)
-
+    
     tmp=outputPathList{iP};
     ji=strfind(tmp,'[');
-
+    
     if ~isempty(ji)
         outputPathList{iP}=strtrim(tmp(1:ji-1));
         outputUnit{iP}=strtrim(tmp(ji:end)); %#ok<AGROW>
