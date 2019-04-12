@@ -31,7 +31,9 @@ mandatoryFields = {'SimulationMappings', 'ObservedDataSets', 'Plots', 'Inputs', 
 for i=1:length(mandatoryFields)
     if ~isfield(ConfigurationPlan, mandatoryFields)
         writeToReportLog('ERROR',[mandatoryFields(i) ' is missing from ' jsonFile],'false');
-        disp([mandatoryFields(i) ' is missing from ' jsonFile]);
+        ME = MException('getConfigurationPlan:MissingField', ...
+            '%s is missing from %s', mandatoryFields(i), jsonFile);
+        throw(ME);
     end
 end
 
