@@ -214,7 +214,7 @@ switch figureFormat
             set(figureHandle, 'PaperPosition',paperPosition);
         end
     case 'landscape'
-        set(figureHandle,'position',[193 273 chartWidth chartHeight].*scaleVector)
+        set(figureHandle,'position',[193 273 chartWidth./scaleVector chartHeight./scaleVector].*scaleVector)
         if strcmp(paperOrientation,'default')
             set(figureHandle, 'PaperOrientation', 'landscape');
         else
