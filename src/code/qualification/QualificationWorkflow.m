@@ -44,9 +44,14 @@ for i=1:length(ConfigurationPlan.ObservedDataSets)
     if ~iscell(ConfigurationPlan.ObservedDataSets)
         ConfigurationPlan.ObservedDataSets={ConfigurationPlan.ObservededDataSets};
     end
-    
-    ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{1}.Path, ...
-        ConfigurationPlan.ObservedDataSets{1}.Id);
+    % For DDI plot, Observed Data Type is DDIRatio
+    if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
+        ObservedDataSets(i).Id = ConfigurationPlan.ObservedDataSets{i}.Id;
+        
+    else
+        ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{i}.Path, ...
+            ConfigurationPlan.ObservedDataSets{i}.Id);
+    end
 end
 
 % Task list: fields in ConfigurationPlan.Plots
