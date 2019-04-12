@@ -135,7 +135,7 @@ switch scale
     case 'lin'
         figtxt = sprintf('Linear residuals of %s vs predicted values for %s. Data source: %s.',output,simulation,nameData);
     case 'log'
-        figtxt = sprintf('Logarithmic resiudals vs predicted values of %s for %s. Data source: %s.',output,simulation,nameData);
+        figtxt = sprintf('Logarithmic residuals vs predicted values of %s for %s. Data source: %s.',output,simulation,nameData);
     otherwise
         error('unknown scale')
 
@@ -155,9 +155,9 @@ function [figtxt,legendEntries] = textVPCResidualsVsTime(output,simulation,nameD
 % get name and figure description
 switch scale
     case 'lin'
-        figtxt = sprintf('Linear resiudals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
+        figtxt = sprintf('Linear residuals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
     case 'log'
-        figtxt = sprintf('Logarithmic resiudals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
+        figtxt = sprintf('Logarithmic residuals vs time of %s for %s. Data source: %s.',output,simulation,nameData);
     otherwise
         error('unknown scale')
 

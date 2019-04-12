@@ -1,5 +1,0 @@
-functionHandle = @addDosetablePerBSA;;
-targetParameterList = {'Application_*|ProtocolSchemaItem|DosePerBodySurfaceArea'};;
-BSAmin;BSAmax;targetParameter
-0;100;3.00E-07
-100;300;3.00E-07

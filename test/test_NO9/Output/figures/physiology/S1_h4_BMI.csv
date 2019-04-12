@@ -1,7 +1,0 @@
-Percentile of BMI for virtual adult population.;
-;
-BMI [kg/m²];adult: n=10
-17.9 <= BMI < 19.5;2
-19.5 <= BMI < 22.6;2
-22.6 <= BMI < 25.7;4
-25.7 <= BMI < 27.3;2

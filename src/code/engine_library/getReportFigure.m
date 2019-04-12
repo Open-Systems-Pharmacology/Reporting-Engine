@@ -86,13 +86,13 @@ if ~exist('nCols','var')
 end
 
 % set watermark
-% if WSettings.isValidatedSystem
-%     timestamp = false;
-%     watermark = '';
-% else
+ if WSettings.isValidatedSystem
+    timestamp = false;
+    watermark = '';
+ else
     watermark = 'Not QCed!';
     timestamp = true;
-%end
+end
 
 % Get the fontsize if not user defined corresponding to the numbers of
 % figures
