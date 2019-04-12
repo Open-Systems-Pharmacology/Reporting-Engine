@@ -1,7 +1,7 @@
 function plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions, PlotSettings)
 %PLOTQUALIFICATIONTIMEPROFILE Plots the time profile of a population in comparison to a reference population
 %
-% plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions)
+% plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions,PlotSettings)
 %
 % Inputs:
 %       WSettings (structure)    definition of properties used in all
@@ -27,7 +27,7 @@ function plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curve
 % To be updated using the Configuration plan Settings as optional arguments
 ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
 
-setFigureOptions(AxesOptions);
+xAxisUnit=setFigureOptions(AxesOptions);
 
 % Perform the plot based on Curves indications
 legendLabels={};
@@ -52,7 +52,10 @@ for i=1:length(Curves)
                         yyaxis left
                     end
                 end
+                % Convert units to reference unit
+                SimTL.time = ConvertTimeUnit(SimTL.time, SimTL.timeUnit, xAxisUnit);
                 pp = plot(SimTL.time, SimTL.y{j});
+                break
             end
         end
         % For observations
@@ -70,9 +73,17 @@ for i=1:length(Curves)
                         yyaxis left
                     end
                 end
+                DataTP(j).time = ConvertTimeUnit(DataTP(j).time, DataTP(j).timeUnit, xAxisUnit);
                 pp = plot(DataTP(j).time, DataTP(j).y{1});
+                break
             end
         end
+    end
+    % If the output was not found
+    if ~exist('pp')
+        ME = MException('TimeProfile:notFoundInPath', ...
+            'Curve %s not found within simulation or observation files', Curves(i).Y);
+        throw(ME);
     end
     setCurveOptions(pp, Curves(i).CurveOptions);
 end
