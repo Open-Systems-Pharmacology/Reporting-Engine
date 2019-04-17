@@ -1,4 +1,4 @@
-function setFigureOptions(AxesOptions)
+function [xUnit, yUnit, y2Unit] = setFigureOptions(AxesOptions)
 
 % Axes definitions and options
 for iAxes=1:length(AxesOptions)
@@ -20,6 +20,10 @@ for iAxes=1:length(AxesOptions)
             yyAxesOptions=AxesOptionsStr;
     end
 end
+
+xUnit=[];
+yUnit=[];
+y2Unit=[];
 
 % Set all axis options based on TimeProfile.Plot.Axes
 
@@ -58,6 +62,7 @@ end
 % Set x label
 if isfield(xAxesOptions, {'Dimension', 'Unit'})
     xlabel([xAxesOptions.Dimension ' [' xAxesOptions.Unit ']']);
+    xUnit = xAxesOptions.Unit;
 elseif isfield(xAxesOptions, 'Dimension')
     xlabel(xAxesOptions.Dimension);
 end
