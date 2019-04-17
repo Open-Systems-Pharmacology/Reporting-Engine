@@ -4,8 +4,8 @@ function [ax_handles,figureHandle]=getReportFigureQP(WSettings,nRows,nCols,figur
 %   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %
 %   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols)
-%       - nRows number of rows for creation of new axes 
-%       - nCols number of rows for creation of new axes 
+%       - nRows number of rows for creation of new axes
+%       - nCols number of rows for creation of new axes
 %       returns:
 %       - ax_handles: array of axes handles
 %       - figureHandle: figure handle
@@ -32,11 +32,11 @@ function [ax_handles,figureHandle]=getReportFigureQP(WSettings,nRows,nCols,figur
 %               -'landscape',
 %               -'portrait'
 %           Default orientation depends on the figure format.
-%           
+%
 %   paperPosition:
 %   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols,figureHandle,...
 %           'paperPosition',paperPosition_value)
-%           paperPosition of the figure (4x1 vector) 
+%           paperPosition of the figure (4x1 vector)
 %           of form [left bottom width height]
 %           Default position depends on the figure format.
 %
@@ -51,7 +51,7 @@ function [ax_handles,figureHandle]=getReportFigureQP(WSettings,nRows,nCols,figur
 %           'axes_position',axes_position_value)
 %           Position array for axes, unit is normalized
 %           Each row (as 4x1 vector) defines one axis
-%           nRows and Cols will be ignored 
+%           nRows and Cols will be ignored
 %
 %
 % Example Call:
@@ -70,19 +70,17 @@ function [ax_handles,figureHandle]=getReportFigureQP(WSettings,nRows,nCols,figur
 % Check input options
 % Account for input options set as structure
 % Set default width and height
-chartWidth=921; 
-chartHeight=530;
 if strcmp(WSettings.workflowType, 'Qualification')
-
+    
     [figureFormat,paperOrientation, paperPosition ,fontsize,axes_position] = ...
-    checkInputOptions({},{...
-    'figureFormat',{'square','portrait','landscape'},'landscape',...
-    'paperOrientation',{'landscape','portrait','default'},'landscape',...
-    'PaperPosition',nan,'default',...
-    'fontsize',nan,nan,...
-    'axes_position',nan,nan,...
-    });
-
+        checkInputOptions({},{...
+        'figureFormat',{'square','portrait','landscape'},'landscape',...
+        'paperOrientation',{'landscape','portrait','default'},'landscape',...
+        'PaperPosition',nan,'default',...
+        'fontsize',nan,nan,...
+        'axes_position',nan,nan,...
+        });
+    
     FigOptions=varargin{1};
     if isfield(FigOptions, 'ChartWidth')
         chartWidth=FigOptions.ChartWidth;
@@ -124,21 +122,21 @@ if strcmp(WSettings.workflowType, 'Qualification')
     
 else
     
-[figureFormat,paperOrientation, paperPosition ,fontsize,axes_position] = ...
-    checkInputOptions(varargin,{...
-    'figureFormat',{'square','portrait','landscape'},'landscape',...
-    'paperOrientation',{'landscape','portrait','default'},'landscape',...
-    'PaperPosition',nan,'default',...
-    'fontsize',nan,nan,...
-    'axes_position',nan,nan,...
-    });
-
-% Set specific fonts
-fontsize_watermark=24;
-fontsize_origin=8;
-fontsize_axis=fontsize;
-fontsize_legend=fontsize;
-
+    [figureFormat,paperOrientation, paperPosition ,fontsize,axes_position] = ...
+        checkInputOptions(varargin,{...
+        'figureFormat',{'square','portrait','landscape'},'landscape',...
+        'paperOrientation',{'landscape','portrait','default'},'landscape',...
+        'PaperPosition',nan,'default',...
+        'fontsize',nan,nan,...
+        'axes_position',nan,nan,...
+        });
+    
+    % Set specific fonts
+    fontsize_watermark=24;
+    fontsize_origin=8;
+    fontsize_axis=fontsize;
+    fontsize_legend=fontsize;
+    
 end
 
 if ~exist('nRows','var')
@@ -154,8 +152,8 @@ end
 %     timestamp = false;
 %     watermark = '';
 % else
-    watermark = 'Not QCed!';
-    timestamp = true;
+watermark = 'Not QCed!';
+timestamp = true;
 %end
 
 % Get the fontsize if not user defined corresponding to the numbers of
@@ -171,11 +169,11 @@ if isnan(fontsize)
         otherwise
             fontsize=8;
     end
-fontsize_axis=fontsize;
-fontsize_legend=fontsize;    
+    fontsize_axis=fontsize;
+    fontsize_legend=fontsize;
 end
 
-    
+
 %% Create  the figure;
 if exist('figureHandle','var') && ~isempty(figureHandle) && ishandle(figureHandle)
     clf(figureHandle);
@@ -214,7 +212,11 @@ switch figureFormat
             set(figureHandle, 'PaperPosition',paperPosition);
         end
     case 'landscape'
-        set(figureHandle,'position',[193 273 chartWidth./scaleVector chartHeight./scaleVector].*scaleVector)
+        if exist('chartWidth') && exist('chartHeight')
+            set(figureHandle,'position',[193.*scaleVector 273.*scaleVector chartWidth chartHeight]);
+        else
+            set(figureHandle,'position',[193 273 921 530].*scaleVector);
+        end
         if strcmp(paperOrientation,'default')
             set(figureHandle, 'PaperOrientation', 'landscape');
         else
@@ -234,16 +236,16 @@ end
 % Create textbox
 if ~isempty(watermark)
     annotation(figureHandle,'textbox',[0.01 0.45 0.99 0.1],...
-    'String',{watermark},...
-    'FontSize',fontsize_watermark,...
-    'FitBoxToText','off',...
-    'Linestyle','None',...
-    'VerticalAlignment','middle',...
-    'HorizontalAlignment','center',...
-    'color',[0.85 0.85 0.85]);
+        'String',{watermark},...
+        'FontSize',fontsize_watermark,...
+        'FitBoxToText','off',...
+        'Linestyle','None',...
+        'VerticalAlignment','middle',...
+        'HorizontalAlignment','center',...
+        'color',[0.85 0.85 0.85]);
 end
 if timestamp
-   
+    
     % get creation information
     [st] = dbstack();
     if length(st)==1
@@ -252,17 +254,18 @@ if timestamp
         creation_txt = ...
             sprintf('created with: %s, created by: %s on %s',st(end).file,getenv('username'),datestr(now));
     end
-    
+    %{
     annotation(figureHandle,'textbox',[0.001 0.001 1 0.1],...
-    'String',{creation_txt},...
-    'FontSize',fontsize_origin,...
-    'FitBoxToText','off',...
-    'Linestyle','None',...
-    'VerticalAlignment','bottom',...
-    'HorizontalAlignment','left',...
-    'interpreter','none',...
-    'color',[0.5 0.5 0.5],...
-    'Tag','Timestamp');
+        'String',{creation_txt},...
+        'FontSize',fontsize_origin,...
+        'FitBoxToText','off',...
+        'Linestyle','None',...
+        'VerticalAlignment','bottom',...
+        'HorizontalAlignment','left',...
+        'interpreter','none',...
+        'color',[0.5 0.5 0.5],...
+        'Tag','Timestamp');
+    %}
 end
 
 % reset colormap
@@ -276,7 +279,7 @@ if isnan(axes_position)
     end
     
     % scale to provide place for picture bottomline (see printWithTimeStamp)
-    if timestamp        
+    if timestamp
         f = 0.95;
         for iAx=1:nRows*nCols
             ps = get(ax_handles(iAx),'position');
@@ -287,7 +290,7 @@ if isnan(axes_position)
 else
     ax_handles=nan(size(axes_position,1),1);
     for iAx=1:size(axes_position,1)
-        ax_handles(iAx)=axes('position',axes_position(iAx,:)); 
+        ax_handles(iAx)=axes('position',axes_position(iAx,:));
     end
     
 end
