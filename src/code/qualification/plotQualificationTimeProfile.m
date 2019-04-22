@@ -8,30 +8,29 @@ function plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curve
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
 %   figureHandle ( handle) handle of figure
 %   SimTL (structure) with simulated results
-%       .time (double vector): time vector (in units of time_unit)
-%       .y  (double matrix (nIndividual x n timepoints)): time profile of population
-%       .timeRef (double vector): time vector of reference population (in units of time_unit)
-%           if empty no reference population is drawn
-%       .yRef  (double matrix (nIndividual x n timepoints)): time profile of of reference population
-%           if empty no reference population is drawn
-%       .meanModel  (double matrix (1 x n timepoints)): time profile of population
-%   DataTP (structure) dataprofile
+%   DataTP (structure) of all loaded observed data
+%   Curves (structure) to map simulations with observations
+%   AxesOptions (structure) to set plot options
+%   PlotSettings (structure) to set plot options
 %
-% Output
-%   csv (cellarray) table with numeric information to the plot
-
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 %---------------------------------------------
+
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
+
 ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
 
-xAxisUnit=setFigureOptions(AxesOptions);
+[xAxesOptions, yAxesOptions, yyAxesOptions] = setFigureOptions(AxesOptions);
+
 
 % Perform the plot based on Curves indications
 legendLabels={};
 hold on;
+
+% Get dimensions for scaling plots
+dimensionList=getDimensions;
 
 % Plot the Curves indicated by the array of structures Curves
 for i=1:length(Curves)
@@ -45,16 +44,25 @@ for i=1:length(Curves)
             findPathOutput = strfind(Curves(i).Y,SimTL.outputPathList{j});
             if ~isempty(findPathOutput)
                 legendLabels{length(legendLabels)+1}=Curves(i).Name;
+                
                 if isfield(Curves(i).CurveOptions, 'yAxisType')
                     if strcmp(Curves(i).CurveOptions.yAxisType, 'Y2')
                         yyaxis right
+                        YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                        Yfactor=getUnitFactor(SimTL.outputUnit{j},yyAxesOptions.Unit,YDimension);
                     else
                         yyaxis left
                     end
+                else
+                    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+                    Yfactor=getUnitFactor(SimTL.outputUnit{j},yAxesOptions.Unit,YDimension);
                 end
+                
                 % Convert units to reference unit
-                SimTL.time = ConvertTimeUnit(SimTL.time, SimTL.timeUnit, xAxisUnit);
-                pp = plot(SimTL.time, SimTL.y{j});
+                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                Xfactor=getUnitFactor(SimTL.timeUnit,xAxesOptions.Unit,XDimension);
+                
+                pp = plot(SimTL.time.*Xfactor, SimTL.y{j}.*Yfactor);
                 break
             end
         end
@@ -66,15 +74,26 @@ for i=1:length(Curves)
             
             if ~isempty(findPathOutput)
                 legendLabels{length(legendLabels)+1}=Curves(i).Name;
+                
                 if isfield(Curves(i).CurveOptions, 'yAxisType')
                     if strcmp(Curves(i).CurveOptions.yAxisType, 'Y2')
                         yyaxis right
+                        YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                        Yfactor=getUnitFactor(DataTP(j).outputUnit,yyAxesOptions.Unit,YDimension);
                     else
                         yyaxis left
                     end
+                else
+                    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+                    % Caution: Code to be updated
+                    % Observed concentration was massic whereas output was
+                    % molar
+                    Yfactor=getUnitFactor(DataTP(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',325.78);
+                    
                 end
-                DataTP(j).time = ConvertTimeUnit(DataTP(j).time, DataTP(j).timeUnit, xAxisUnit);
-                pp = plot(DataTP(j).time, DataTP(j).y{1});
+                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                Xfactor=getUnitFactor(DataTP(j).timeUnit,xAxesOptions.Unit,XDimension);
+                pp = plot(DataTP(j).time.*Xfactor, DataTP(j).y{1}.*Yfactor);
                 break
             end
         end

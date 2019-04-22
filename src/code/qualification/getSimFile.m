@@ -1,4 +1,4 @@
-function csvSimFile = getSimFile(PlotType, SimulationMapping)
+function [csvSimFile, xmlSimFile] = getSimFile(PlotType, SimulationMapping)
 % GETSIMFILE get the simulated result file specified in the
 % SimulationMapping
 %
@@ -15,6 +15,7 @@ function csvSimFile = getSimFile(PlotType, SimulationMapping)
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 csvSimFile=[];
+xmlSimFile=[];
 
 Project=PlotType.Project;
 Simulation=PlotType.Simulation;
@@ -25,5 +26,6 @@ for i=1:length(SimulationMapping)
         
         path = SimulationMapping(i).Path;
         csvSimFile = fullfile(path, [Simulation '-Results.csv']);
+        xmlSimFile = fullfile(path, [Simulation '.xml']);
     end
 end

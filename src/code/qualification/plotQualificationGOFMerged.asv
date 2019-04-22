@@ -23,25 +23,14 @@ minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN;
 
 % create figure for Obs vs Pred
 [ax, fig_handle1] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
-[xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsPredictedVsObserved);
+[xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions);
 
 % create figure for Residuals vs time
 [ax, fig_handle2] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
-[TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsResidualsOverTime);
+[TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions);
 
 % Get dimensions for scaling plots
 dimensionList=getDimensions;
-if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
-    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-else
-    YDimension='';
-end
-if ~strcmp(ResAxesOptions.Dimension, 'Dimensionless')
-    ResDimension=dimensionList{strContains(ResAxesOptions.Dimension, dimensionList)};
-else
-    ResDimension='';
-end
-TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
 
 % Map for each group the corresponding observations within a same structure
 for i=1:length(Groups)
@@ -61,20 +50,14 @@ for i=1:length(Groups)
                 predictedTime=SimResult.time;
                 
                 % Convert units to reference unit
-                % Caution: Code to be updated
-                % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',325.78);
-                if strcmp(ResDimension,'')
-                    Resfactor=Yfactor;
-                else
-                    Resfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,ResDimension);
-                end
-                Timefactor=getUnitFactor(SimResult.timeUnit,TimeAxesOptions.Unit,TimeDimension);
+                Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,yAxesOptions.Dimension);
+                Resfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,ResAxesOptions.Dimension);
+                Timefactor=getUnitFactor(SimResult.timeUnit,TimeAxesOptions.Unit,TimeAxesOptions.Dimension);
                 
                 predicted = predicted.*Yfactor;
                 predictedRes = predicted.*Resfactor;
                 predictedTime = predictedTime.*Timefactor;
-                
+                        
                 break
             end
         end
@@ -92,17 +75,11 @@ for i=1:length(Groups)
                 % Get the Observation results
                 Obs=ObservedDataSets(k).y{1};
                 ObsTime=ObservedDataSets(k).time;
-                
+                 
                 % Convert units to reference unit
-                % Caution: Code to be updated
-                % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',325.78);
-                if strcmp(ResDimension,'')
-                    Resfactor=Yfactor;
-                else
-                    Resfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,ResDimension);
-                end
-                Timefactor=getUnitFactor(ObservedDataSets(k).timeUnit,TimeAxesOptions.Unit,TimeDimension);
+                Yfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,yAxesOptions.Dimension);
+                Resfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,ResAxesOptions.Dimension);
+                Timefactor=getUnitFactor(ObservedDataSets(k).timeUnit,TimeAxesOptions.Unit,TimeAxesOptions.Dimension);
                 
                 Obs = Obs.*Yfactor;
                 ObsRes = Obs.*Resfactor;
@@ -116,7 +93,7 @@ for i=1:length(Groups)
                 Group(i).dataTP(j).ypred = predicted(comparable_index);
                 Group(i).dataTP(j).yres = predicted(comparable_index)-Obs;
                 Group(i).dataTP(j).time = ObsTime;
-                
+               
                 % Set the min/max of the axis
                 minX=nanmin(min(Obs), minX);
                 maxX=nanmax(max(Obs), maxX);
@@ -147,9 +124,9 @@ for i=1:length(Groups)
         setCurveOptions(pp, CurveOptions);
     end
 end
-%xLabelFinal = getLabelWithUnit('Observed',timeUnit);
-%yLabelFinal = getLabelWithUnit('Predicted',[]);
-%xlabel(xLabelFinal); ylabel(yLabelFinal);
+xLabelFinal = getLabelWithUnit('Observed',timeUnit);
+yLabelFinal = getLabelWithUnit('Predicted',[]);
+xlabel(xLabelFinal); ylabel(yLabelFinal);
 legend(legendLabels);
 
 % Residuals vs Time Figure
@@ -165,13 +142,13 @@ for i=1:length(Groups)
         CurveOptions.LineStyle='none';
         legendLabels{length(legendLabels)+1}=Groups(i).Caption;
         
-        pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
+        pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).y-Group(i).dataTP(j).predicted);
         setCurveOptions(pp, CurveOptions);
     end
 end
-%xLabelFinal = getLabelWithUnit('Time',timeUnit);
-%yLabelFinal = getLabelWithUnit('Residuals',[]);
-%xlabel(xLabelFinal); ylabel(yLabelFinal);
+xLabelFinal = getLabelWithUnit('Time',timeUnit);
+yLabelFinal = getLabelWithUnit('Residuals',[]);
+xlabel(xLabelFinal); ylabel(yLabelFinal);
 legend(legendLabels);
 
 

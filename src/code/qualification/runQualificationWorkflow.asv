@@ -90,20 +90,17 @@ for i=1:length(TaskList)
                     nPlotSettings=PlotSettings;
                 end
                 for l=1:length(AxesSettings)
-                    if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
-                        AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
-                        break
-                    else
-                        AxesOptions.GOFMergedPlotsPredictedVsObserved=[];
-                    end
+                if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
+                    AxesOptions=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
+                    break
+                else
+                    AxesOptions.GOFMergedPlotsPredictedVsObserved=[];
                 end
-                for l=1:length(AxesSettings)
-                    if isfield(AxesSettings(l), 'GOFMergedPlotsResidualsOverTime')
-                        AxesOptions.GOFMergedPlotsResidualsOverTime=AxesSettings(l).GOFMergedPlotsResidualsOverTime;
-                        break
-                    else
-                        AxesOptions.GOFMergedPlotsResidualsOverTime=[];
-                    end
+                end
+                if isfield(AxesSettings, 'GOFMergedPlotsResidualsOverTime')
+                    AxesOptions=AxesSettings.GOFMergedPlotsResidualsOverTime;
+                else
+                    AxesOptions.GOFMergedPlotsResidualsOverTime=[];
                 end
                 % Get all the groups for one GOF merged plot
                 Groups = GOFMerged.Groups;

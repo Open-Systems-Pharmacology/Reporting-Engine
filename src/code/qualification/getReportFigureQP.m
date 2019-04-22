@@ -1,6 +1,8 @@
 function [ax_handles,figureHandle]=getReportFigureQP(WSettings,nRows,nCols,figureHandle,varargin) %#ok<INUSL>
-%GETREPORTFIGURE creates new figure with and set watermark if not on validated system.
+%GETREPORTFIGUREQP creates new figure with and set watermark if not on validated system.
 %
+%       Function based on getReportFigure from Reporting Engine, tuning
+%       some options based on the Configuration Plan (AxesSettings)
 %   WSettings  structure containing global settings see GETDEFAULTWORKFLOWSETTINGS
 %
 %   [ax_handles,figureHandle]=getReportFigure(WSettings,nRows,nCols)
@@ -244,6 +246,7 @@ if ~isempty(watermark)
         'HorizontalAlignment','center',...
         'color',[0.85 0.85 0.85]);
 end
+%{
 if timestamp
     
     % get creation information
@@ -254,7 +257,7 @@ if timestamp
         creation_txt = ...
             sprintf('created with: %s, created by: %s on %s',st(end).file,getenv('username'),datestr(now));
     end
-    %{
+    
     annotation(figureHandle,'textbox',[0.001 0.001 1 0.1],...
         'String',{creation_txt},...
         'FontSize',fontsize_origin,...
@@ -265,9 +268,9 @@ if timestamp
         'interpreter','none',...
         'color',[0.5 0.5 0.5],...
         'Tag','Timestamp');
-    %}
+    
 end
-
+%}
 % reset colormap
 colormap('default');
 
@@ -278,6 +281,7 @@ if isnan(axes_position)
         ax_handles(iAx)=subplot(nRows,nCols,iAx);
     end
     
+    %{
     % scale to provide place for picture bottomline (see printWithTimeStamp)
     if timestamp
         f = 0.95;
@@ -286,6 +290,7 @@ if isnan(axes_position)
             set(ax_handles(iAx),'position',[ps(1) 1-(1-ps(2))*f ps(3) ps(4)*f]);
         end
     end
+    %}
     
 else
     ax_handles=nan(size(axes_position,1),1);
