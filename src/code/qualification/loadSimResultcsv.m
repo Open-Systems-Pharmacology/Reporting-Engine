@@ -27,6 +27,14 @@ outputPathList = varNames(3:end);
 timePathList = varNames{2};
 
 % split path and unit for variables
+% Get all the units for concentration and amount
+allUnits=[getUnitsForDimension('mass') getUnitsForDimension('amount') getUnitsForDimension('concentration')];
+
+% To get the best match bewteen header and unit
+for jii=1:length(allUnits)
+    LallUnits(jii)=length(allUnits{jii});
+end
+
 for iP=1:length(outputPathList)
     
     tmp=outputPathList{iP};
@@ -34,14 +42,26 @@ for iP=1:length(outputPathList)
     
     if ~isempty(ji)
         outputPathList{iP}=strtrim(tmp(1:ji-1));
-        outputUnit{iP}=strtrim(tmp(ji:end)); %#ok<AGROW>
+        % Get time unit with brackets
+        bracketedUnit=strtrim(tmp(ji:end)); %#ok<AGROW>
+        % Get time unit without brackets
+        unbracketedUnits=allUnits(strContains(bracketedUnit, allUnits));
+        [Lmax, Imax]=max(LallUnits(strContains(bracketedUnit, allUnits)));
+        outputUnit{iP}=unbracketedUnits{Imax};
+        
     else
         outputPathList{iP}=tmp;
-        outputUnit{iP}=''; %#ok<AGROW>
+        outputUnit{iP}=[]; %#ok<AGROW>
     end
 end
-% For time units
+
+% Get time unit
+allTimeUnits=getUnitsForDimension('time');
+% Get time unit with brackets
 timeUnit = strtrim(timePathList(strfind(timePathList,'['):end));
+
+% Get actual time unit
+timeUnit=allTimeUnits{strContains(timeUnit, allTimeUnits)};
 
 % read numeric data and remove duplicate points
 individualIdVector = unique(t.IndividualId);

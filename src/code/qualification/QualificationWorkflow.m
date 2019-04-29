@@ -1,4 +1,4 @@
-% Script to start a Qualification Plan workflow
+% Script to perform a Qualification Plan workflow
 % Qualification Plan Workflow developed with Matlab 2017b
 % --------------------------------------------------------------
 
@@ -6,8 +6,9 @@ clear
 close all
 
 % Set the working directy and create the output repository
-% This part can be remove or replaced on later versions
-REInput_path = 'QualificationPlan\examples\examples\advanced_01\reporting engine input';
+% This part can be remove or replaced on later versions PKRatio advanced_01
+% minimal
+REInput_path = 'QualificationPlan\examples\PKRatio\reporting engine input';
 cd(REInput_path)
 REOutput_path = '..\reporting engine output';
 mkdir(REOutput_path);
@@ -23,34 +24,45 @@ ConfigurationPlan.Sections = generateOutputFolders(ConfigurationPlan.Sections, R
 % --------------------------------------------------------------
 % Copy Input content into right section
 for i=1:length(ConfigurationPlan.Inputs)
-    SectionPath = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
+    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
     try
-        copyfile(ConfigurationPlan.Inputs(i).Path, SectionPath)
-        writeToReportLog('INFO',['Input ' num2str(i) ' was copied successfully'],'false');
+        copyfile(ConfigurationPlan.Inputs(i).Path, SectionPath);
     catch exception
-        writeToReportLog('ERROR', ['Input ' num2str(i) ' could not be copied:' exception.message], 'true', exception);
+        writeToReportLog('ERROR', sprintf('Input %d could not be copied: \n %s', num2str(i), exception.message), 'true', exception);
         rethrow(exception);
     end
 end
 
-
+% --------------------------------------------------------------
 % Global settings
-% Not developped yet
-% WSettings = getDefaultWorkflowSettings('Qualification','default'); ??
+% Not developed yet: uses getDefaultWorkflowSettings from Reporting Engine
 WSettings = getDefaultWorkflowSettings('Qualification','default'); close;
 
-% Load the Observations DataSets in structures
+% --------------------------------------------------------------
+% Load the Observations DataSets from csv into structures
 for i=1:length(ConfigurationPlan.ObservedDataSets)
     if ~iscell(ConfigurationPlan.ObservedDataSets)
-        ConfigurationPlan.ObservedDataSets={ConfigurationPlan.ObservededDataSets};
+        ConfigurationPlan.ObservedDataSets={ConfigurationPlan.ObservedDataSets};
     end
-    
-    ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{1}.Path, ...
-        ConfigurationPlan.ObservedDataSets{1}.Id);
+    % For DDI and PK Ratio plots, Observed Data Type is different
+    % ObservedDataSets format to be determined
+    % Temporary format: structure where the observed data is a table y
+    if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
+        ObsTable = readtable(ConfigurationPlan.ObservedDataSets{i}.Path, 'Encoding', 'UTF-8');
+        ObservedDataSets(i).Id=ConfigurationPlan.ObservedDataSets{i}.Id;
+        ObservedDataSets(i).Type=ConfigurationPlan.ObservedDataSets{i}.Type;
+        ObservedDataSets(i).name=ConfigurationPlan.ObservedDataSets{i}.Path;
+        ObservedDataSets(i).y=ObsTable;
+    else
+        ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{i}.Path,...
+            ConfigurationPlan.ObservedDataSets{i}.Id);
+    end
 end
 
+% --------------------------------------------------------------
 % Task list: fields in ConfigurationPlan.Plots
 TaskList = fields(ConfigurationPlan.Plots);
 
-% runWorklfow
+% --------------------------------------------------------------
+% run the Worklfow tasklist of ConfigurationPlan
 runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, ObservedDataSets);
