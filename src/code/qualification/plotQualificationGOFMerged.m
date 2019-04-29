@@ -48,8 +48,12 @@ for i=1:length(Groups)
     % Load simulation according to mapping
     for j=1:length(Groups(i))
         Simulations = Groups(i).OutputMappings(j);
-        csvSimFile = getSimFile(Simulations, SimulationMappings);
+        [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings);
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
+        
+        initSimulation(xmlfile,'none');
+        Compound=Simulations.Project;
+        MW = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly');
         
         % Get the right simulation output to be compared
         for k=1:length(SimResult.outputPathList)
@@ -61,13 +65,13 @@ for i=1:length(Groups)
                 predictedTime=SimResult.time;
                 
                 % Convert units to reference unit
-                % Caution: Code to be updated
+                % Caution: Code to be updated ? what is MW unit ?
                 % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',325.78);
+                Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW*1e10);
                 if strcmp(ResDimension,'')
                     Resfactor=Yfactor;
                 else
-                    Resfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,ResDimension);
+                    Resfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,ResDimension,'MW',MW*1e10);
                 end
                 Timefactor=getUnitFactor(SimResult.timeUnit,TimeAxesOptions.Unit,TimeDimension);
                 
@@ -96,11 +100,11 @@ for i=1:length(Groups)
                 % Convert units to reference unit
                 % Caution: Code to be updated
                 % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',325.78);
+                Yfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW*1e10);
                 if strcmp(ResDimension,'')
                     Resfactor=Yfactor;
                 else
-                    Resfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,ResDimension);
+                    Resfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,ResDimension,'MW',MW);
                 end
                 Timefactor=getUnitFactor(ObservedDataSets(k).timeUnit,TimeAxesOptions.Unit,TimeDimension);
                 
@@ -114,7 +118,10 @@ for i=1:length(Groups)
                 % Group and save comparable points
                 Group(i).dataTP(j).yobs = Obs;
                 Group(i).dataTP(j).ypred = predicted(comparable_index);
-                Group(i).dataTP(j).yres = predicted(comparable_index)-Obs;
+                Group(i).dataTP(j).yres = predictedRes(comparable_index)-ObsRes;
+                if strcmp(ResDimension,'')
+                    Group(i).dataTP(j).yres=Group(i).dataTP(j).yres./ObsRes;
+                end
                 Group(i).dataTP(j).time = ObsTime;
                 
                 % Set the min/max of the axis
@@ -126,7 +133,15 @@ for i=1:length(Groups)
                 break
             end
         end
+        % If the output was not found
+        if ~exist('Obs')
+            ME = MException('GOFMergedPlot:notFoundInPath', ...
+                ['In Groups %d Mappings %d, ' Simulations.ObservedData ' not found within Observed Dataset'], i,j);
+            throw(ME);
+        end
     end
+    clear Obs
+    clear predicted
 end
 
 % -------------------------------------------------------------
@@ -134,9 +149,14 @@ end
 % Observation vs Prediction Figure
 figure(fig_handle1);
 plot([0.8*min(minX, minY) 1.2*max(maxX, maxY)], [0.8*min(minX, minY) 1.2*max(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
+axis([0.8*min(minX, minY) 1.2*max(maxX, maxY) 0.8*min(minX, minY) 1.2*max(maxX, maxY)]);
 legendLabels={};
 
+% Initialize error for computing GMFE
+Error=[];
+
 for i=1:length(Groups)
+    
     for j=1:length(Groups(i))
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
@@ -145,12 +165,21 @@ for i=1:length(Groups)
         
         pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
         setCurveOptions(pp, CurveOptions);
+        
+        Error = [Error log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
     end
 end
+xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);
+yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
+xlabel(xLabelFinal); ylabel(yLabelFinal);
+
+GMFE = 10.^(sum(abs(Error))/length(Error));
+
 %xLabelFinal = getLabelWithUnit('Observed',timeUnit);
 %yLabelFinal = getLabelWithUnit('Predicted',[]);
 %xlabel(xLabelFinal); ylabel(yLabelFinal);
-legend(legendLabels);
+%legend(legendLabels);
+legend('off')
 
 % Residuals vs Time Figure
 % create figure for Residuals vs time
@@ -169,11 +198,11 @@ for i=1:length(Groups)
         setCurveOptions(pp, CurveOptions);
     end
 end
-%xLabelFinal = getLabelWithUnit('Time',timeUnit);
-%yLabelFinal = getLabelWithUnit('Residuals',[]);
-%xlabel(xLabelFinal); ylabel(yLabelFinal);
-legend(legendLabels);
-
+xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
+yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
+xlabel(xLabelFinal); ylabel(yLabelFinal);
+%legend(legendLabels);
+legend('off')
 
 % -------------------------------------------------------------
 % Auxiliary function:

@@ -55,13 +55,10 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
-            
-            % Load the mapped Time Profile Simulation Results
-            csvSimFile = getSimFile(TimeProfile, ConfigurationPlan.SimulationMappings);
-            SimResult = loadSimResultcsv(csvSimFile, TimeProfile.Simulation);
+            nPlotSettings.title = TimeProfile.Plot.Name;
             
             % Plot the results
-            plotQualificationTimeProfile(WSettings, j, SimResult, ObservedDataSets, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, PlotSettings);
+            plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
             % Pause option for debugging
             % pause()
             saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
@@ -84,11 +81,12 @@ for i=1:length(TaskList)
                 
                 % Update plot settings if necessary (to be performed)
                 % Currently not handled
-                if isfield(GOFMerged(j), 'PlotSettings')
-                    nPlotSettings=GOFMerged(j).PlotSettings;
+                if isfield(GOFMerged(k), 'PlotSettings')
+                    nPlotSettings=GOFMerged(k).PlotSettings;
                 else
                     nPlotSettings=PlotSettings;
                 end
+                nPlotSettings.title = GOFMerged(k).Caption;
                 for l=1:length(AxesSettings)
                     if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
                         AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
@@ -110,7 +108,7 @@ for i=1:length(TaskList)
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
                 % TO BE MODELED: Output GMFE
-                plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
                 
                 % Pause option for debugging
                 % pause()
@@ -119,8 +117,15 @@ for i=1:length(TaskList)
                     saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
                 end
                 if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved')
+                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
                 end
+                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
+                % Create GMFE markdown
+                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                fileID = fopen(GMFEfile,'wt');
+                fprintf(fileID,'%f\n',GMFE);
+                fclose(fileID);
+                
             end
             
         end
@@ -187,6 +192,17 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
+            nPlotSettings.title = PKRatioPlots.Caption;
+            if isfield(PKRatioPlots, 'Color')
+                CurveOptions.Color=PKRatioPlots.Color;
+            else
+                CurveOptions.Color='#000000'; %Black
+            end
+            if isfield(PKRatioPlots, 'Symbol')
+                CurveOptions.Symbol=PKRatioPlots.Symbol;
+            else
+                CurveOptions.Symbol='Circle';
+            end
             if isfield(AxesSettings, 'PKRatioPlots')
                 AxesOptions=AxesSettings.PKRatioPlots;
             else
@@ -194,11 +210,20 @@ for i=1:length(TaskList)
             end
             
             % Plot the results
-            plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, PlotSettings);
+            [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
             
+            saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+            saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+            
+            [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
+            % Create GMFE markdown
+            GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+            fileID = fopen(GMFEfile,'wt');
+            fprintf(fileID,'%f\n',GMFE);
+            fclose(fileID);
         end
+        break
     end
-    break
 end
 
 %---------------------------------------------------
@@ -212,3 +237,12 @@ function saveQualificationFigure(figureHandle, Sections, SectionId, PlotType)
 set(figureHandle,'PaperOrientation','portrait');
 saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
 close(figureHandle);
+
+function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
+
+[SectionPath, indexed_item] = getSection(Sections, SectionId);
+fileName = fullfile(SectionPath, sprintf('%0.3d_table%s.md', indexed_item+1, Type));
+
+writeCell2md(QualificationTable, 'outfile', fileName);
+
+
