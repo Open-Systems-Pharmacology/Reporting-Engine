@@ -8,7 +8,7 @@ close all
 % Set the working directy and create the output repository
 % This part can be remove or replaced on later versions PKRatio advanced_01
 % minimal
-REInput_path = 'QualificationPlan\examples\examples\minimal\reporting engine input';
+REInput_path = 'QualificationPlan\examples\PKRatio\reporting engine input';
 cd(REInput_path)
 REOutput_path = '..\reporting engine output';
 mkdir(REOutput_path);
@@ -27,7 +27,7 @@ for i=1:length(ConfigurationPlan.Inputs)
     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
     try
         copyfile(ConfigurationPlan.Inputs(i).Path, SectionPath);
-	catch exception
+    catch exception
         writeToReportLog('ERROR', sprintf('Input %d could not be copied: \n %s', num2str(i), exception.message), 'true', exception);
         rethrow(exception);
     end
