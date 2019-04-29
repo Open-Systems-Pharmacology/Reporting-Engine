@@ -114,6 +114,12 @@ if strcmp(WSettings.workflowType, 'Qualification')
         else
             fontsize_watermark=24;
         end
+        if isfield(FigOptions, 'title')
+            timestamp = true;
+        else
+            timestamp = false;
+        end
+        
     else
         % Set default Fonts
         fontsize_watermark=24;
@@ -155,7 +161,7 @@ end
 %     watermark = '';
 % else
 watermark = 'Not QCed!';
-timestamp = true;
+%timestamp = true;
 %end
 
 % Get the fontsize if not user defined corresponding to the numbers of
@@ -246,17 +252,10 @@ if ~isempty(watermark)
         'HorizontalAlignment','center',...
         'color',[0.85 0.85 0.85]);
 end
-%{
 if timestamp
     
     % get creation information
-    [st] = dbstack();
-    if length(st)==1
-        creation_txt = sprintf('created by: %s on %s',getenv('username'),datestr(now));
-    else
-        creation_txt = ...
-            sprintf('created with: %s, created by: %s on %s',st(end).file,getenv('username'),datestr(now));
-    end
+    creation_txt = FigOptions.title;
     
     annotation(figureHandle,'textbox',[0.001 0.001 1 0.1],...
         'String',{creation_txt},...
@@ -270,7 +269,7 @@ if timestamp
         'Tag','Timestamp');
     
 end
-%}
+
 % reset colormap
 colormap('default');
 
@@ -281,7 +280,7 @@ if isnan(axes_position)
         ax_handles(iAx)=subplot(nRows,nCols,iAx);
     end
     
-    %{
+    
     % scale to provide place for picture bottomline (see printWithTimeStamp)
     if timestamp
         f = 0.95;
@@ -290,7 +289,7 @@ if isnan(axes_position)
             set(ax_handles(iAx),'position',[ps(1) 1-(1-ps(2))*f ps(3) ps(4)*f]);
         end
     end
-    %}
+    
     
 else
     ax_handles=nan(size(axes_position,1),1);
