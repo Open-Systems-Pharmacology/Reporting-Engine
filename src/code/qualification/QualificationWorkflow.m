@@ -22,7 +22,18 @@ ConfigurationPlan = getConfigurationPlan(jsonFile);
 ConfigurationPlan.Sections = generateOutputFolders(ConfigurationPlan.Sections, REOutput_path);
 
 % --------------------------------------------------------------
-% Copy Input content into right section
+% Copy Intro and Input content into right section
+if isfield(ConfigurationPlan, 'Intro')
+    for i=1:length(ConfigurationPlan.Intro)
+        [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
+        try
+            copyfile(ConfigurationPlan.Intro(i).Path, fullfile(REOutput_path));
+        catch exception
+            writeToReportLog('ERROR', sprintf('Input %d could not be copied: \n %s', num2str(i), exception.message), 'true', exception);
+            rethrow(exception);
+        end
+    end
+end
 for i=1:length(ConfigurationPlan.Inputs)
     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
     try
