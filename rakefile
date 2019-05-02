@@ -57,6 +57,12 @@ def copy_src_to_deploy_dir
     copy_file 'README.md'
     copy_file 'LICENSE'
   end
+
+  Dir.glob(File.join(deploy_dir,"**/**/.git")).each do |f| 
+    puts "Deleting #{f}".red
+    FileUtils.rm_f(f)
+  end
+
 end
 
 def copy_to_lib_dir(target_lib_dir) 
