@@ -23,6 +23,9 @@ skip_commits:
   files:
     - '*.md'
 
+pull_requests: 
+  do_not_increment_build_number: true     
+
 before_build:
   - nuget sources add -name funcparser -source https://ci.appveyor.com/nuget/ospsuite-funcparser 
   - nuget sources add -name simmodel -source https://ci.appveyor.com/nuget/ospsuite-simmodel
@@ -33,7 +36,7 @@ build_script:
   - rake "create_portable_setup[%APPVEYOR_BUILD_VERSION%]"
 
 artifacts:
-  - path: 'setup\*.zip'  
+  - path: '*.zip'  
 
 notifications:
   - provider: Slack
