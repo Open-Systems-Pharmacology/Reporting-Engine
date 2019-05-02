@@ -19,7 +19,7 @@ function  GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,Observed
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % Initialize the unity line and the time line of the plot
-minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN;
+minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN; maxRes=NaN;
 
 % create figure for Obs vs Pred
 [ax, fig_handle1] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
@@ -29,119 +29,73 @@ minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN;
 [ax, fig_handle2] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
 [TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsResidualsOverTime);
 
-% Get dimensions for scaling plots
-dimensionList=getDimensions;
-if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
-    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-else
-    YDimension='';
-end
 if ~strcmp(ResAxesOptions.Dimension, 'Dimensionless')
-    ResDimension=dimensionList{strContains(ResAxesOptions.Dimension, dimensionList)};
+    dimensionList=getDimensions;
+    ResDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
 else
     ResDimension='';
 end
-TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
 
 % Map for each group the corresponding observations within a same structure
 for i=1:length(Groups)
     % Load simulation according to mapping
     for j=1:length(Groups(i))
+        
+        % Load the mapped GOF Simulation Results
         Simulations = Groups(i).OutputMappings(j);
         [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings);
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
-        
+        % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
         initSimulation(xmlfile,'none');
         Compound=Simulations.Project;
         MW = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly');
+        MWUnit = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly', 'property', 'Unit');
+        MW = MW.*getUnitFactor(MWUnit, 'g/mol', 'Molecular weight');
         
         % Get the right simulation output to be compared
-        for k=1:length(SimResult.outputPathList)
-            % Find first integer of string pattern found else empty
-            findPathOutput = strfind(SimResult.outputPathList{k}, Simulations.Output);
-            if ~isempty(findPathOutput)
-                % Get the simulation results
-                predicted=SimResult.y{k};
-                predictedTime=SimResult.time;
-                
-                % Convert units to reference unit
-                % Caution: Code to be updated ? what is MW unit ?
-                % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW*1e10);
-                if strcmp(ResDimension,'')
-                    Resfactor=Yfactor;
-                else
-                    Resfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,ResDimension,'MW',MW*1e10);
-                end
-                Timefactor=getUnitFactor(SimResult.timeUnit,TimeAxesOptions.Unit,TimeDimension);
-                
-                predicted = predicted.*Yfactor;
-                predictedRes = predicted.*Resfactor;
-                predictedTime = predictedTime.*Timefactor;
-                
-                break
-            end
-        end
-        % If the output was not found
-        if ~exist('predicted')
-            ME = MException('GOFMergedPlot:notFoundInPath', ...
-                ['In Groups %d Mappings %d, ' Simulations.Output ' not found within simulation file ' csvSimFile], i, j);
+        [predictedTime, predicted] = testSimResults(Simulations, SimResult, MW, TimeAxesOptions, yAxesOptions);
+        
+        if isempty(predicted)
+            ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
+                'Group %d SubGroup %d : %s not found', i, j, Simulations.Output);
             throw(ME);
         end
         
-        % Get the right observations to be compared
-        for k=1:length(ObservedDataSets)
-            findPathOutput = strfind(ObservedDataSets(k).Id,Simulations.ObservedData);
-            if ~isempty(findPathOutput)
-                % Get the Observation results
-                Obs=ObservedDataSets(k).y{1};
-                ObsTime=ObservedDataSets(k).time;
-                
-                % Convert units to reference unit
-                % Caution: Code to be updated
-                % Some concentrations are massic whereas others are molar
-                Yfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW*1e10);
-                if strcmp(ResDimension,'')
-                    Resfactor=Yfactor;
-                else
-                    Resfactor=getUnitFactor(ObservedDataSets(k).outputUnit{1},yAxesOptions.Unit,ResDimension,'MW',MW);
-                end
-                Timefactor=getUnitFactor(ObservedDataSets(k).timeUnit,TimeAxesOptions.Unit,TimeDimension);
-                
-                Obs = Obs.*Yfactor;
-                ObsRes = Obs.*Resfactor;
-                ObsTime = ObsTime.*Timefactor;
-                
-                % Get points comparable between obs and pred
-                comparable_index= getComparablePredicted(ObsTime , predictedTime);
-                
-                % Group and save comparable points
-                Group(i).dataTP(j).yobs = Obs;
-                Group(i).dataTP(j).ypred = predicted(comparable_index);
-                Group(i).dataTP(j).yres = predictedRes(comparable_index)-ObsRes;
-                if strcmp(ResDimension,'')
-                    Group(i).dataTP(j).yres=Group(i).dataTP(j).yres./ObsRes;
-                end
-                Group(i).dataTP(j).time = ObsTime;
-                
-                % Set the min/max of the axis
-                minX=nanmin(min(Obs), minX);
-                maxX=nanmax(max(Obs), maxX);
-                minY=nanmax(min(predicted(comparable_index)), minY);
-                maxY=nanmax(max(predicted(comparable_index)), maxY);
-                maxtime=nanmax(max(ObsTime), maxtime);
-                break
-            end
-        end
-        % If the output was not found
-        if ~exist('Obs')
-            ME = MException('GOFMergedPlot:notFoundInPath', ...
-                ['In Groups %d Mappings %d, ' Simulations.ObservedData ' not found within Observed Dataset'], i,j);
+        % Get the right simulation output to be compared
+        [ObsTime, Obs] = testObservations(Simulations, ObservedDataSets, MW, TimeAxesOptions, yAxesOptions);
+        
+        if isempty(Obs)
+            ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
+                'Group %d SubGroup %d : %s not found', i, j, Simulations.ObservedData);
             throw(ME);
         end
+        
+        % Get points comparable between obs and pred
+        comparable_index= getComparablePredicted(ObsTime , predictedTime);
+        
+        % Group and save comparable points
+        Group(i).dataTP(j).yobs = Obs;
+        Group(i).dataTP(j).ypred = predicted(comparable_index);
+        Yres = predicted(comparable_index)-Obs;
+        if strcmp(ResDimension,'')
+            Yres=Yres./Obs;
+        else
+            Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResDimension, 'MW',MW);
+            Yres=Yres.*Resfactor;
+        end
+        Group(i).dataTP(j).yres=Yres;
+        Group(i).dataTP(j).time = ObsTime;
+        
+        % Set the min/max of the axis
+        minX=nanmin(min(Obs), minX);
+        maxX=nanmax(max(Obs), maxX);
+        minY=nanmin(min(predicted(comparable_index)), minY);
+        maxY=nanmax(max(predicted(comparable_index)), maxY);
+        maxtime=nanmax(max(ObsTime), maxtime);
+        maxRes=nanmax(max(abs(Yres)), maxRes);
+        
+        
     end
-    clear Obs
-    clear predicted
 end
 
 % -------------------------------------------------------------
@@ -150,6 +104,7 @@ end
 figure(fig_handle1);
 plot([0.8*min(minX, minY) 1.2*max(maxX, maxY)], [0.8*min(minX, minY) 1.2*max(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
 axis([0.8*min(minX, minY) 1.2*max(maxX, maxY) 0.8*min(minX, minY) 1.2*max(maxX, maxY)]);
+
 legendLabels={};
 
 % Initialize error for computing GMFE
@@ -174,17 +129,15 @@ yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 GMFE = 10.^(sum(abs(Error))/length(Error));
-
-%xLabelFinal = getLabelWithUnit('Observed',timeUnit);
-%yLabelFinal = getLabelWithUnit('Predicted',[]);
-%xlabel(xLabelFinal); ylabel(yLabelFinal);
-%legend(legendLabels);
-legend('off')
+%legend('off')
+legend(legendLabels, 'Location', 'northoutside');
 
 % Residuals vs Time Figure
 % create figure for Residuals vs time
 figure(fig_handle2);
 plot([0 1.2*maxtime], [0 0], '--k', 'Linewidth', 1, 'HandleVisibility','off');
+axis([0 1.2*maxtime -1.2*abs(maxRes) 1.2*abs(maxRes)]);
+
 legendLabels={};
 
 for i=1:length(Groups)
@@ -201,11 +154,11 @@ end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
-%legend(legendLabels);
-legend('off')
+%legend('off')
+legend(legendLabels, 'Location', 'northoutside');
 
-% -------------------------------------------------------------
-% Auxiliary function:
+% ---------------- Auxiliary function ------------------------------------
+
 % get comparable time points between observations and simulations
 function Index = getComparablePredicted(timeObs, timePred)
 
@@ -218,3 +171,81 @@ timePred2 = repmat(timePred, 1, length(timeObs));
 error = (timeObs2-timePred2).*(timeObs2-timePred2);
 
 [Y, Index] = min(error);
+
+
+% For simulations: Get the right simulation curve with right unit
+function [predictedTime, predicted] = testSimResults(Simulations, SimResult, MW, TimeAxesOptions, yAxesOptions)
+
+% If no path is matched ObsTime will be emtpy
+predictedTime=[];
+predicted=[];
+
+% Get dimensions for scaling plots
+dimensionList=getDimensions;
+if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
+    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+else
+    YDimension='Fraction';
+end
+
+TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
+
+for j = 1:length(SimResult.outputPathList)
+    
+    findPathOutput = strcmp(SimResult.outputPathList{j}, Simulations.Output);
+    
+    if findPathOutput
+        
+        % Get the data from simulations
+        predictedTime=SimResult.time;
+        predicted=SimResult.y{j};
+        
+        % Get unit factor to convert to reference unit
+        Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW);
+        Timefactor=getUnitFactor(SimResult.timeUnit,TimeAxesOptions.Unit,TimeDimension);
+        
+        % Convert units to
+        predicted = predicted.*Yfactor;
+        predictedTime = predictedTime.*Timefactor;
+        break
+    end
+end
+
+% For observation: Get the right observation curve with right unit
+function [ObsTime, Obs] = testObservations(Simulations, ObservedDataSets, MW, TimeAxesOptions, yAxesOptions)
+
+% If no path is matched ObsTime will be emtpy
+ObsTime=[];
+Obs=[];
+
+dimensionList=getDimensions;
+
+if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
+    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+else
+    YDimension='Fraction';
+end
+
+TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
+
+for j = 1:length(ObservedDataSets)
+    
+    % Get the right observed data
+    findPathOutput = strcmp(ObservedDataSets(j).Id, Simulations.ObservedData);
+    if findPathOutput
+        
+        % Get the first outputPathList, may be modified if more than one
+        % Observed data is in the file
+        Obs=ObservedDataSets(j).y{1};
+        ObsTime=ObservedDataSets(j).time;
+        
+        % Get unit factor to convert to reference unit
+        Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW);
+        Timefactor=getUnitFactor(ObservedDataSets(j).timeUnit,TimeAxesOptions.Unit,TimeDimension);
+        
+        % Convert units to
+        Obs = Obs.*Yfactor;
+        ObsTime = ObsTime.*Timefactor;
+        break
+    end
+end

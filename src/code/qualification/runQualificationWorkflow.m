@@ -243,6 +243,6 @@ function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
 fileName = fullfile(SectionPath, sprintf('%0.3d_table%s.md', indexed_item+1, Type));
 
-writeCell2md(QualificationTable, 'outfile', fileName);
+writeCell2md(QualificationTable, 'outfile', fileName, 'alignment', 'right');
 
 
