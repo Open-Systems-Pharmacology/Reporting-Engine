@@ -13,6 +13,7 @@ cache:
 branches:
   only:
     - develop
+    - qualification
 
 skip_branch_with_pr: true
 
