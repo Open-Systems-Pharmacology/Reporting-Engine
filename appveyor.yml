@@ -32,8 +32,7 @@ build_script:
   - rake "create_portable_setup[%APPVEYOR_BUILD_VERSION%]"
 
 artifacts:
-  - path: 'setup\deploy\*.zip'  
-    name: 'package'
+  - path: 'setup\*.zip'  
 
 notifications:
   - provider: Slack
