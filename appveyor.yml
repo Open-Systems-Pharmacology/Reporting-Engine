@@ -1,5 +1,5 @@
 environment:
-  app_version: '2.1.0'
+  app_version: '3.0.0'
 
 version: '$(app_version).{build}'
 
@@ -29,10 +29,10 @@ before_build:
   - nuget restore -PackagesDirectory packages
 
 build_script:
-  - rake "create_setup[%APPVEYOR_BUILD_VERSION%]"
+  - rake "create_portable_setup[%APPVEYOR_BUILD_VERSION%]"
 
 artifacts:
-  - path: 'setup\deploy\*.msi'  
+  - path: 'setup\deploy\*.zip'  
     name: 'package'
 
 notifications:
