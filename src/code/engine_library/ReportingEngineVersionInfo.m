@@ -14,7 +14,7 @@ function Info = ReportingEngineVersionInfo
 
 
 % version is still under construction
-Info.ReportingEngineVersion = 2.0; 
+Info.ReportingEngineVersion = 2.1; 
 
 % add here the names of the computers, for which the code was validated
-Info.ListOfValidatedComputers = {'BY-SPMREPRD', 'BY0S3H'}; %{'BY0LBF'}; 
+Info.ListOfValidatedComputers = {'BY-SPMREPRD', 'BY0S3H'};  
