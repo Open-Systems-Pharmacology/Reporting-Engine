@@ -89,7 +89,7 @@ for i=1:length(Groups)
         % Set the min/max of the axis
         minX=nanmin(min(Obs), minX);
         maxX=nanmax(max(Obs), maxX);
-        minY=nanmax(min(predicted(comparable_index)), minY);
+        minY=nanmin(min(predicted(comparable_index)), minY);
         maxY=nanmax(max(predicted(comparable_index)), maxY);
         maxtime=nanmax(max(ObsTime), maxtime);
         maxRes=nanmax(max(abs(Yres)), maxRes);
