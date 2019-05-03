@@ -57,11 +57,17 @@ for i=1:length(TaskList)
             end
             nPlotSettings.title = TimeProfile.Plot.Name;
             
-            % Plot the results
-            plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
-            % Pause option for debugging
-            % pause()
-            saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
+            % Plot the Time Profile results
+            try
+                plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
+                % Pause option for debugging
+                % pause()
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                
+            end
         end
         break
     end
@@ -107,24 +113,30 @@ for i=1:length(TaskList)
                 Groups = GOFMerged.Groups;
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
-                % TO BE MODELED: Output GMFE
-                GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
-                
-                % Pause option for debugging
-                % pause()
-                % Check plot type to perform predictedVsObserved, residualsOverTime or both
-                if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
-                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
+                try
+                    GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                    
+                    % Pause option for debugging
+                    % pause()
+                    % Check plot type to perform predictedVsObserved, residualsOverTime or both
+                    if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
+                    end
+                    if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
+                    end
+                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
+                    % Create GMFE markdown
+                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                    fileID = fopen(GMFEfile,'wt');
+                    fprintf(fileID,'GMFE = %f \n',GMFE);
+                    fclose(fileID);
+                catch exception
+                    writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message), 'true', exception);
+                    warning('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message);
+                    % Close open figures
+                    close all
                 end
-                if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
-                end
-                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
-                % Create GMFE markdown
-                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                fileID = fopen(GMFEfile,'wt');
-                fprintf(fileID,'%f\n',GMFE);
-                fclose(fileID);
                 
             end
             
@@ -219,7 +231,7 @@ for i=1:length(TaskList)
             % Create GMFE markdown
             GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
             fileID = fopen(GMFEfile,'wt');
-            fprintf(fileID,'%f\n',GMFE);
+            fprintf(fileID,'GMFE = %f \n',GMFE);
             fclose(fileID);
         end
         break
