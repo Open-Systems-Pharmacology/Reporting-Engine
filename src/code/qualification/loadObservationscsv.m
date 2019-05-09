@@ -29,6 +29,7 @@ t.Properties.VariableNames{success_index} = 'Time';
 % split path and unit for variables
 % Get all the units for concentration and amount
 allUnits=[getUnitsForDimension('mass') getUnitsForDimension('amount') getUnitsForDimension('concentration')];
+
 % To get the best match bewteen header and unit
 for jii=1:length(allUnits)
     LallUnits(jii)=length(allUnits{jii});
