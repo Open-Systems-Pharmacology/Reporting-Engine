@@ -10,8 +10,10 @@ if isfield(CurveOptions, 'LineStyle')
         CurveOptions.LineStyle='--';
     elseif strcmp(CurveOptions.LineStyle, 'Dot')
         CurveOptions.LineStyle=':';
-	elseif strcmp(CurveOptions.LineStyle, 'DashDot')
-        CurveOptions.LineStyle='.-';
+    elseif strcmp(CurveOptions.LineStyle, 'DashDot')
+        CurveOptions.LineStyle='-.';
+    elseif strcmp(CurveOptions.LineStyle, 'Solid')
+        CurveOptions.LineStyle='-';
     end
     set(pp, 'LineStyle', CurveOptions.LineStyle);
 end
@@ -24,9 +26,9 @@ if isfield(CurveOptions, 'Symbol')
         CurveOptions.Symbol='*';
     elseif strcmp(CurveOptions.Symbol, 'Point')
         CurveOptions.Symbol='.';
-	elseif strcmp(CurveOptions.Symbol, 'Dot')
+    elseif strcmp(CurveOptions.Symbol, 'Dot')
         CurveOptions.Symbol='.';
-	elseif strcmp(CurveOptions.Symbol, 'Cross')
+    elseif strcmp(CurveOptions.Symbol, 'Cross')
         CurveOptions.Symbol='x';
     elseif strcmp(CurveOptions.Symbol, 'Triangle')
         CurveOptions.Symbol='^';

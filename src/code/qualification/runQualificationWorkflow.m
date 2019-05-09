@@ -57,16 +57,73 @@ for i=1:length(TaskList)
             end
             nPlotSettings.title = TimeProfile.Plot.Name;
             
-            % Plot the Time Profile results
-            try
-                plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
-                % Pause option for debugging
-                % pause()
-                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
-            catch exception
-                writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
-                warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+            % Check if Individual or Population Time Profile
+            if isfield(TimeProfile.Plot, 'Type')
+                % If loop subject to change:
+                % So far, Type is TimeProfile for population, and no field
+                % Type is entered for individual.
+                if ~iscell(TimeProfile.Plot.Analysis.Fields)
+                    TimeProfile.Plot.Analysis.Fields=num2cell(TimeProfile.Plot.Analysis.Fields);
+                end
+                if ~iscell(TimeProfile.Plot.ObservedDataCollection.ObservedData)
+                    TimeProfile.Plot.ObservedDataCollection.ObservedData=num2cell(TimeProfile.Plot.ObservedDataCollection.ObservedData);
+                end
                 
+                % Get analysis plan passed on for each field
+                for jj=1:length(TimeProfile.Plot.Analysis.Fields)
+                    % Curves and Axis may contain all the analyis in a specific
+                    % field. But the path will be called similarly.
+                    PopulationCurves = TimeProfile.Plot.Analysis.Fields{jj};
+                    
+                    PopulationAxes(1).Type='X';
+                    PopulationAxes(1).Dimension='Time';
+                    PopulationAxes(1).Unit='h';
+                    PopulationAxes(1).Scaling='Linear';
+                    
+                    PopulationAxes(2).Type='Y';
+                    PopulationAxes(2).Dimension=PopulationCurves.Dimension;
+                    PopulationAxes(2).Unit=PopulationCurves.Unit;
+                    PopulationAxes(2).Scaling=PopulationCurves.Scaling;
+                    
+                    Curves(1).Name=PopulationCurves.Name;
+                    Curves(1).X='Time';
+                    Curves(1).Y=PopulationCurves.QuantityPath;
+                    Curves(1).Type='Population';
+                    Curves(1).Statistics = TimeProfile.Plot.Analysis.Statistics;
+                    
+                    % Add observed data into curves structures
+                    for kk=1:length(TimeProfile.Plot.ObservedDataCollection.CurveOptions)
+                        Curves(kk+1).Name=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).Caption;
+                        Curves(kk+1).X='Time';
+                        Curves(kk+1).Y=TimeProfile.Plot.ObservedDataCollection.ObservedData{kk};
+                        Curves(kk+1).CurveOptions=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).CurveOptions;
+                    end
+                    
+                    try
+                        plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, Curves, PopulationAxes, nPlotSettings);
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
+                        clear Curves PopulationAxes
+                        
+                    catch exception
+                        writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                        warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                        
+                    end
+                end
+                
+            else
+                
+                % Plot the Time Profile results
+                try
+                    plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
+                    % Pause option for debugging
+                    % pause()
+                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
+                catch exception
+                    writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                    warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                    
+                end
             end
         end
         break

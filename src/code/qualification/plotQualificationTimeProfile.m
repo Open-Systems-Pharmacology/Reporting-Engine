@@ -43,13 +43,14 @@ hold on;
 % Plot the Curves indicated by the array of structures Curves
 for i=1:length(Curves)
     
+    
     % For simulations: Get the right simulation curve
     [p_handle, legLabel] = testandplotSimResults(Curves(i), SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+    
     
     if isempty(p_handle)
         % For observation: Get the right observation curve with right unit
         [p_handle, legLabel] = testandplotObservations(Curves(i), ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
-        
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
@@ -57,7 +58,7 @@ for i=1:length(Curves)
             throw(ME);
         end
     end
-    legendLabels{length(legendLabels)+1}=legLabel;
+    legendLabels=[legendLabels legLabel];
     
 end
 legend(legendLabels, 'Location', 'northoutside');
@@ -68,6 +69,8 @@ legend(legendLabels, 'Location', 'northoutside');
 function [p_handle, legendLabels] = testandplotSimResults(Curves, SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions)
 
 dimensionList=getDimensions;
+p_handle=[];
+legendLabels={};
 
 for j = 1:length(SimResult.outputPathList)
     
@@ -85,9 +88,15 @@ for j = 1:length(SimResult.outputPathList)
                 XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
                 Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
                 
-                p_handle = plot(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor);
-                yyaxis left
-                break
+                if isfield(Curves, 'Type')
+                    if strcmp(Curves.Type, 'Population')
+                        [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves);
+                    end
+                else
+                    p_handle = plot(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor);
+                    yyaxis left
+                    break
+                end
             end
         else
             
@@ -97,17 +106,17 @@ for j = 1:length(SimResult.outputPathList)
             % Convert units to reference unit
             XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
             Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
-            
-            p_handle = plot(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor);
-            break
+            if isfield(Curves, 'Type')
+                if strcmp(Curves.Type, 'Population')
+                    [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves);
+                end
+            else
+                p_handle = plot(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor);
+                setCurveOptions(p_handle, Curves.CurveOptions);
+                break
+            end
         end
     end
-end
-if exist('p_handle')
-    setCurveOptions(p_handle, Curves.CurveOptions);
-else
-    p_handle=[];
-    legendLabels=[];
 end
 
 % For observation: Get the right observation curve with right unit
@@ -188,4 +197,65 @@ if exist('p_handle')
 else
     p_handle=[];
     legendLabels=[];
+end
+
+function [pp, legendLabels] = plotPopulationStatistics(time, Y, Curves)
+pp=[];
+legendLabels={};
+
+time = reshape(time, 1, []);
+ll = size(Y,1);
+if ll == length(time)
+    Y=Y';
+end
+
+for i=1:length(Curves.Statistics)
+    if strcmp(Curves.Statistics(i).Id, 'ArithmeticMean')
+        pp = plot(time, mean(Y));
+        legendLabels{length(legendLabels)+1}=sprintf('Arithmetic Mean %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'ArithmeticStandardDeviation')
+        pp = plot([time NaN time], [mean(Y)-std(Y) NaN mean(Y)+std(Y)]);
+        legendLabels{length(legendLabels)+1}=sprintf('Arithmetic Standard Deviation %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'GeometricMean')
+        pp = plot(time, geomean(Y));
+        legendLabels{length(legendLabels)+1}=sprintf('Geometric Mean %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'GeometricStandardDeviation')
+        pp = plot([time NaN time], [exp(mean(log(Y))-std(log(Y))) NaN exp(mean(log(Y))+std(log(Y)))]);
+        legendLabels{length(legendLabels)+1}=sprintf('Geometric Standard Deviation %s', Curves.Y);
+        setCurveOptions(pp , Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'Median')
+        pp = plot(time, median(Y));
+        legendLabels{length(legendLabels)+1}=sprintf('Median %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'Min')
+        pp = plot(time, min(Y));
+        legendLabels{length(legendLabels)+1}=sprintf('Min %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if strcmp(Curves.Statistics(i).Id, 'Max')
+        pp = plot(time, max(Y));
+        legendLabels{length(legendLabels)+1}=sprintf('Max %s', Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if contains(Curves.Statistics(i).Id, 'Percentile')
+        perc=sscanf(Curves.Statistics(i).Id, 'Percentile_%d')/100;
+        pp = plot(time, quantile(Y, perc));
+        legendLabels{length(legendLabels)+1}=sprintf('Percentile %d %s ', perc*100, Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
+    if contains(Curves.Statistics(i).Id, 'Range')
+        perc = sscanf(Curves.Statistics(i).Id, 'Range%d')/100;
+        ran = quantile(Y, [(1-perc)/2 (1+perc)/2]);
+        pp = patch([time time(end:-1:1)], [ran(1,:) ran(2,end:-1:1)], [perc perc perc]);
+        legendLabels{length(legendLabels)+1}=sprintf('Range %d %s ', perc*100, Curves.Y);
+        setCurveOptions(pp, Curves.Statistics(i));
+    end
 end
