@@ -31,10 +31,13 @@ SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
 % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
 initSimulation(xmlfile,'none');
-Compound=TimeProfile.Project;
-MW = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly');
-MWUnit = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly', 'property', 'Unit');
-MW = MW.*getUnitFactor(MWUnit, 'g/mol', 'Molecular weight');
+for i=1:length(Curves)
+    MW = getMolecularWeightForPath(Curves(i).Y);
+    if ~isempty(MW)
+        break
+    end
+end
+
 
 % Perform the plot based on Curves indications
 legendLabels={};
