@@ -13,6 +13,8 @@ function runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, Observ
 
 %---------------------------------------------------
 
+[WSettings] = initializeWorkflow(WSettings);
+
 %---------------------------------------------------
 for i=1:length(TaskList)
     % Implement Plot Settings
@@ -103,11 +105,10 @@ for i=1:length(TaskList)
                         plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, Curves, PopulationAxes, nPlotSettings);
                         saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
                         clear Curves PopulationAxes
-                        
                     catch exception
                         writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
                         warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
-                        
+                        close all;
                     end
                 end
                 
@@ -122,6 +123,7 @@ for i=1:length(TaskList)
                 catch exception
                     writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
                     warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                    close all;
                     
                 end
             end
@@ -278,18 +280,25 @@ for i=1:length(TaskList)
                 AxesOptions=[];
             end
             
-            % Plot the results
-            [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
-            
-            saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
-            saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
-            
-            [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
-            % Create GMFE markdown
-            GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-            fileID = fopen(GMFEfile,'wt');
-            fprintf(fileID,'GMFE = %f \n',GMFE);
-            fclose(fileID);
+            try
+                % Plot the results
+                [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
+                
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+                saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+                
+                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
+                % Create GMFE markdown
+                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                fileID = fopen(GMFEfile,'wt');
+                fprintf(fileID,'GMFE = %f \n',GMFE);
+                fclose(fileID);
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
+                % Close open figures
+                close all
+            end
         end
         break
     end
