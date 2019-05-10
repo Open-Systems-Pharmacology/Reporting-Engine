@@ -40,7 +40,7 @@ end
 
 
 %---------------------------------------------------
-%{
+
 % Plot Time Profile
 for i=1:length(TaskList)
     
@@ -203,18 +203,17 @@ for i=1:length(TaskList)
         break
     end
 end
-%}
+
 
 %---------------------------------------------------
 % Plot Comparison of Time profiles
-% TO BE COMPLETED
 for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'ComparisonTimeProfilePlots')
         
         for j=1:length(ConfigurationPlan.Plots.ComparisonTimeProfilePlots)
             
             ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
-           
+            
             % Update plot settings if necessary (to be performed)
             % Currently not handled
             if isfield(ComparisonTimeProfile, 'PlotSettings')
@@ -232,16 +231,15 @@ for i=1:length(TaskList)
                 end
             end
             
-            %try
-            plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, AxesOptions, nPlotSettings);
-            %saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
-            pause()
-            close
-            %catch exception
-            %    writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
-            %    warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
-            %    close all;
-            %end
+            try
+                plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, AxesOptions, nPlotSettings);
+                %pause()
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile')
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message);
+                close all;
+            end
         end
         break
     end
