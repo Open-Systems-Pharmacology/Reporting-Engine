@@ -7,8 +7,8 @@ close all
 
 % Set the working directy and create the output repository
 % This part can be remove or replaced on later versions PKRatio advanced_01
-% minimal
-REInput_path = 'QualificationPlan\examples\PKRatio\reporting engine input';
+% minimal PopulationTimeProfile
+REInput_path = 'QualificationPlan\examples\minimal\reporting engine input';
 cd(REInput_path)
 REOutput_path = '..\reporting engine output';
 mkdir(REOutput_path);
@@ -51,10 +51,10 @@ WSettings = getDefaultWorkflowSettings('Qualification','default'); close;
 
 % --------------------------------------------------------------
 % Load the Observations DataSets from csv into structures
+if ~iscell(ConfigurationPlan.ObservedDataSets)
+        ConfigurationPlan.ObservedDataSets=num2cell(ConfigurationPlan.ObservedDataSets);
+end
 for i=1:length(ConfigurationPlan.ObservedDataSets)
-    if ~iscell(ConfigurationPlan.ObservedDataSets)
-        ConfigurationPlan.ObservedDataSets={ConfigurationPlan.ObservedDataSets};
-    end
     % For DDI and PK Ratio plots, Observed Data Type is different
     % ObservedDataSets format to be determined
     % Temporary format: structure where the observed data is a table y

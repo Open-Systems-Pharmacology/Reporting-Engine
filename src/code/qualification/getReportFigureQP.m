@@ -90,6 +90,11 @@ if strcmp(WSettings.workflowType, 'Qualification')
     if isfield(FigOptions, 'ChartHeight')
         chartHeight=FigOptions.ChartHeight;
     end
+    if isfield(FigOptions, 'title')
+        timestamp = true;
+    else
+        timestamp = false;
+    end
     if isfield(FigOptions, 'Fonts')
         if isfield(FigOptions.Fonts, 'AxisSize')
             fontsize_axis=FigOptions.Fonts.AxisSize;
@@ -99,7 +104,7 @@ if strcmp(WSettings.workflowType, 'Qualification')
         if isfield(FigOptions.Fonts, 'LegendSize')
             fontsize_legend=FigOptions.Fonts.LegendSize;
         else
-            fontsize_legend=fontsize;
+            fontsize_legend=round(fontsize*0.6);
         end
         if isfield(FigOptions.Fonts, 'OriginSize')
             fontsize_origin=FigOptions.Fonts.OriginSize;
@@ -114,18 +119,13 @@ if strcmp(WSettings.workflowType, 'Qualification')
         else
             fontsize_watermark=24;
         end
-        if isfield(FigOptions, 'title')
-            timestamp = true;
-        else
-            timestamp = false;
-        end
         
     else
         % Set default Fonts
         fontsize_watermark=24;
         fontsize_origin=8;
         fontsize_axis=fontsize;
-        fontsize_legend=fontsize;
+        fontsize_legend=round(fontsize*0.6);
     end
     
 else
@@ -143,7 +143,7 @@ else
     fontsize_watermark=24;
     fontsize_origin=8;
     fontsize_axis=fontsize;
-    fontsize_legend=fontsize;
+    fontsize_legend=round(fontsize*0.6);
     
 end
 
@@ -178,7 +178,7 @@ if isnan(fontsize)
             fontsize=8;
     end
     fontsize_axis=fontsize;
-    fontsize_legend=fontsize;
+    fontsize_legend=round(fontsize*0.6);
 end
 
 

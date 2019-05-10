@@ -13,6 +13,8 @@ function runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, Observ
 
 %---------------------------------------------------
 
+[WSettings] = initializeWorkflow(WSettings);
+
 %---------------------------------------------------
 for i=1:length(TaskList)
     % Implement Plot Settings
@@ -57,11 +59,74 @@ for i=1:length(TaskList)
             end
             nPlotSettings.title = TimeProfile.Plot.Name;
             
-            % Plot the results
-            plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
-            % Pause option for debugging
-            % pause()
-            saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
+            % Check if Individual or Population Time Profile
+            if isfield(TimeProfile.Plot, 'Type')
+                % If loop subject to change:
+                % So far, Type is TimeProfile for population, and no field
+                % Type is entered for individual.
+                if ~iscell(TimeProfile.Plot.Analysis.Fields)
+                    TimeProfile.Plot.Analysis.Fields=num2cell(TimeProfile.Plot.Analysis.Fields);
+                end
+                if ~iscell(TimeProfile.Plot.ObservedDataCollection.ObservedData)
+                    TimeProfile.Plot.ObservedDataCollection.ObservedData=num2cell(TimeProfile.Plot.ObservedDataCollection.ObservedData);
+                end
+                
+                % Get analysis plan passed on for each field
+                for jj=1:length(TimeProfile.Plot.Analysis.Fields)
+                    % Curves and Axis may contain all the analyis in a specific
+                    % field. But the path will be called similarly.
+                    PopulationCurves = TimeProfile.Plot.Analysis.Fields{jj};
+                    
+                    PopulationAxes(1).Type='X';
+                    PopulationAxes(1).Dimension='Time';
+                    PopulationAxes(1).Unit='h';
+                    PopulationAxes(1).Scaling='Linear';
+                    
+                    PopulationAxes(2).Type='Y';
+                    PopulationAxes(2).Dimension=PopulationCurves.Dimension;
+                    PopulationAxes(2).Unit=PopulationCurves.Unit;
+                    PopulationAxes(2).Scaling=PopulationCurves.Scaling;
+                    
+                    Curves(1).Name=PopulationCurves.Name;
+                    Curves(1).X='Time';
+                    Curves(1).Y=PopulationCurves.QuantityPath;
+                    Curves(1).Type='Population';
+                    Curves(1).Statistics = TimeProfile.Plot.Analysis.Statistics;
+                    
+                    % Add observed data into curves structures
+                    for kk=1:length(TimeProfile.Plot.ObservedDataCollection.CurveOptions)
+                        Curves(kk+1).Name=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).Caption;
+                        Curves(kk+1).X='Time';
+                        Curves(kk+1).Y=TimeProfile.Plot.ObservedDataCollection.ObservedData{kk};
+                        Curves(kk+1).CurveOptions=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).CurveOptions;
+                    end
+                    
+                    try
+                        plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, Curves, PopulationAxes, nPlotSettings);
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
+                        clear Curves PopulationAxes
+                    catch exception
+                        writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                        warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                        close all;
+                    end
+                end
+                
+            else
+                
+                % Plot the Time Profile results
+                try
+                    plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
+                    % Pause option for debugging
+                    % pause()
+                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
+                catch exception
+                    writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                    warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
+                    close all;
+                    
+                end
+            end
         end
         break
     end
@@ -107,24 +172,30 @@ for i=1:length(TaskList)
                 Groups = GOFMerged.Groups;
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
-                % TO BE MODELED: Output GMFE
-                GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
-                
-                % Pause option for debugging
-                % pause()
-                % Check plot type to perform predictedVsObserved, residualsOverTime or both
-                if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
-                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
+                try
+                    GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                    
+                    % Pause option for debugging
+                    % pause()
+                    % Check plot type to perform predictedVsObserved, residualsOverTime or both
+                    if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
+                    end
+                    if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
+                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
+                    end
+                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
+                    % Create GMFE markdown
+                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                    fileID = fopen(GMFEfile,'wt');
+                    fprintf(fileID,'GMFE = %f \n',GMFE);
+                    fclose(fileID);
+                catch exception
+                    writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message), 'true', exception);
+                    warning('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message);
+                    % Close open figures
+                    close all
                 end
-                if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                    saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
-                end
-                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
-                % Create GMFE markdown
-                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                fileID = fopen(GMFEfile,'wt');
-                fprintf(fileID,'%f\n',GMFE);
-                fclose(fileID);
                 
             end
             
@@ -209,18 +280,25 @@ for i=1:length(TaskList)
                 AxesOptions=[];
             end
             
-            % Plot the results
-            [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
-            
-            saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
-            saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
-            
-            [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
-            % Create GMFE markdown
-            GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-            fileID = fopen(GMFEfile,'wt');
-            fprintf(fileID,'%f\n',GMFE);
-            fclose(fileID);
+            try
+                % Plot the results
+                [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
+                
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+                saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+                
+                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
+                % Create GMFE markdown
+                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                fileID = fopen(GMFEfile,'wt');
+                fprintf(fileID,'GMFE = %f \n',GMFE);
+                fclose(fileID);
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
+                % Close open figures
+                close all
+            end
         end
         break
     end
