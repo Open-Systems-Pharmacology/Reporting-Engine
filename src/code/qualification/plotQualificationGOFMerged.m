@@ -39,7 +39,7 @@ end
 % Map for each group the corresponding observations within a same structure
 for i=1:length(Groups)
     % Load simulation according to mapping
-    for j=1:length(Groups(i))
+    for j=1:length(Groups(i).OutputMappings)
         
         % Load the mapped GOF Simulation Results
         Simulations = Groups(i).OutputMappings(j);
