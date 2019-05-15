@@ -24,11 +24,11 @@ timePathList = varNames{1};
 % Rename time variable as Time in Observed Dataset,
 success_index = (strContains(t.Properties.VariableNames,'Time') | strContains(t.Properties.VariableNames,'time'));
 try
-t.Properties.VariableNames{success_index} = 'Time';
+    t.Properties.VariableNames{success_index} = 'Time';
 catch exception
-writeToReportLog('WARNING', sprintf('Error in TimeProfile plot %d. \n %s \n', csvfile, exception.message), 'true', exception);
-warning('Variable Time not found in first column header of observed dataset, %s. \n First column assumed as Time variable \n', csvfile, exception.message);
-t.Properties.VariableNames{1} = 'Time';
+    writeToReportLog('WARNING', sprintf('Error in TimeProfile plot %d. \n %s \n', csvfile, exception.message), 'true', exception);
+    warning('Variable Time not found in first column header of observed dataset, %s. \n First column assumed as Time variable \n', csvfile, exception.message);
+    t.Properties.VariableNames{1} = 'Time';
 end
 
 % Split path and unit for variables
@@ -60,9 +60,15 @@ for iP=1:length(outputPathList)
                 break
             end
         end
+        if isempty(iUnit)
+            outputPathList{iP}=tmp;
+            outputUnit{iP}=[]; %#ok<AGROW>
+            outputDimension{iP}=[];
+        end
     else
         outputPathList{iP}=tmp;
         outputUnit{iP}=[]; %#ok<AGROW>
+        outputDimension{iP}=[];
     end
 end
 

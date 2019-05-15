@@ -55,9 +55,15 @@ for iP=1:length(outputPathList)
                 break
             end
         end
+        if isempty(iUnit)
+            outputPathList{iP}=tmp;
+            outputUnit{iP}=[]; %#ok<AGROW>
+            outputDimension{iP}=[];
+        end
     else
         outputPathList{iP}=tmp;
         outputUnit{iP}=[]; %#ok<AGROW>
+        outputDimension{iP}=[];
     end
 end
 
