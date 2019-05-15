@@ -46,14 +46,22 @@ hold on;
 % Plot the Curves indicated by the array of structures Curves
 for i=1:length(Curves)
     
+    % ObservedData type is indicated as 2nd element of Path
+    OutputType = getElementsfromPath(Curves(i).Y);
+    OutputType = OutputType{2};
     
-    % For simulations: Get the right simulation curve
-    [p_handle, legLabel] = testandplotSimResults(Curves(i), SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
-    
-    
-    if isempty(p_handle)
+    if strcmp(OutputType, 'ObservedData')
         % For observation: Get the right observation curve with right unit
         [p_handle, legLabel] = testandplotObservations(Curves(i), ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+        % If the output was not found
+        if isempty(p_handle)
+            ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
+                'Curves %d : %s not found', i, Curves(i).Y);
+            throw(ME);
+        end
+    else
+        % For simulations: Get the right simulation curve
+        [p_handle, legLabel] = testandplotSimResults(Curves(i), SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
@@ -127,73 +135,61 @@ function [p_handle, legendLabels] = testandplotObservations(Curves, ObservedData
 
 dimensionList=getDimensions;
 
+CurveElements = getElementsfromPath(Curves.Y);
+
 for j = 1:length(ObservedDataSets)
-    findPathOutput = contains(Curves.Y,ObservedDataSets(j).Id);
+    findPathOutput = strcmp(CurveElements{1},ObservedDataSets(j).Id);
     if findPathOutput
-        for k=1:length(ObservedDataSets(j).outputPathList)
-            findPathOutputj = contains(Curves.Y,ObservedDataSets(j).outputPathList{k});
-            if findPathOutputj
+        
+        legendLabels=Curves.Name;
+        
+        if isfield(Curves.CurveOptions, 'yAxisType')
+            if strcmp(Curves.CurveOptions.yAxisType, 'Y2')
+                yyaxis right
+                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
-                legendLabels=Curves.Name;
+                % Convert units to reference unit
+                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                if isfield(Curves.CurveOptions, 'yAxisType')
-                    if strcmp(Curves.CurveOptions.yAxisType, 'Y2')
-                        yyaxis right
-                        YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
-                        Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
-                        
-                        % Convert units to reference unit
-                        XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
-                        Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
-                        
-                        p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{k}.*Yfactor);
-                        
-                        % Check if error bars to be plotted
-                        if length(ObservedDataSets(j).outputPathList)>1
-                            for kk=1:length(ObservedDataSets(j).outputPathList)
-                                errorObs = contains(ObservedDataSets(j).outputPathList{kk}, 'SD');
-                                if errorObs
-                                    errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{kk},yyAxesOptions.Unit,YDimension, 'MW',MW);
-                                    p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{k}.*Yfactor, ObservedDataSets(j).y{kk}.*errorfactor);
-                                    setCurveOptions(p_handle2, Curves.CurveOptions);
-                                end
-                            end
-                        end
-                        
-                        yyaxis left
-                        break
-                    end
-                else
+                p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+                
+                % Check if error bars to be plotted
+                if length(ObservedDataSets(j).outputPathList)>1
+                    errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yyAxesOptions.Unit,YDimension, 'MW',MW);
+                    p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor, ObservedDataSets(j).y{2}.*errorfactor);
+                    setCurveOptions(p_handle2, Curves.CurveOptions);
                     
-                    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-                    Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{k},yAxesOptions.Unit,YDimension, 'MW',MW);
-                    
-                    %fprintf('%d %d %s %s %s %f \n', i, j, YDimension, SimResult.outputUnit{j}, yAxesOptions.Unit, Yfactor);
-                    %fprintf('%s \n %s \n\n', Curves(i).Y, SimResult.outputPathList{j});
-                    
-                    % Convert units to reference unit
-                    XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
-                    Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
-                    
-                    p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{k}.*Yfactor);
-                    
-                    % Check if error bars to be plotted
-                    if length(ObservedDataSets(j).outputPathList)>1
-                        for kk=1:length(ObservedDataSets(j).outputPathList)
-                            errorObs = contains(ObservedDataSets(j).outputPathList{kk}, 'SD');
-                            if errorObs
-                                errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{kk},yAxesOptions.Unit,YDimension, 'MW',MW);
-                                p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{k}.*Yfactor, ObservedDataSets(j).y{kk}.*errorfactor);
-                                setCurveOptions(p_handle2, Curves.CurveOptions);
-                            end
-                        end
-                    end
-                    break
                 end
+                
+                yyaxis left
                 break
             end
+        else
+            
+            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW);
+            
+            % Convert units to reference unit
+            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
+            
+            p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+            
+            % Check if error bars to be plotted
+            if length(ObservedDataSets(j).outputPathList)>1
+                errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
+                p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor, ObservedDataSets(j).y{2}.*errorfactor);
+                setCurveOptions(p_handle2, Curves.CurveOptions);
+                
+            end
+            
         end
+        break
+        
     end
+    
 end
 if exist('p_handle')
     setCurveOptions(p_handle, Curves.CurveOptions);
