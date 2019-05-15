@@ -8,7 +8,7 @@ close all
 % Set the working directy and create the output repository
 % This part can be remove or replaced on later versions PKRatio advanced_01
 % minimal PopulationTimeProfile
-REInput_path = 'QualificationPlan\examples\minimal\reporting engine input';
+REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
 cd(REInput_path)
 REOutput_path = '..\reporting engine output';
 mkdir(REOutput_path);
@@ -50,23 +50,29 @@ end
 WSettings = getDefaultWorkflowSettings('Qualification','default'); close;
 
 % --------------------------------------------------------------
-% Load the Observations DataSets from csv into structures
+% Load the Observations Data Sets from csv into structures
+% Convert the input into cell array
 if ~iscell(ConfigurationPlan.ObservedDataSets)
-        ConfigurationPlan.ObservedDataSets=num2cell(ConfigurationPlan.ObservedDataSets);
+    ConfigurationPlan.ObservedDataSets=num2cell(ConfigurationPlan.ObservedDataSets);
 end
-for i=1:length(ConfigurationPlan.ObservedDataSets)
-    % For DDI and PK Ratio plots, Observed Data Type is different
-    % ObservedDataSets format to be determined
-    % Temporary format: structure where the observed data is a table y
-    if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
-        ObsTable = readtable(ConfigurationPlan.ObservedDataSets{i}.Path, 'Encoding', 'UTF-8');
-        ObservedDataSets(i).Id=ConfigurationPlan.ObservedDataSets{i}.Id;
-        ObservedDataSets(i).Type=ConfigurationPlan.ObservedDataSets{i}.Type;
-        ObservedDataSets(i).name=ConfigurationPlan.ObservedDataSets{i}.Path;
-        ObservedDataSets(i).y=ObsTable;
-    else
-        ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{i}.Path,...
-            ConfigurationPlan.ObservedDataSets{i}.Id);
+if isempty(ConfigurationPlan.ObservedDataSets)
+    % If empty input, output ObservedDataSets is an empty variable
+    ObservedDataSets=[];
+else
+    for i=1:length(ConfigurationPlan.ObservedDataSets)
+        % For DDI and PK Ratio plots, Observed Data Type is different
+        % ObservedDataSets format to be determined
+        % Temporary format: structure where the observed data is a table y
+        if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
+            ObsTable = readtable(ConfigurationPlan.ObservedDataSets{i}.Path, 'Encoding', 'UTF-8');
+            ObservedDataSets(i).Id=ConfigurationPlan.ObservedDataSets{i}.Id;
+            ObservedDataSets(i).Type=ConfigurationPlan.ObservedDataSets{i}.Type;
+            ObservedDataSets(i).name=ConfigurationPlan.ObservedDataSets{i}.Path;
+            ObservedDataSets(i).y=ObsTable;
+        else
+            ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{i}.Path,...
+                ConfigurationPlan.ObservedDataSets{i}.Id);
+        end
     end
 end
 

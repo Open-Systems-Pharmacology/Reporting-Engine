@@ -207,18 +207,12 @@ end
 
 %---------------------------------------------------
 % Plot Comparison of Time profiles
-% TO BE COMPLETED
 for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'ComparisonTimeProfilePlots')
-        %{
+        
         for j=1:length(ConfigurationPlan.Plots.ComparisonTimeProfilePlots)
             
             ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
-            
-            %            for k=1:length(ComparisonTimeProfile.OutputMappings)
-            %                csvSimFile = getSimFile(TimeProfile, ComparisonTimeProfile.OutputMappings(k));
-            %                SimResult(k) = loadSimResultcsv(csvSimFile, ComparisonTimeProfile.OutputMappings(k).Simulation);
-            %            end
             
             % Update plot settings if necessary (to be performed)
             % Currently not handled
@@ -227,26 +221,30 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
+            nPlotSettings.title = ComparisonTimeProfile.Caption;
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'ComparisonTimeProfile')
+                    AxesOptions=AxesSettings(l).ComparisonTimeProfile;
+                    break
+                else
+                    AxesOptions=[];
+                end
+            end
             
-            % Load the mapped Time Profile Simulation Results
-            csvSimFile = getSimFile(TimeProfile, ConfigurationPlan.SimulationMappings);
-            SimResult = loadSimResultcsv(csvSimFile, TimeProfile.Simulation);
-        
-        
-            ax = getReportFigure(WSettings,1,1,[],'figureformat','landscape');
-            
-            % Plot the results
-            plotQualificationComparisonTimeProfile(WSettings, j, SimResult, ComparisonTimeProfile.OutputMapping(k).Plot.Curves, ComparisonTimeProfile.OutputMapping(k).Plot.Axes);
-            
-            % Pause option for debugging
-            % pause()
-            saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile')
+            try
+                plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, AxesOptions, nPlotSettings);
+                %pause()
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile')
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message);
+                close all;
+            end
         end
-        %}
         break
     end
 end
-
+%}
 %---------------------------------------------------
 % Plot of PK Ratio
 for i=1:length(TaskList)

@@ -39,7 +39,7 @@ end
 % Map for each group the corresponding observations within a same structure
 for i=1:length(Groups)
     % Load simulation according to mapping
-    for j=1:length(Groups(i))
+    for j=1:length(Groups(i).OutputMappings)
         
         % Load the mapped GOF Simulation Results
         Simulations = Groups(i).OutputMappings(j);
@@ -47,10 +47,7 @@ for i=1:length(Groups)
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
         % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
         initSimulation(xmlfile,'none');
-        Compound=Simulations.Project;
-        MW = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly');
-        MWUnit = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype','readonly', 'property', 'Unit');
-        MW = MW.*getUnitFactor(MWUnit, 'g/mol', 'Molecular weight');
+        MW = getMolecularWeightForPath(Simulations.Output);
         
         % Get the right simulation output to be compared
         [predictedTime, predicted] = testSimResults(Simulations, SimResult, MW, TimeAxesOptions, yAxesOptions);
@@ -116,7 +113,7 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels{length(legendLabels)+1}=Groups(i).Caption;
+        legendLabels=[legendLabels Groups(i).Caption];
         
         pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
         setCurveOptions(pp, CurveOptions);
@@ -145,7 +142,7 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels{length(legendLabels)+1}=Groups(i).Caption;
+        legendLabels=[legendLabels Groups(i).Caption];
         
         pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
         setCurveOptions(pp, CurveOptions);
@@ -192,7 +189,7 @@ TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList
 
 for j = 1:length(SimResult.outputPathList)
     
-    findPathOutput = strcmp(SimResult.outputPathList{j}, Simulations.Output);
+    findPathOutput = contains(SimResult.outputPathList{j}, Simulations.Output);
     
     if findPathOutput
         
