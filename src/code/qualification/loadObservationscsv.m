@@ -25,9 +25,7 @@ timePathList = varNames{1};
 success_index = (strContains(t.Properties.VariableNames,'Time') | strContains(t.Properties.VariableNames,'time'));
 try
     t.Properties.VariableNames{success_index} = 'Time';
-catch exception
-    writeToReportLog('WARNING', sprintf('Error in TimeProfile plot %d. \n %s \n', csvfile, exception.message), 'true', exception);
-    warning('Variable Time not found in first column header of observed dataset, %s. \n First column assumed as Time variable \n', csvfile, exception.message);
+catch 
     t.Properties.VariableNames{1} = 'Time';
 end
 
@@ -58,7 +56,4 @@ Data.individualIdVector = individualIdVector;
 Data.outputPathList = outputPathList;
 Data.outputUnit = outputUnit;
 Data.outputDimension = outputDimension;
-<<<<<<< HEAD
 
-=======
->>>>>>> qualification

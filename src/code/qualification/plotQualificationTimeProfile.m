@@ -158,13 +158,14 @@ for j = 1:length(ObservedDataSets)
                 XDimension = findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                % Check if the observation names match
-                if ~strcmp(CurveElements{end}, ObservedDataSets(j).outputPathList{1})
-                    writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
-                        Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
-                    warning('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
-                        Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1});
-                end
+                % Check if the observation names match (many warning message
+                % appears and are left aside so far)
+                %{
+            if ~strcmp(ObservedDataSets(j).outputPathList{1}, CurveElements{end})
+                writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
+                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
+            end
+                %}
                 
                 % Convert the output to the correct unit
                 ObservedTime = ObservedDataSets(j).time.*Xfactor;
@@ -202,14 +203,14 @@ for j = 1:length(ObservedDataSets)
             XDimension = findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            % Check if the observation names match
-            if ~strcmp(CurveElements{end}, ObservedDataSets(j).outputPathList{1})
+            % Check if the observation names match (many warning message
+            % appears and are left aside so far)
+            %{
+            if ~strcmp(ObservedDataSets(j).outputPathList{1}, CurveElements{end})
                 writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
                     Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
-                warning('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
-                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1});
             end
-            
+            %}
             % Convert the output to the correct unit
             ObservedTime = ObservedDataSets(j).time.*Xfactor;
             ObservedOutput = ObservedDataSets(j).y{1}.*Yfactor;
