@@ -79,7 +79,6 @@ legend(legendLabels, 'Location', 'northoutside');
 % For simulations: Get the right simulation curve with right unit
 function [p_handle, legendLabels] = testandplotSimResults(Curves, SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions)
 
-dimensionList=getDimensions;
 p_handle=[];
 legendLabels={};
 
@@ -89,14 +88,17 @@ for j = 1:length(SimResult.outputPathList)
     if findPathOutput
         legendLabels=Curves.Name;
         
+        % For right Y axis
         if isfield(Curves.CurveOptions, 'yAxisType')
             if strcmp(Curves.CurveOptions.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                % Get the dimension from the Unit
+                % A flag can be output if the unit was not found
+                YDimension = findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(SimResult.outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension = findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
                 
                 if isfield(Curves, 'Type')
@@ -110,12 +112,13 @@ for j = 1:length(SimResult.outputPathList)
                 end
             end
         else
+            % For left Y axis
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            YDimension = findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension = findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
             if isfield(Curves, 'Type')
                 if strcmp(Curves.Type, 'Population')
@@ -133,33 +136,55 @@ end
 % For observation: Get the right observation curve with right unit
 function [p_handle, legendLabels] = testandplotObservations(Curves, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions)
 
-dimensionList=getDimensions;
-
+% Split the Curve path into its elements
 CurveElements = getElementsfromPath(Curves.Y);
 
 for j = 1:length(ObservedDataSets)
     findPathOutput = strcmp(CurveElements{1},ObservedDataSets(j).Id);
     if findPathOutput
-        
+        % Get the legend
         legendLabels=Curves.Name;
         
+        % For right Y axis
         if isfield(Curves.CurveOptions, 'yAxisType')
             if strcmp(Curves.CurveOptions.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                % Get the dimension from the Unit
+                % A flag can be output if the unit was not found
+                YDimension = findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension = findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+                % Check if the observation names match
+                if ~strcmp(CurveElements{end}, ObservedDataSets(j).outputPathList{1})
+                    writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
+                        Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
+                    warning('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
+                        Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1});
+                end
+                
+                % Convert the output to the correct unit
+                ObservedTime = ObservedDataSets(j).time.*Xfactor;
+                ObservedOutput = ObservedDataSets(j).y{1}.*Yfactor;
+                
+                % Plot the output
+                p_handle = plot(ObservedTime, ObservedOutput);
                 
                 % Check if error bars to be plotted
                 if length(ObservedDataSets(j).outputPathList)>1
-                    errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yyAxesOptions.Unit,YDimension, 'MW',MW);
-                    p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor, ObservedDataSets(j).y{2}.*errorfactor);
-                    setCurveOptions(p_handle2, Curves.CurveOptions);
+                    if isempty(ObservedDataSets(j).outputUnit{2})
+                        % Geometric SD is assumed for no dimension unit
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ...
+                            ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
+                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                    else
+                        errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                    end
                     
                 end
                 
@@ -167,21 +192,44 @@ for j = 1:length(ObservedDataSets)
                 break
             end
         else
+            % For left Y axis
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            % A flag can be output if the unit was not found
+            YDimension = findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension = findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+            % Check if the observation names match
+            if ~strcmp(CurveElements{end}, ObservedDataSets(j).outputPathList{1})
+                writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
+                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
+                warning('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
+                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1});
+            end
+            
+            % Convert the output to the correct unit
+            ObservedTime = ObservedDataSets(j).time.*Xfactor;
+            ObservedOutput = ObservedDataSets(j).y{1}.*Yfactor;
+            
+            % Plot the output
+            p_handle = plot(ObservedTime, ObservedOutput);
+            
             
             % Check if error bars to be plotted
             if length(ObservedDataSets(j).outputPathList)>1
-                errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
-                p_handle2=errorbar(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor, ObservedDataSets(j).y{2}.*errorfactor);
-                setCurveOptions(p_handle2, Curves.CurveOptions);
+                if isempty(ObservedDataSets(j).outputUnit{2})
+                    % Geometric SD is assumed for no dimension unit
+                    p_handle2=errorbar(ObservedTime, ObservedOutput, ...
+                        ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
+                    setCurveOptions(p_handle2, Curves.CurveOptions);
+                else
+                    errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
+                    p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                    setCurveOptions(p_handle2, Curves.CurveOptions);
+                end
                 
             end
             

@@ -262,6 +262,8 @@ for i=1:length(TaskList)
                 nPlotSettings=PlotSettings;
             end
             nPlotSettings.title = PKRatioPlots.Caption;
+            % Curve Options and default may be moved within
+            % plotQualificationPKRatio
             if isfield(PKRatioPlots, 'Color')
                 CurveOptions.Color=PKRatioPlots.Color;
             else
@@ -300,6 +302,72 @@ for i=1:length(TaskList)
         end
         break
     end
+end
+
+%}
+
+%---------------------------------------------------
+% Plot of DDI Ratio
+for i=1:length(TaskList)
+    if strcmp(TaskList{i}, 'DDIRatioPlots')
+        
+        for j=1:length(ConfigurationPlan.Plots.DDIRatioPlots)
+            
+            DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(j);
+            
+            % Update plot settings if necessary (to be performed)
+            % Currently not handled
+            if isfield(DDIRatioPlots, 'PlotSettings')
+                nPlotSettings=DDIRatioPlots.PlotSettings;
+            else
+                nPlotSettings=PlotSettings;
+            end
+            nPlotSettings.title = DDIRatioPlots.Caption;
+            
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'DDIRatioPlotsPredictedVsObserved')
+                    AxesOptions.DDIRatioPlotsPredictedVsObserved=AxesSettings(l).DDIRatioPlotsPredictedVsObserved;
+                    break
+                else
+                    AxesOptions.DDIRatioPlotsPredictedVsObserved=[];
+                end
+            end
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'DDIRatioPlotsResidualsVsObserved')
+                    AxesOptions.DDIRatioPlotsResidualsVsObserved=AxesSettings(l).DDIRatioPlotsResidualsVsObserved;
+                    break
+                else
+                    AxesOptions.DDIRatioPlotsResidualsVsObserved=[];
+                end
+            end
+            
+            % Get PK Parameters as elements
+            DDIRatioPlots.PKParameter=getElementsfromPath(DDIRatioPlots.PKParameter);
+            
+            %try
+                % Plot the results
+                plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                
+                %saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'DDIRatio');
+                %saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'DDIRatio');
+                
+                %[SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, DDIRatioPlots.SectionId);
+                % Create GMFE markdown
+                %GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                %fileID = fopen(GMFEfile,'wt');
+                %fprintf(fileID,'GMFE = %f \n',GMFE);
+                %fclose(fileID);
+            %catch exception
+             %   writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+              %  warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
+                % Close open figures
+              %  close all
+            %end
+        end
+        break
+    end
+    
+    
 end
 
 %---------------------------------------------------
