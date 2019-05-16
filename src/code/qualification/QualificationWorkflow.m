@@ -6,8 +6,8 @@ clear all
 close all
 
 % List of examples to be tested 
-REInput_path = 'QualificationPlanTests\examples\minimal\reporting engine input';
-% REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
+% REInput_path = 'QualificationPlanTests\examples\minimal\reporting engine input';
+REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PKRatio\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PopulationTimeProfile\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
