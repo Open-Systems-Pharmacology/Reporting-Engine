@@ -31,54 +31,13 @@ catch exception
     t.Properties.VariableNames{1} = 'Time';
 end
 
-% Split path and unit for variables
-[unitList,unitList_dimensionList]=iniUnitList(0);
+[timePath, timeUnit] = strimPath(timePathList);
 
 for iP=1:length(outputPathList)
-    
     % Get unit and dimension from string within brackets
-    tmp=outputPathList{iP};
-    ji=strfind(tmp,'[');
-    ij=strfind(tmp,']');
+    [outputPathList{iP}, outputUnit{iP}, outputDimension{iP}] = strimPath(outputPathList{iP});
     
-    if ~isempty(ji)
-        % In case more than one '[' ']' are found, takes the first
-        ji=ji(1); ij=ij(1);
-        
-        % Split between header and unit
-        outputPathList{iP}=strtrim(tmp(1:ji-1));
-        
-        % Get unit within brackets
-        tmpUnit=strtrim(tmp(ji+1:ij-1)); %#ok<AGROW>
-        
-        for jiUnit=1:length(unitList)
-            iUnit = find(strcmpi(unitList(jiUnit).unit_txt,tmpUnit));
-            if ~isempty(iUnit)
-                % Get the unit and dimension as cell
-                outputUnit(iP)=unitList(jiUnit).unit_txt(iUnit);
-                outputDimension(iP)=unitList_dimensionList(jiUnit);
-                break
-            end
-        end
-        if isempty(iUnit)
-            outputPathList{iP}=tmp;
-            outputUnit{iP}=[]; %#ok<AGROW>
-            outputDimension{iP}=[];
-        end
-    else
-        outputPathList{iP}=tmp;
-        outputUnit{iP}=[]; %#ok<AGROW>
-        outputDimension{iP}=[];
-    end
 end
-
-% Get time unit
-allTimeUnits=getUnitsForDimension('time');
-% Get time unit with brackets
-timeUnit = strtrim(timePathList(strfind(timePathList,'['):end));
-
-% Get actual time unit
-timeUnit=allTimeUnits{strContains(timeUnit, allTimeUnits)};
 
 IndividualId = zeros(size(t.Time));
 individualIdVector = unique(IndividualId);
