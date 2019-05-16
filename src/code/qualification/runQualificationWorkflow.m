@@ -190,11 +190,13 @@ for i=1:length(TaskList)
                     fileID = fopen(GMFEfile,'wt');
                     fprintf(fileID,'GMFE = %f \n',GMFE);
                     fclose(fileID);
+                    clear AxesOptions nPlotSettings
                 catch exception
                     writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message), 'true', exception);
                     warning('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message);
                     % Close open figures
                     close all
+                    clear AxesOptions nPlotSettings
                 end
                 
             end
@@ -234,17 +236,19 @@ for i=1:length(TaskList)
             try
                 plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, AxesOptions, nPlotSettings);
                 %pause()
-                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile')
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile');
+                clear AxesOptions nPlotSettings
             catch exception
                 writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
                 warning('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message);
                 close all;
+                clear AxesOptions nPlotSettings
             end
         end
         break
     end
 end
-%}
+
 %---------------------------------------------------
 % Plot of PK Ratio
 for i=1:length(TaskList)
@@ -293,18 +297,19 @@ for i=1:length(TaskList)
                 fileID = fopen(GMFEfile,'wt');
                 fprintf(fileID,'GMFE = %f \n',GMFE);
                 fclose(fileID);
+                clear AxesOptions nPlotSettings
             catch exception
                 writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
                 warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
                 close all
+                clear AxesOptions nPlotSettings
             end
         end
         break
     end
 end
 
-%}
 
 %---------------------------------------------------
 % Plot of DDI Ratio
@@ -344,25 +349,33 @@ for i=1:length(TaskList)
             % Get PK Parameters as elements
             DDIRatioPlots.PKParameter=getElementsfromPath(DDIRatioPlots.PKParameter);
             
-            %try
+            try
                 % Plot the results
-                plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                fig_handle = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
                 
-                %saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'DDIRatio');
-                %saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'DDIRatio');
-                
-                %[SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, DDIRatioPlots.SectionId);
-                % Create GMFE markdown
-                %GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                %fileID = fopen(GMFEfile,'wt');
-                %fprintf(fileID,'GMFE = %f \n',GMFE);
-                %fclose(fileID);
-            %catch exception
-             %   writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
-              %  warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
+                % Get output plot types as elements
+                DDIRatioPlots.PlotType = getElementsfromPath(DDIRatioPlots.PKParameter);
+                for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
+                    for plottedTypes=1:length(DDIRatioPlots.PlotType)
+                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
+                            saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
+                                DDIRatioPlots.SectionId, sprintf('DDIRatio%spredictedVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
+                        end
+                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'residualsVsObserved')
+                            saveQualificationFigure(fig_handle(plottedPKparameters).residualsVsObserved, ConfigurationPlan.Sections, ...
+                                DDIRatioPlots.SectionId, sprintf('DDIRatio%sresidualsVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
+                        end
+                    end
+                end
+                clear AxesOptions nPlotSettings
+            catch exception
+                pause()
+                %   writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                %  warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
-              %  close all
-            %end
+                close all
+                clear AxesOptions nPlotSettings
+            end
         end
         break
     end
