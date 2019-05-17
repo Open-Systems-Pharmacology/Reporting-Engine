@@ -25,7 +25,7 @@ for i=1:length(SimulationMapping)
             strcmp(SimulationMapping(i).Simulation, Simulation)
         
         path = SimulationMapping(i).Path;
-        csvSimFile = fullfile(path, [Simulation '-Results.csv']);
-        xmlSimFile = fullfile(path, [Simulation '.xml']);
+        csvSimFile = fullfile(pwd, path, [Simulation '-Results.csv']);
+        xmlSimFile = fullfile(pwd, path, [Simulation '.xml']);
     end
 end

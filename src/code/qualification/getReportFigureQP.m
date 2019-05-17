@@ -192,11 +192,15 @@ end
 set(0, 'CurrentFigure', figureHandle);
 
 % set Figure Format
+% Normalization reference TBD 
+set(0, 'Units', 'points');
 screensize = get(0,'ScreenSize');
-scaleVector=min([screensize(1,3)/1280 screensize(1,4)/1024]);
+%scaleVector=min([screensize(1,3)/1280 screensize(1,4)/1024]);
+set(figureHandle, 'Units', 'normalized');
 switch figureFormat
     case 'square'
-        set(figureHandle,'Position',[300 300 600 504].*scaleVector)
+        %set(figureHandle,'Position',[300 300 600 504].*scaleVector)
+        set(figureHandle,'Position',[0.05 0.05 0.8*screensize(1,4)/screensize(1,3) 0.8])
         if strcmp(paperOrientation,'default')
             set(figureHandle, 'PaperOrientation', 'landscape');
         else
@@ -208,7 +212,8 @@ switch figureFormat
             set(figureHandle, 'PaperPosition',paperPosition);
         end
     case 'portrait'
-        set(figureHandle,'position',[300 150 600 650].*scaleVector)
+        %set(figureHandle,'position',[300 150 600 650].*scaleVector)
+        set(figureHandle,'position',[0.05 0.05 0.6*screensize(1,4)/screensize(1,3) 0.8])
         if strcmp(paperOrientation,'default')
             set(figureHandle, 'PaperOrientation', 'portrait');
         else
@@ -221,9 +226,11 @@ switch figureFormat
         end
     case 'landscape'
         if exist('chartWidth') && exist('chartHeight')
-            set(figureHandle,'position',[193.*scaleVector 273.*scaleVector chartWidth chartHeight]);
+            %set(figureHandle,'position',[193.*scaleVector 273.*scaleVector chartWidth chartHeight]);
+            set(figureHandle,'position',[0.05 0.05 chartWidth./screensize(1,3) chartHeight./screensize(1,4)]);
         else
-            set(figureHandle,'position',[193 273 921 530].*scaleVector);
+            %set(figureHandle,'position',[193 273 921 530].*scaleVector);
+            set(figureHandle,'position',[0.05 0.05 0.8 0.8]);
         end
         if strcmp(paperOrientation,'default')
             set(figureHandle, 'PaperOrientation', 'landscape');

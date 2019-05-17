@@ -20,6 +20,11 @@ MW = cell2mat(desc(2:end,3));
 
 jj = cellfun(@(x) contains([outputPath '|'],x),strcat('|',compounds,'|'));
 
+if sum(jj)~=1
+    disp(jj);
+    jj=1; 
+end
+
 % set MW
 Compound = compounds{jj};
 MW = MW(jj);

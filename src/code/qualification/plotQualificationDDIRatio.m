@@ -1,7 +1,7 @@
-function plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, CurveOptions)
+function fig_handle = plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings)
 %PLOTQUALIFICATIONPKRATIO Plots PK ratio from qualification workflow
 %
-% plotQualificationPKRatio(WSettings,figureHandle,PKParameter,PKRatios,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings)
+% plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings)
 %
 % Inputs:
 %       WSettings (structure)    definition of properties used in all
@@ -21,34 +21,37 @@ function plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGr
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
 
-% WARNING: FUNCTION STILL AS DRAFT, MANY FEATURES NOT AVAILABLE/HANDLED
+% WARNING: FUNCTION STILL AS DRAFT: MANY FEATURES NOT AVAILABLE/HANDLED
+% TO BE ADDED: LEGENDS, LABELS, GMFE, TABLE, ENSURE ROBUSTNESS
 
+% xRatio and yRatio vectors for Guest et al. equation
 % Load the template for the plot/ Formula not correct at the moment
-xRatio=10.^(-2:0.1:2);
-yRatio1=1.5.*xRatio./(1+xRatio)+0.5;
-yRatio2=-1.5.*xRatio./(1+xRatio)+2;
+xRatio=10.^(-2:0.01:2);
+[yRatio1, yRatio2] = DDIRatioGuestEquation(xRatio);
 
-% create figure for Obs vs Pred
-[ax, fig_handle1] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
-[xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-figure(fig_handle1);
-plot(xRatio, xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, xRatio/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, xRatio*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, xRatio.*yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, xRatio./yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-xlabel('Observed Ratio'); ylabel('Predicted Ratio');
-
-% create figure for Residuals
-[ax, fig_handle2] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
-[xResAxesOptions, yResAxesOptions] = setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-figure(fig_handle2);
-plot(xRatio, ones(size(xRatio)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, ones(size(xRatio))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, ones(size(xRatio))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-plot(xRatio, yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-xlabel('Observed Ratio'); ylabel('Residuals');
+for k=1:length(PKParameter)
+    % create figure for Obs vs Pred
+    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
+    figure(fig_handle(k).predictedVsObserved);
+    plot(xRatio, xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, xRatio/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, xRatio*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel('Observed Ratio'); ylabel('Predicted Ratio');
+    
+    % create figure for Residuals
+    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
+    figure(fig_handle(k).residualsVsObserved);
+    plot(xRatio, ones(size(xRatio)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, ones(size(xRatio))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, ones(size(xRatio))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio1./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio2./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel('Observed Ratio'); ylabel('Residuals');
+end
 
 % Initialize error for computing GMFE
 Error=[];
@@ -144,10 +147,10 @@ for i=1:length(DDIRatioGroups)
                 
                 Result(i).RatioPK(j,k)=Result(i).DDIPK(j,k)./Result(i).ControlPK(j,k);
                 
-                figure(fig_handle1);
+                figure(fig_handle(k).predictedVsObserved);
                 pp=plot(PKRobs(j,k), Result(i).RatioPK(j,k), 'o', 'Linewidth',1);
                 
-                figure(fig_handle2);
+                figure(fig_handle(k).residualsVsObserved);
                 pp=plot(PKRobs(j,k), Result(i).RatioPK(j,k)./PKRobs(j,k), 'o', 'Linewidth',1);
                 %setCurveOptions(pp, CurveOptions);
                 
@@ -196,3 +199,24 @@ drugmass = getParameter('*Application_*|ProtocolSchemaItem|DrugMass',1,'paramete
 
 AGE = getParameter('*|Organism|Age',1,'parametertype','readonly');
 BW = getParameter('*|Organism|Weight',1,'parametertype','readonly');
+
+function [UpperLimit, LowerLimit] = DDIRatioGuestEquation(Robs, delta)
+% Upper and Lower limits for DDI Ratio plots as proposed by Guest et al.
+
+
+% Delta might be different from 1 to use different limits
+if ~exist('delta')
+    delta=1;
+end
+
+symRobs=Robs;
+
+symRobs(Robs<1)=1./symRobs(symRobs<1);
+
+Limit = (delta + 2.*(symRobs-1))./symRobs;
+
+UpperLimit = symRobs.*Limit;
+LowerLimit = symRobs./Limit;
+
+UpperLimit(Robs<1)=1./UpperLimit(Robs<1);
+LowerLimit(Robs<1)=1./LowerLimit(Robs<1);
