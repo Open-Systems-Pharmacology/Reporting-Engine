@@ -109,7 +109,7 @@ Error=[];
 
 for i=1:length(Groups)
     
-    for j=1:length(Groups(i))
+    for j=1:length(Groups(i).OutputMappings)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';

@@ -13,9 +13,9 @@ function  [SectionsOut, SectionIndex] = generateOutputFolders(SectionsIn, REOutp
 %---------------------------------------------------
 
 % Standardize all input sections into cell class
-if ~iscell(SectionsIn)
-    SectionsIn = {SectionsIn};
-end
+% if ~iscell(SectionsIn)
+%     SectionsIn = {SectionsIn};
+% end
 
 % Initialize output sections
 SectionsOut=[];
@@ -25,11 +25,11 @@ for i = 1:length(SectionsIn)
     
     % Get Section Id
     SectionIndex=length(SectionsOut)+1;
-    SectionsOut(SectionIndex).Id=SectionsIn{i}.Id;
-    SectionsOut(SectionIndex).Title=SectionsIn{i}.Title;
+    SectionsOut(SectionIndex).Id=SectionsIn(i).Id;
+    SectionsOut(SectionIndex).Title=SectionsIn(i).Title;
     
     % Create folder and add its path in the structure
-    Path = fullfile(REOutputFolder, removeForbiddenLetters(SectionsIn{i}.Title));
+    Path = fullfile(REOutputFolder, removeForbiddenLetters(SectionsIn(i).Title));
     SectionsOut(SectionIndex).Path = Path;
     
     try
@@ -44,7 +44,7 @@ for i = 1:length(SectionsIn)
     end
     
     % Copy the content of the section within the folder
-    SectionsOut(SectionIndex).Content = SectionsIn{i}.Content;
+    SectionsOut(SectionIndex).Content = SectionsIn(i).Content;
     
     try
         copyfile(SectionsOut(SectionIndex).Content, fullfile(Path, '_content.md'));
@@ -54,10 +54,10 @@ for i = 1:length(SectionsIn)
     end
     
     % Check for sub-Sections
-    if isfield(SectionsIn{i}, 'Sections')
-        if ~isempty(SectionsIn{i}.Sections)
+    if isfield(SectionsIn(i), 'Sections')
+        if ~isempty(SectionsIn(i).Sections)
             % Repeat the process from this folder
-            [SubSectionsOut, SubSectionIndex] = generateOutputFolders(SectionsIn{i}.Sections, Path);
+            [SubSectionsOut, SubSectionIndex] = generateOutputFolders(SectionsIn(i).Sections, Path);
             for j=1:SubSectionIndex
                 SectionsOut(SectionIndex+j)=SubSectionsOut(j);
             end

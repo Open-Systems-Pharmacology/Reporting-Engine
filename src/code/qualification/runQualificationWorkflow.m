@@ -140,7 +140,7 @@ for i=1:length(TaskList)
         
         for j=1:length(ConfigurationPlan.Plots.GOFMergedPlots)
             
-            GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots(j);
+            GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots{j};
             
             for k=1:length(GOFMerged)
                 
