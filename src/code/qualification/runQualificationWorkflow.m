@@ -40,7 +40,7 @@ end
 
 
 %---------------------------------------------------
-%{
+
 % Plot Time Profile
 for i=1:length(TaskList)
     
@@ -270,7 +270,7 @@ for i=1:length(TaskList)
         break
     end
 end
-%}
+
 %---------------------------------------------------
 % Plot of PK Ratio
 for i=1:length(TaskList)
@@ -339,7 +339,6 @@ for i=1:length(TaskList)
     end
 end
 
-
 %---------------------------------------------------
 % Plot of DDI Ratio
 for i=1:length(TaskList)
@@ -385,33 +384,37 @@ for i=1:length(TaskList)
             % Get PK Parameters as elements
             DDIRatioPlots.PKParameter=getElementsfromPath(DDIRatioPlots.PKParameter);
             
-            %try
-            % Plot the results
-            fig_handle = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
-            
-            % Get output plot types as elements
-            DDIRatioPlots.PlotType = getElementsfromPath(DDIRatioPlots.PKParameter);
-            for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
-                for plottedTypes=1:length(DDIRatioPlots.PlotType)
-                    if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
-                        saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
-                            DDIRatioPlots.SectionId, sprintf('DDIRatio%spredictedVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
-                    end
-                    if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'residualsVsObserved')
-                        saveQualificationFigure(fig_handle(plottedPKparameters).residualsVsObserved, ConfigurationPlan.Sections, ...
-                            DDIRatioPlots.SectionId, sprintf('DDIRatio%sresidualsVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
+            try
+                % Plot the results
+                [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, ...
+                    DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
+                    AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
+                
+                % Get output plot types as elements
+                DDIRatioPlots.PlotType = getElementsfromPath(DDIRatioPlots.PKParameter);
+                for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
+                    saveQualificationTable(DDIRatioTable(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
+                    saveQualificationTable(DDIRatioQuali(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
+                    for plottedTypes=1:length(DDIRatioPlots.PlotType)
+                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
+                            saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
+                                DDIRatioPlots.SectionId, sprintf('DDIRatio%spredictedVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
+                        end
+                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'residualsVsObserved')
+                            saveQualificationFigure(fig_handle(plottedPKparameters).residualsVsObserved, ConfigurationPlan.Sections, ...
+                                DDIRatioPlots.SectionId, sprintf('DDIRatio%sresidualsVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
+                        end
                     end
                 end
+                clear AxesOptions nPlotSettings
+            catch exception
+                %pause()
+                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in DDIRatio plot %d. \n %s \n', j, exception.message);
+                % Close open figures
+                close all
+                clear AxesOptions nPlotSettings
             end
-            clear AxesOptions nPlotSettings
-            %catch exception
-            %    pause()
-            %   writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
-            %  warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
-            % Close open figures
-            close all
-            clear AxesOptions nPlotSettings
-            %end
         end
         break
     end
