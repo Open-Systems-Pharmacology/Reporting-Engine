@@ -440,5 +440,3 @@ function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
 fileName = fullfile(SectionPath, sprintf('%0.3d_table%s.md', indexed_item+1, Type));
 
 writeCell2md(QualificationTable, 'outfile', fileName, 'alignment', 'right');
-
-
