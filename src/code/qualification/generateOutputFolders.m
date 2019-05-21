@@ -1,4 +1,4 @@
-function  [SectionsOut, SectionIndex] = generateOutputFolders(SectionsIn, REOutputFolder)
+function  [SectionsOut, SectionIndex] = generateOutputFolders(SectionsIn, REInputFolder, REOutputFolder)
 %GENERATEOUTPUTFOLDERS Support function:
 % Explore tree of sections and generate folders of sections within REOutputFolder
 % linearize the section structure
@@ -14,7 +14,7 @@ function  [SectionsOut, SectionIndex] = generateOutputFolders(SectionsIn, REOutp
 
 % Standardize all input sections into cell class
 if ~iscell(SectionsIn)
-    SectionsIn = {SectionsIn};
+    SectionsIn = num2cell(SectionsIn);
 end
 
 % Initialize output sections
@@ -47,9 +47,9 @@ for i = 1:length(SectionsIn)
     SectionsOut(SectionIndex).Content = SectionsIn{i}.Content;
     
     try
-        copyfile(SectionsOut(SectionIndex).Content, fullfile(Path, '_content.md'));
+        copyfile(fullfile(REInputFolder, SectionsOut(SectionIndex).Content), fullfile(Path, '_content.md'));
     catch exception
-        writeToReportLog('ERROR', [sprintf('Error in Section Id %d: %s could not be copied : \n', SectionsOut(SectionIndex).Id, SectionsOut(SectionIndex).Content), exception.message], 'true', exception);
+        writeToReportLog('ERROR', [sprintf('Error in Section Id %d: %s could not be copied : \n', SectionsOut(SectionIndex).Id, fullfile(REInputFolder, SectionsOut(SectionIndex).Content)), exception.message], 'true', exception);
         rethrow(exception);
     end
     

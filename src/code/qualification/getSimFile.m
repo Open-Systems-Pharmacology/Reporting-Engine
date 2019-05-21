@@ -1,4 +1,4 @@
-function [csvSimFile, xmlSimFile] = getSimFile(PlotType, SimulationMapping)
+function [csvSimFile, xmlSimFile] = getSimFile(PlotType, SimulationMapping, REInputPath)
 % GETSIMFILE get the simulated result file specified in the
 % SimulationMapping
 %
@@ -25,7 +25,8 @@ for i=1:length(SimulationMapping)
             strcmp(SimulationMapping(i).Simulation, Simulation)
         
         path = SimulationMapping(i).Path;
-        csvSimFile = fullfile(path, [Simulation '-Results.csv']);
-        xmlSimFile = fullfile(path, [Simulation '.xml']);
+        csvSimFile = fullfile(REInputPath, path, [Simulation '-Results.csv']);
+        xmlSimFile = fullfile(REInputPath, path, [Simulation '.xml']);
+        break
     end
 end

@@ -1,10 +1,11 @@
-function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initializeQualificationWorkflow(jsonFile, REOutput_path)
+function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initializeQualificationWorkflow(jsonFile, REInput_path, REOutput_path)
 % function that initialise the workflow, sets up the logfile, and sets global settings
 %
 % [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initializeQualificationWorkflow(jsonFile)
 % 
 % Inputs:
 %       jsonFile (string)  name of configuration .json file
+%       REInput_path (string) name of the input RE folder
 %       REOutput_path (string) name of the output RE folder
 % Outputs:
 %       WSettings (structure)  see GETDEFAULTWORKFLOWSETTINGS
@@ -20,20 +21,23 @@ function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initialize
 mkdir(REOutput_path);
 
 % Read the .json file
-ConfigurationPlan = getConfigurationPlan(jsonFile);
+ConfigurationPlan = getConfigurationPlan(fullfile(REInput_path, jsonFile));
+
+% Set Reporting Engine Input Path 
+ConfigurationPlan.REInput_path=REInput_path;
 
 % Linearize the Sections input and create the folder structure
-ConfigurationPlan.Sections = generateOutputFolders(ConfigurationPlan.Sections, REOutput_path);
+ConfigurationPlan.Sections = generateOutputFolders(ConfigurationPlan.Sections, REInput_path, REOutput_path);
 
 % --------------------------------------------------------------
 % Copy Intro and Input content into right section
 if isfield(ConfigurationPlan, 'Intro')
     for i=1:length(ConfigurationPlan.Intro)
         try
-            copyfile(ConfigurationPlan.Intro(i).Path, fullfile(REOutput_path));
+            copyfile(fullfile(REInput_path, ConfigurationPlan.Intro(i).Path), fullfile(REOutput_path));
         catch exception
             writeToReportLog('ERROR', sprintf('Error in copying Intro: \n %s \n Intro index: %d \n Input path: %s \n Output path: %s \n', ...
-                exception.message, i, ConfigurationPlan.Intro(i).Path, fullfile(REOutput_path)), 'true', exception);
+                exception.message, i, fullfile(REInput_path, ConfigurationPlan.Intro(i).Path), fullfile(REOutput_path)), 'true', exception);
             rethrow(exception);
         end
     end
@@ -41,10 +45,10 @@ end
 for i=1:length(ConfigurationPlan.Inputs)
     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, ConfigurationPlan.Inputs(i).SectionId);
     try
-        copyfile(ConfigurationPlan.Inputs(i).Path, SectionPath);
+        copyfile(fullfile(REInput_path, ConfigurationPlan.Inputs(i).Path), SectionPath);
     catch exception
         writeToReportLog('ERROR', sprintf('Error in copying Inputs: \n %s \n Inputs index: %d \n Input path: %s \n Output path: %s \n', ...
-                exception.message, i, ConfigurationPlan.Inputs(i).Path, SectionPath), 'true', exception);
+                exception.message, i, fullfile(REInput_path, ConfigurationPlan.Inputs(i).Path), SectionPath), 'true', exception);
             rethrow(exception);
     end
 end
@@ -69,13 +73,13 @@ else
         % ObservedDataSets format to be determined
         % Temporary format: structure where the observed data is a table y
         if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
-            ObsTable = readtable(ConfigurationPlan.ObservedDataSets{i}.Path, 'Encoding', 'UTF-8');
+            ObsTable = readtable(fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path), 'Encoding', 'UTF-8');
             ObservedDataSets(i).Id=ConfigurationPlan.ObservedDataSets{i}.Id;
             ObservedDataSets(i).Type=ConfigurationPlan.ObservedDataSets{i}.Type;
-            ObservedDataSets(i).name=ConfigurationPlan.ObservedDataSets{i}.Path;
+            ObservedDataSets(i).name=fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path);
             ObservedDataSets(i).y=ObsTable;
         else
-            ObservedDataSets(i) = loadObservationscsv(ConfigurationPlan.ObservedDataSets{i}.Path,...
+            ObservedDataSets(i) = loadObservationscsv(fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path),...
                 ConfigurationPlan.ObservedDataSets{i}.Id);
         end
     end

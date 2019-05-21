@@ -1,4 +1,4 @@
-function plotQualificationComparisonTimeProfile(WSettings,figureHandle,CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings)
+function plotQualificationComparisonTimeProfile(WSettings,figureHandle,CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %PLOTCOMPARISONQUALIFICATIONTIMEPROFILE Plots the time profile of a population in comparison to a reference population
 %
 % plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions,PlotSettings)
@@ -31,7 +31,12 @@ legendLabels={};
 for i=1:length(Curves)
     
     % Load the mapped Time Profile Simulation Results
-    [csvSimFile, xmlfile] = getSimFile(Curves(i), SimulationMappings);
+    [csvSimFile, xmlfile] = getSimFile(Curves(i), SimulationMappings, REInputPath);
+    if isempty(csvSimFile)
+        ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
+            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves(i).Project, Curves(i).Simulation);
+        throw(ME);
+    end
     SimResult = loadSimResultcsv(csvSimFile, Curves(i));
     
     % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
