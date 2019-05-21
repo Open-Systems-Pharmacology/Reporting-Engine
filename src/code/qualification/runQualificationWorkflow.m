@@ -57,6 +57,13 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
+            if isfield(TimeProfile.Plot, 'Caption')
+                nPlotSettings.title = TimeProfile.Plot.Caption;
+            elseif isfield(TimeProfile.Plot, 'Name')
+                nPlotSettings.title = TimeProfile.Plot.Name;
+            else
+                nPlotSettings.title = [];
+            end
             nPlotSettings.title = TimeProfile.Plot.Name;
             
             % Check if Individual or Population Time Profile
@@ -97,12 +104,13 @@ for i=1:length(TaskList)
                     for kk=1:length(TimeProfile.Plot.ObservedDataCollection.CurveOptions)
                         Curves(kk+1).Name=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).Caption;
                         Curves(kk+1).X='Time';
-                        Curves(kk+1).Y=TimeProfile.Plot.ObservedDataCollection.ObservedData{kk};
+                        Curves(kk+1).Y=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).Path;
                         Curves(kk+1).CurveOptions=TimeProfile.Plot.ObservedDataCollection.CurveOptions(kk).CurveOptions;
                     end
                     
                     try
-                        plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, Curves, PopulationAxes, nPlotSettings);
+                        plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
+                            Curves, PopulationAxes, nPlotSettings, ConfigurationPlan.REInput_path);
                         saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
                         clear Curves PopulationAxes
                     catch exception
@@ -116,7 +124,8 @@ for i=1:length(TaskList)
                 
                 % Plot the Time Profile results
                 try
-                    plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, TimeProfile.Plot.Axes, nPlotSettings);
+                    plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, ...
+                        TimeProfile.Plot.Axes, nPlotSettings, ConfigurationPlan.REInput_path);
                     % Pause option for debugging
                     % pause()
                     saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
@@ -151,7 +160,13 @@ for i=1:length(TaskList)
                 else
                     nPlotSettings=PlotSettings;
                 end
-                nPlotSettings.title = GOFMerged(k).Caption;
+                if isfield(GOFMerged(k), 'Caption')
+                    nPlotSettings.title = GOFMerged(k).Caption;
+                elseif isfield(GOFMerged(k), 'Name')
+                    nPlotSettings.title = GOFMerged(k).Name;
+                else
+                    nPlotSettings.title = [];
+                end
                 for l=1:length(AxesSettings)
                     if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
                         AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
@@ -173,7 +188,8 @@ for i=1:length(TaskList)
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
                 try
-                    GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                    GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,...
+                        ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                     
                     % Pause option for debugging
                     % pause()
@@ -206,7 +222,6 @@ for i=1:length(TaskList)
     end
 end
 
-
 %---------------------------------------------------
 % Plot Comparison of Time profiles
 for i=1:length(TaskList)
@@ -223,7 +238,13 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
-            nPlotSettings.title = ComparisonTimeProfile.Caption;
+            if isfield(ComparisonTimeProfile, 'Caption')
+                nPlotSettings.title = ComparisonTimeProfile.Caption;
+            elseif isfield(ComparisonTimeProfile, 'Name')
+                nPlotSettings.title = ComparisonTimeProfile.Name;
+            else
+                nPlotSettings.title = [];
+            end
             for l=1:length(AxesSettings)
                 if isfield(AxesSettings(l), 'ComparisonTimeProfile')
                     AxesOptions=AxesSettings(l).ComparisonTimeProfile;
@@ -234,9 +255,10 @@ for i=1:length(TaskList)
             end
             
             try
-                plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, AxesOptions, nPlotSettings);
+                plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, ...
+                    AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 %pause()
-                saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'ComparisonTimeProfile');
+                saveQualificationFigure(gcf, ConfigurationPlan.Sections, ComparisonTimeProfile.SectionId, 'ComparisonTimeProfile');
                 clear AxesOptions nPlotSettings
             catch exception
                 writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
@@ -265,7 +287,14 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
-            nPlotSettings.title = PKRatioPlots.Caption;
+            if isfield(PKRatioPlots, 'Caption')
+                nPlotSettings.title = PKRatioPlots.Caption;
+            elseif isfield(PKRatioPlots, 'Name')
+                nPlotSettings.title = PKRatioPlots.Name;
+            else
+                nPlotSettings.title = [];
+            end
+            
             % Curve Options and default may be moved within
             % plotQualificationPKRatio
             if isfield(PKRatioPlots, 'Color')
@@ -310,7 +339,6 @@ for i=1:length(TaskList)
     end
 end
 
-
 %---------------------------------------------------
 % Plot of DDI Ratio
 for i=1:length(TaskList)
@@ -327,7 +355,14 @@ for i=1:length(TaskList)
             else
                 nPlotSettings=PlotSettings;
             end
-            nPlotSettings.title = DDIRatioPlots.Caption;
+            if isfield(DDIRatioPlots, 'Caption')
+                nPlotSettings.title = DDIRatioPlots.Caption;
+            elseif isfield(DDIRatioPlots, 'Name')
+                nPlotSettings.title = DDIRatioPlots.Name;
+            else
+                nPlotSettings.title = [];
+            end
+            
             
             for l=1:length(AxesSettings)
                 if isfield(AxesSettings(l), 'DDIRatioPlotsPredictedVsObserved')
@@ -351,11 +386,15 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                fig_handle = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings);
+                [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, ...
+                    DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
+                    AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
                 % Get output plot types as elements
                 DDIRatioPlots.PlotType = getElementsfromPath(DDIRatioPlots.PKParameter);
                 for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
+                    saveQualificationTable(DDIRatioTable(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
+                    saveQualificationTable(DDIRatioQuali(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
                     for plottedTypes=1:length(DDIRatioPlots.PlotType)
                         if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
                             saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
@@ -369,9 +408,9 @@ for i=1:length(TaskList)
                 end
                 clear AxesOptions nPlotSettings
             catch exception
-                pause()
-                %   writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
-                %  warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
+                %pause()
+                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in DDIRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
                 close all
                 clear AxesOptions nPlotSettings
@@ -401,5 +440,3 @@ function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
 fileName = fullfile(SectionPath, sprintf('%0.3d_table%s.md', indexed_item+1, Type));
 
 writeCell2md(QualificationTable, 'outfile', fileName, 'alignment', 'right');
-
-

@@ -1,4 +1,4 @@
-function  GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings)
+function  GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 % PLOTQUALIFICATIONGOFMERGED plot predcited vs observed and residuals vs time
 %
 % GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, PlotSettings)
@@ -43,7 +43,12 @@ for i=1:length(Groups)
         
         % Load the mapped GOF Simulation Results
         Simulations = Groups(i).OutputMappings(j);
-        [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings);
+        [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings, REInputPath);
+        if isempty(csvSimFile)
+            ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
+                'In GOF Merged plot %d group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+            throw(ME);
+        end
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
         % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
         initSimulation(xmlfile,'none');
@@ -71,8 +76,8 @@ for i=1:length(Groups)
         comparable_index= getComparablePredicted(ObsTime , predictedTime);
         
         % Group and save comparable points
-        Group(i).dataTP(j).yobs = Obs;
-        Group(i).dataTP(j).ypred = predicted(comparable_index);
+        Group(i).dataTP(j).yobs = reshape(Obs, [], 1);
+        Group(i).dataTP(j).ypred = reshape(predicted(comparable_index), [], 1);
         Yres = predicted(comparable_index)-Obs;
         if strcmp(ResDimension,'')
             Yres=Yres./Obs;
@@ -80,8 +85,8 @@ for i=1:length(Groups)
             Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResDimension, 'MW',MW);
             Yres=Yres.*Resfactor;
         end
-        Group(i).dataTP(j).yres=Yres;
-        Group(i).dataTP(j).time = ObsTime;
+        Group(i).dataTP(j).yres= reshape(Yres, [], 1);
+        Group(i).dataTP(j).time = reshape(ObsTime, [], 1);
         
         % Set the min/max of the axis
         minX=nanmin(min(Obs), minX);
@@ -99,8 +104,8 @@ end
 % Plot the figures
 % Observation vs Prediction Figure
 figure(fig_handle1);
-plot([0.8*min(minX, minY) 1.2*max(maxX, maxY)], [0.8*min(minX, minY) 1.2*max(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
-axis([0.8*min(minX, minY) 1.2*max(maxX, maxY) 0.8*min(minX, minY) 1.2*max(maxX, maxY)]);
+plot([0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], [0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
+axis([0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY) 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)]);
 
 legendLabels={};
 
@@ -118,7 +123,7 @@ for i=1:length(Groups)
         pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
         setCurveOptions(pp, CurveOptions);
         
-        Error = [Error log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
+        Error = [Error; log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
     end
 end
 xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);

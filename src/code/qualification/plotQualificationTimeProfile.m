@@ -1,4 +1,4 @@
-function plotQualificationTimeProfile(WSettings,figureHandle,TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings)
+function plotQualificationTimeProfile(WSettings,figureHandle,TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %PLOTQUALIFICATIONTIMEPROFILE Plots the time profile of a population in comparison to a reference population
 %
 % plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions,PlotSettings)
@@ -26,7 +26,12 @@ ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
 [xAxesOptions, yAxesOptions, yyAxesOptions] = setFigureOptions(AxesOptions);
 
 % Load the mapped Time Profile Simulation Results
-[csvSimFile, xmlfile] = getSimFile(TimeProfile, SimulationMappings);
+[csvSimFile, xmlfile] = getSimFile(TimeProfile, SimulationMappings, REInputPath);
+if isempty(csvSimFile)
+    ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
+        'In Time Profile plot %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, TimeProfile.Project, TimeProfile.Simulation);
+    throw(ME);
+end
 SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
 % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
@@ -56,7 +61,7 @@ for i=1:length(Curves)
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-                'Curves %d : %s not found', i, Curves(i).Y);
+                'In plot %d, Curves %d : %s not found', figureHandle, i, Curves(i).Y);
             throw(ME);
         end
     else
@@ -65,7 +70,7 @@ for i=1:length(Curves)
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-                'Curves %d : %s not found', i, Curves(i).Y);
+                'In plot %d, Curves %d : %s not found', figureHandle, i, Curves(i).Y);
             throw(ME);
         end
     end

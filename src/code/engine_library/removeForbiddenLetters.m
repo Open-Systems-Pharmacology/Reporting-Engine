@@ -10,7 +10,7 @@ function testString = removeForbiddenLetters(testString)
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 
-jj = ismember(testString,'./ ?§$%&()[]{}+~*#');
+jj = ismember(testString,'./ ?§$%&()[]{}+~*#:');
 testString(jj)='_';
 
 return
