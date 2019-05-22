@@ -25,8 +25,14 @@ for i=1:length(SimulationMapping)
             strcmp(SimulationMapping(i).Simulation, Simulation)
         
         path = SimulationMapping(i).Path;
-        csvSimFile = fullfile(REInputPath, path, [Simulation '-Results.csv']);
-        xmlSimFile = fullfile(REInputPath, path, [Simulation '.xml']);
+        
+        % The name of the Simulation file is the same as folder name
+        % and may mismatch from the Simulation Id
+        % Consequently, the name of the folder is used instead
+        SimulationFile = getElementsfromPath(fullfile(path), '\');
+        
+        csvSimFile = fullfile(REInputPath, path, [SimulationFile{2} '-Results.csv']);
+        xmlSimFile = fullfile(REInputPath, path, [SimulationFile{2} '.xml']);
         break
     end
 end

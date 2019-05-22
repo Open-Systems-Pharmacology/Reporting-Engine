@@ -36,9 +36,15 @@ SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
 % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
 initSimulation(xmlfile,'none');
+
+% Get Molecular Weight for Conversion
 for i=1:length(Curves)
-    MW = getMolecularWeightForPath(Curves(i).Y);
-    if ~isempty(MW)
+    OutputType = getElementsfromPath(Curves(i).Y);
+    OutputType = OutputType{2};
+    if strcmp(OutputType, 'ObservedData')
+        MW = getMolecularWeightForPath(Curves(i).Y);
+    end
+    if exist('MW')
         break
     end
 end
@@ -181,7 +187,7 @@ for j = 1:length(ObservedDataSets)
                 
                 % Check if error bars to be plotted
                 if length(ObservedDataSets(j).outputPathList)>1
-                    if isempty(ObservedDataSets(j).outputUnit{2})
+                    if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
                         % Geometric SD is assumed for no dimension unit
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                             ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
@@ -226,8 +232,8 @@ for j = 1:length(ObservedDataSets)
             
             % Check if error bars to be plotted
             if length(ObservedDataSets(j).outputPathList)>1
-                if isempty(ObservedDataSets(j).outputUnit{2})
-                    % Geometric SD is assumed for no dimension unit
+                if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
+                    % Geometric SD is assumed for fraction dimension
                     p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                         ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
                     setCurveOptions(p_handle2, Curves.CurveOptions);

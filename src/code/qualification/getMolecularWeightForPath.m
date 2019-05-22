@@ -20,6 +20,7 @@ MW = cell2mat(desc(2:end,3));
 
 jj = cellfun(@(x) contains([outputPath '|'],x),strcat('|',compounds,'|'));
 
+%{
 % If no or multiple compounds are found for that path,
 % Boolean vector jj will lead to empty MW or multiple output
 % In this case, the Molecular Weight entry is assumed
@@ -34,6 +35,7 @@ elseif sum(jj)>1
     writeToReportLog('WARNING', sprintf(['In getMolecularWeightForPath: multiple matches found between compounds and path %s \n' ...
         'Compound %s with MW= %f g/mol was assumed \n'], outputPath, compounds{jj}, MW(jj)), 'true');
 end
+%}
 
 % set MW
 Compound = compounds{jj};
@@ -46,7 +48,8 @@ MWUnit = getParameter(sprintf('*|%s|Molecular weight',Compound),1,'parametertype
 % latest examples. Might be a version issue with the xml files ?
 try
     MW = MW.*getUnitFactor(MWUnit, 'g/mol', 'Molecular weight');
-catch
+
+    catch
     [unitList,unitList_dimensionList]=iniUnitList(-1, 3);
     MWUnit = unitList(find(strcmp(unitList_dimensionList, 'Molecular weight'))).baseUnit;
     MW = MW.*getUnitFactor(MWUnit, 'g/mol', 'Molecular weight');
