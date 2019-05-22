@@ -40,7 +40,7 @@ end
 
 
 %---------------------------------------------------
-
+%{
 % Plot Time Profile
 for i=1:length(TaskList)
     
@@ -50,21 +50,8 @@ for i=1:length(TaskList)
             
             TimeProfile=ConfigurationPlan.Plots.TimeProfile(j);
             
-            % Update plot settings if necessary (to be performed)
-            % Currently not handled
-            if isfield(TimeProfile, 'PlotSettings')
-                nPlotSettings=TimeProfile.PlotSettings;
-            else
-                nPlotSettings=PlotSettings;
-            end
-            if isfield(TimeProfile.Plot, 'Caption')
-                nPlotSettings.title = TimeProfile.Plot.Caption;
-            elseif isfield(TimeProfile.Plot, 'Name')
-                nPlotSettings.title = TimeProfile.Plot.Name;
-            else
-                nPlotSettings.title = [];
-            end
-            nPlotSettings.title = TimeProfile.Plot.Name;
+            % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, TimeProfile);
             
             % Check if Individual or Population Time Profile
             if isfield(TimeProfile.Plot, 'Type')
@@ -153,20 +140,9 @@ for i=1:length(TaskList)
             
             for k=1:length(GOFMerged)
                 
-                % Update plot settings if necessary (to be performed)
-                % Currently not handled
-                if isfield(GOFMerged(k), 'PlotSettings')
-                    nPlotSettings=GOFMerged(k).PlotSettings;
-                else
-                    nPlotSettings=PlotSettings;
-                end
-                if isfield(GOFMerged(k), 'Caption')
-                    nPlotSettings.title = GOFMerged(k).Caption;
-                elseif isfield(GOFMerged(k), 'Name')
-                    nPlotSettings.title = GOFMerged(k).Name;
-                else
-                    nPlotSettings.title = [];
-                end
+                % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, GOFMerged(k));
+
                 for l=1:length(AxesSettings)
                     if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
                         AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
@@ -231,20 +207,9 @@ for i=1:length(TaskList)
             
             ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
             
-            % Update plot settings if necessary (to be performed)
-            % Currently not handled
-            if isfield(ComparisonTimeProfile, 'PlotSettings')
-                nPlotSettings=ComparisonTimeProfile.PlotSettings;
-            else
-                nPlotSettings=PlotSettings;
-            end
-            if isfield(ComparisonTimeProfile, 'Caption')
-                nPlotSettings.title = ComparisonTimeProfile.Caption;
-            elseif isfield(ComparisonTimeProfile, 'Name')
-                nPlotSettings.title = ComparisonTimeProfile.Name;
-            else
-                nPlotSettings.title = [];
-            end
+            % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, ComparisonTimeProfile);
+
             for l=1:length(AxesSettings)
                 if isfield(AxesSettings(l), 'ComparisonTimeProfile')
                     AxesOptions=AxesSettings(l).ComparisonTimeProfile;
@@ -280,20 +245,8 @@ for i=1:length(TaskList)
             
             PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots(j);
             
-            % Update plot settings if necessary (to be performed)
-            % Currently not handled
-            if isfield(PKRatioPlots, 'PlotSettings')
-                nPlotSettings=PKRatioPlots.PlotSettings;
-            else
-                nPlotSettings=PlotSettings;
-            end
-            if isfield(PKRatioPlots, 'Caption')
-                nPlotSettings.title = PKRatioPlots.Caption;
-            elseif isfield(PKRatioPlots, 'Name')
-                nPlotSettings.title = PKRatioPlots.Name;
-            else
-                nPlotSettings.title = [];
-            end
+            % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, PKRatioPlots);
             
             % Curve Options and default may be moved within
             % plotQualificationPKRatio
@@ -338,7 +291,7 @@ for i=1:length(TaskList)
         break
     end
 end
-
+%}
 %---------------------------------------------------
 % Plot of DDI Ratio
 for i=1:length(TaskList)
@@ -348,21 +301,8 @@ for i=1:length(TaskList)
             
             DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(j);
             
-            % Update plot settings if necessary (to be performed)
-            % Currently not handled
-            if isfield(DDIRatioPlots, 'PlotSettings')
-                nPlotSettings=DDIRatioPlots.PlotSettings;
-            else
-                nPlotSettings=PlotSettings;
-            end
-            if isfield(DDIRatioPlots, 'Caption')
-                nPlotSettings.title = DDIRatioPlots.Caption;
-            elseif isfield(DDIRatioPlots, 'Name')
-                nPlotSettings.title = DDIRatioPlots.Name;
-            else
-                nPlotSettings.title = [];
-            end
-            
+            % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, DDIRatioPlots);
             
             for l=1:length(AxesSettings)
                 if isfield(AxesSettings(l), 'DDIRatioPlotsPredictedVsObserved')
@@ -440,3 +380,19 @@ function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
 fileName = fullfile(SectionPath, sprintf('%0.3d_table%s.md', indexed_item+1, Type));
 
 writeCell2md(QualificationTable, 'outfile', fileName, 'alignment', 'right');
+
+function nPlotSettings = setPlotSettings(PlotSettings, StructureInput)
+
+if isfield(StructureInput, 'PlotSettings')
+    nPlotSettings=StructureInput.PlotSettings;
+else
+    nPlotSettings=PlotSettings;
+end
+
+if isfield(StructureInput, 'Title')
+    nPlotSettings.title = StructureInput.Title;
+elseif isfield(StructureInput, 'Name')
+    nPlotSettings.title = StructureInput.Name;
+else
+    nPlotSettings.title = [];
+end
