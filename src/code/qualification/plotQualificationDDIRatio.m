@@ -145,10 +145,19 @@ for i=1:length(DDIRatioGroups)
                 throw(ME);
             end
         end
+<<<<<<< Updated upstream
         % Build the DDI Ratio Table:
         Perpetrator = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
             {'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
         Victim = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'Substrate', 'RouteSubstrate'}));
+=======
+<<<<<<< Updated upstream
+=======
+        % Build the DDI Ratio Table:
+        Perpetrator = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
+            {'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
+        Victim = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'Victim', 'RouteVictim'}));
+>>>>>>> Stashed changes
         Reference = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'StudyID'}));
         
         % Reshape the ratio table as a line Pred Obs Pred/Obs
@@ -158,6 +167,10 @@ for i=1:length(DDIRatioGroups)
         
         DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
         
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
     end
 end
 

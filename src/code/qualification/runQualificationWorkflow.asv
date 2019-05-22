@@ -285,7 +285,7 @@ for i=1:length(TaskList)
                 fclose(fileID);
                 clear AxesOptions nPlotSettings
             catch exception
-                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
+                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%. \n %s \n', j, exception.message), 'true', exception);
                 warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
                 close all
@@ -353,8 +353,8 @@ for i=1:length(TaskList)
                 clear AxesOptions nPlotSettings
             catch exception
                 %pause()
-                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
-                warning('Error in DDIRatio plot %d %s. \n %s \n', j, nPlotSettings.title, exception.message);
+                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                warning('Error in DDIRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
                 close all
                 clear AxesOptions nPlotSettings
