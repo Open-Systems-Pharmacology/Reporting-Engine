@@ -4,14 +4,15 @@
 
 clear all
 close all
+tic
 
 % List of examples to be tested 
 % REInput_path = 'QualificationPlanTests\examples\minimal\reporting engine input';
-REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
+% REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PKRatio\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PopulationTimeProfile\reporting engine input';
-REInput_path = 'QualificationPlanTests\examples\QualiExample01-master\re_input';
-REOutput_path = 'QualificationPlanTests\examples\QualiExample01-master\re_output';
+REInput_path = 'C:\Design2Code\QualiExample01-master\re_input';
+REOutput_path = 'C:\Design2Code\QualiExample01-master\re_output';
 
 % REInput_path = 'QualificationPlanTests\examples\Qualification-Ontogeny-Distribution-GFR-master\re_input';
 
@@ -24,3 +25,6 @@ jsonFile = 'report-configuration-plan.json';
 % --------------------------------------------------------------
 % run the Worklfow tasklist of ConfigurationPlan
 runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, ObservedDataSets);
+
+QualificationWorkflowTime = toc/60;
+fprintf('\n Qualification Workflow Duration: %0.1f minutes \n', QualificationWorkflowTime);
