@@ -40,7 +40,7 @@ end
 
 
 %---------------------------------------------------
-%{
+
 % Plot Time Profile
 for i=1:length(TaskList)
     
@@ -141,8 +141,8 @@ for i=1:length(TaskList)
             for k=1:length(GOFMerged)
                 
                 % Update plot settings if necessary
-            nPlotSettings = setPlotSettings(PlotSettings, GOFMerged(k));
-
+                nPlotSettings = setPlotSettings(PlotSettings, GOFMerged(k));
+                
                 for l=1:length(AxesSettings)
                     if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
                         AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
@@ -209,7 +209,7 @@ for i=1:length(TaskList)
             
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, ComparisonTimeProfile);
-
+            
             for l=1:length(AxesSettings)
                 if isfield(AxesSettings(l), 'ComparisonTimeProfile')
                     AxesOptions=AxesSettings(l).ComparisonTimeProfile;
@@ -291,7 +291,7 @@ for i=1:length(TaskList)
         break
     end
 end
-%}
+
 %---------------------------------------------------
 % Plot of DDI Ratio
 for i=1:length(TaskList)
@@ -331,10 +331,10 @@ for i=1:length(TaskList)
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
                 % Get output plot types as elements
-                DDIRatioPlots.PlotType = getElementsfromPath(DDIRatioPlots.PKParameter);
+                DDIRatioPlots.PlotType=getElementsfromPath(DDIRatioPlots.PlotType);
                 for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
-                    saveQualificationTable(DDIRatioTable(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
-                    saveQualificationTable(DDIRatioQuali(plottedPKparameters), ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
+                    saveQualificationTable(DDIRatioTable, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
+                    saveQualificationTable(DDIRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
                     for plottedTypes=1:length(DDIRatioPlots.PlotType)
                         if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
                             saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
