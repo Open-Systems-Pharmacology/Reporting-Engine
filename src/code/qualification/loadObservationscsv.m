@@ -55,6 +55,7 @@ Data.y = values';
 Data.individualIdVector = individualIdVector;
 Data.outputPathList = outputPathList;
 Data.outputUnit = outputUnit;
+<<<<<<< HEAD
 Data.outputDimension = outputDimension;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -63,4 +64,7 @@ Data.outputDimension = outputDimension;
 >>>>>>> qualification
 =======
 
+>>>>>>> qualification
+=======
+Data.outputDimension = outputDimension;
 >>>>>>> qualification

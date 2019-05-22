@@ -20,6 +20,13 @@ function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initialize
 % Create output directory
 mkdir(REOutput_path);
 
+% Get complete for REOutput and REInput paths
+REOutput_structure = what(REOutput_path);
+REInput_structure = what(REInput_path);
+
+REOutput_path = REOutput_structure.path;
+REInput_path = REInput_structure.path;
+
 % Read the .json file
 ConfigurationPlan = getConfigurationPlan(fullfile(REInput_path, jsonFile));
 

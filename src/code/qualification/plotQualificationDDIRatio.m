@@ -21,41 +21,9 @@ function [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
 
-% WARNING: FUNCTION STILL AS DRAFT: MANY FEATURES NOT AVAILABLE/HANDLED
-% TO BE ADDED: LEGENDS, LABELS, GMFE, TABLE, ENSURE ROBUSTNESS
-
-% xRatio and yRatio vectors for Guest et al. equation
-% Load the template for the plot/ Formula not correct at the moment
-xRatio=10.^(-2:0.01:2);
-[yRatio1, yRatio2] = DDIRatioGuestEquation(xRatio);
-
-for k=1:length(PKParameter)
-    % create figure for Obs vs Pred
-    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle,PlotSettings);
-    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-    figure(fig_handle(k).predictedVsObserved);
-    plot(xRatio, xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, xRatio/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, xRatio*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel('Observed Ratio'); ylabel('Predicted Ratio');
-    
-    % create figure for Residuals
-    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle+1,PlotSettings);
-    setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-    figure(fig_handle(k).residualsVsObserved);
-    plot(xRatio, ones(size(xRatio)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, ones(size(xRatio))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, ones(size(xRatio))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio1./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio2./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel('Observed Ratio'); ylabel('Residuals');
-end
-
 % Initialize error for computing GMFE
 leg_labels={};
-Error=[];
+DDIRatioTableContent={};
 
 % Loop on the Ratios to be plotted by PK Ratio plot
 for i=1:length(DDIRatioGroups)
@@ -160,29 +128,16 @@ for i=1:length(DDIRatioGroups)
             end
             if isfield(allPKpredControl, PKpredField{k}) && isfield(allPKpredDDI, PKpredField{k})
                 
-                
-                PKRobs(j,k) = table2array(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
+                % Get the observation Ratios
+                Observations(i).RatioPK(k,j) = table2array(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
                     (strcmpi(ObservedData.Properties.VariableNames, [PKParameter{k} 'RAvg']))));
                 
-                Result(i).DDIPK(j,k)=getfield(allPKpredDDI, PKpredField{k});
+                Result(i).DDIPK(k,j)=getfield(allPKpredDDI, PKpredField{k});
                 
-                Result(i).ControlPK(j,k)=getfield(allPKpredControl, PKpredField{k});
+                Result(i).ControlPK(k,j)=getfield(allPKpredControl, PKpredField{k});
                 
-                % Assumes currently that the output from PKSim has same unit for Control
-                % and DDI
-                Result(i).RatioPK(j,k)=Result(i).DDIPK(j,k)./Result(i).ControlPK(j,k);
-                
-                figure(fig_handle(k).predictedVsObserved);
-                pp=plot(PKRobs(j,k), Result(i).RatioPK(j,k), 'o', 'Linewidth',1);
-                setCurveOptions(pp, DDIRatioGroups(i));
-                
-                figure(fig_handle(k).residualsVsObserved);
-                pp=plot(PKRobs(j,k), Result(i).RatioPK(j,k)./PKRobs(j,k), 'o', 'Linewidth',1);
-                setCurveOptions(pp, DDIRatioGroups(i));
-                
-                if isfield(DDIRatioGroups(i), 'Caption')
-                leg_labels=[leg_labels DDIRatioGroups(i).Caption];
-                end
+                % Assumes currently that the output from PKSim has same unit for Control and DDI
+                Result(i).RatioPK(k,j)=Result(i).DDIPK(k,j)./Result(i).ControlPK(k,j);
                 
             else
                 ME = MException('DDIRatio:notFoundInField', ...
@@ -190,35 +145,115 @@ for i=1:length(DDIRatioGroups)
                 throw(ME);
             end
         end
+        % Build the DDI Ratio Table:
+        Perpetrator = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
+            {'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
+        Victim = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'Substrate', 'RouteSubstrate'}));
+        Reference = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'StudyID'}));
+        
+        % Reshape the ratio table as a line Pred Obs Pred/Obs
+        DDIRatioLinePK = reshape([Result(i).RatioPK(:,j), Observations(i).RatioPK(:,j), Result(i).RatioPK(:,j)./Observations(i).RatioPK(:,j)], 1, []);
+        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:}), 0, 0, 0},...
+            num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
+        
+        DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
+        
     end
 end
 
+% xRatio and yRatio vectors for Guest et al. equation
+% Load the template for the plot/ Formula not correct at the moment
+xRatio=10.^(-1.5:0.01:1.5);
+[yRatio1, yRatio2] = DDIRatioGuestEquation(xRatio);
+
 for k=1:length(PKParameter)
-    figure(fig_handle(k).predictedVsObserved);
-    legend(leg_labels);
-    figure(fig_handle(k).predictedVsObserved);
-    legend(residualsVsObserved);
+    % Initialize the Qualification Measures
+    QualiMeasure(k).PointsTotal = 0;
+    QualiMeasure(k).PointsGuest= 0;
+    QualiMeasure(k).Points2fold= 0;
 end
 
-% TABLES TO BE CALCULATED AND UPDATED
-% Get the DDI Ratio Table
-DDIRatioHeader = {'Perpetrator', 'Victim', 'Dose gap', 'Males', ...
-    'Predicted AUC Ratio', 'Observed AUC Ratio', 'Predicted/Obs AUC Ratio', ...
-    'Predicted Cmax Ratio', 'Observed Cmax Ratio', 'Predicted/Obs AUC Ratio', 'Reference'};
+for k=1:length(PKParameter)
+    % create figure for Obs vs Pred
+    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle,PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
+    figure(fig_handle(k).predictedVsObserved);
+    plot(xRatio, xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, xRatio/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, xRatio*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel('Observed Ratio'); ylabel('Predicted Ratio');
+    
+    % create figure for Residuals
+    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle+1,PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
+    figure(fig_handle(k).residualsVsObserved);
+    plot(xRatio, ones(size(xRatio)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, ones(size(xRatio))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, ones(size(xRatio))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio1./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(xRatio, yRatio2./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel('Observed Ratio'); ylabel('Residuals');
+    
+    for i=1:length(DDIRatioGroups)
+        % Update the number of points for each group
+        conditionPoints = ~isnan(Observations(i).RatioPK(k,:));
+        QualiMeasure(k).PointsTotal = QualiMeasure(k).PointsTotal + length(Observations(i).RatioPK(k,conditionPoints));
+        [UpperBound, LowerBound] = DDIRatioGuestEquation(Observations(i).RatioPK(k,:));
+        conditionGuest = (Result(i).RatioPK(k,:) >= LowerBound & Result(i).RatioPK(k,:) <= UpperBound);
+        QualiMeasure(k).PointsGuest= QualiMeasure(k).PointsGuest + length(Result(i).RatioPK(k,conditionGuest));
+        condition2fold = (Result(i).RatioPK(k,:) >= Observations(i).RatioPK(k,:)/2 & Result(i).RatioPK(k,:) <= Observations(i).RatioPK(k,:)*2);
+        QualiMeasure(k).Points2fold= QualiMeasure(k).Points2fold+ length(Result(i).RatioPK(k,condition2fold));
+        
+        % Plot part
+        figure(fig_handle(k).predictedVsObserved);
+        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        setCurveOptions(pp, DDIRatioGroups(i));
+        
+        figure(fig_handle(k).residualsVsObserved);
+        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:)./Observations(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        setCurveOptions(pp, DDIRatioGroups(i));
+        
+        if isfield(DDIRatioGroups(i), 'Caption')
+            leg_labels=[leg_labels DDIRatioGroups(i).Caption];
+        end
+    end
+    figure(fig_handle(k).predictedVsObserved);
+    legend(leg_labels, 'Location', 'northoutside');
+    figure(fig_handle(k).predictedVsObserved);
+    legend(leg_labels, 'Location', 'northoutside');
+end
 
-DDIRatioTable = [DDIRatioHeader];
+% Get the DDI Ratio Table
+DDIRatioHeaderPK={};
+for k=1:length(PKParameter)
+    DDIRatioHeaderPK = [DDIRatioHeaderPK {sprintf('Predicted %s Ratio', PKParameter{k}), ...
+        sprintf('Observed %s Ratio', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
+end
+DDIRatioHeader = [{'Perpetrator', 'Victim', 'Dose gap [h]', 'n', 'Males [%]'}, DDIRatioHeaderPK, {'Reference'}];
+
+DDIRatioTable = [DDIRatioHeader;
+    DDIRatioTableContent];
 
 disp(DDIRatioTable);
-    
+
 % Get the DDI Ratio Qualification
-DDIRatioQualiHeader = {'', 'Number', 'Ratio'};
-DDIRatioQuali_1st_Column = {'Points total'; 'Points within Guest et al.'; 'Points within 2-fold'};
-
-DDIRatioQuali = [DDIRatioQualiHeader  ; ...
-    DDIRatioQuali_1st_Column num2cell(zeros(3,2))];
-
-
-disp(DDIRatioQuali);
+for k=1:length(PKParameter)
+    DDIRatioQualiHeader = {PKParameter{k}, 'Number', 'Ratio [%]'};
+    DDIRatioQuali_1st_Column = {'Points total'; 'Points within Guest et al.'; 'Points within 2-fold'};
+    DDIRatioQuali_Other_Columns = num2cell([QualiMeasure(k).PointsTotal NaN; ...
+        QualiMeasure(k).PointsGuest 100.*QualiMeasure(k).PointsGuest./QualiMeasure(k).PointsTotal; ...
+        QualiMeasure(k).Points2fold 100.*QualiMeasure(k).Points2fold./QualiMeasure(k).PointsTotal]);
+    DDIRatioQuali_Other_Columns{1,2}='-';
+    
+    
+    DDIRatioQuali(k).Output = [DDIRatioQualiHeader  ; ...
+        DDIRatioQuali_1st_Column DDIRatioQuali_Other_Columns];
+    
+    fprintf('Qualification Measures for PK parameter %s \n', PKParameter{k});
+    disp(DDIRatioQuali(k).Output);
+end
 
 
 function [AGE, BW, MW, drugmass] = getInfofromSimulation(xmlfile, Output)
@@ -247,8 +282,13 @@ symRobs(Robs<1)=1./symRobs(symRobs<1);
 
 Limit = (delta + 2.*(symRobs-1))./symRobs;
 
-UpperLimit = symRobs.*Limit;
-LowerLimit = symRobs./Limit;
+symUpperLimit = symRobs.*Limit;
+symLowerLimit = symRobs./Limit;
 
-UpperLimit(Robs<1)=1./UpperLimit(Robs<1);
-LowerLimit(Robs<1)=1./LowerLimit(Robs<1);
+UpperLimit(isnan(Robs))=NaN;
+LowerLimit(isnan(Robs))=NaN;
+
+UpperLimit(Robs>=1)=symUpperLimit(Robs>=1);
+LowerLimit(Robs>=1)=symLowerLimit(Robs>=1);
+UpperLimit(Robs<1)=1./symLowerLimit(Robs<1);
+LowerLimit(Robs<1)=1./symUpperLimit(Robs<1);
