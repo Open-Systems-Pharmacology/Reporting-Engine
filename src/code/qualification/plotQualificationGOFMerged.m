@@ -120,7 +120,6 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels=[legendLabels Groups(i).Caption];
         
         % One legend caption per group
         if j>1
@@ -132,6 +131,7 @@ for i=1:length(Groups)
         
         Error = [Error; log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
     end
+    legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
@@ -154,7 +154,6 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels=[legendLabels Groups(i).Caption];
         
         % One legend caption per group
         if j>1
@@ -164,6 +163,7 @@ for i=1:length(Groups)
         end
         setCurveOptions(pp, CurveOptions);
     end
+    legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
