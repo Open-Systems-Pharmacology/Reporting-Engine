@@ -95,7 +95,3 @@ end
 % --------------------------------------------------------------
 % Task list: fields in ConfigurationPlan.Plots
 TaskList = fields(ConfigurationPlan.Plots);
-
-% Update Unit List for Conversion from Mass to Amount
-
-addAdditionalUnits
