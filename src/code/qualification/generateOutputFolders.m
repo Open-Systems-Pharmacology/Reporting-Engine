@@ -1,4 +1,4 @@
-function  [SectionsOut, SectionIndex] = generateOutputFolders(SectionsIn, REInputFolder, REOutputFolder)
+function  SectionsOut = generateOutputFolders(SectionsIn, REInputFolder, REOutputFolder)
 %GENERATEOUTPUTFOLDERS Support function:
 % Explore tree of sections and generate folders of sections within REOutputFolder
 % linearize the section structure
@@ -57,8 +57,8 @@ for i = 1:length(SectionsIn)
     if isfield(SectionsIn{i}, 'Sections')
         if ~isempty(SectionsIn{i}.Sections)
             % Repeat the process from this folder
-            [SubSectionsOut, SubSectionIndex] = generateOutputFolders(SectionsIn{i}.Sections, REInputFolder, REOutputFolder);
-            for j=1:SubSectionIndex
+            SubSectionsOut = generateOutputFolders(SectionsIn{i}.Sections, REInputFolder, REOutputFolder);
+            for j=1:length(SubSectionsOut)
                 SectionsOut(SectionIndex+j)=SubSectionsOut(j);
             end
         end
