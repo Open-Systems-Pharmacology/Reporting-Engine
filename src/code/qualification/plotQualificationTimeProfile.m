@@ -41,7 +41,7 @@ initSimulation(xmlfile,'none');
 for i=1:length(Curves)
     OutputType = getElementsfromPath(Curves(i).Y);
     OutputType = OutputType{2};
-    if strcmp(OutputType, 'ObservedData')
+    if ~strcmp(OutputType, 'ObservedData')
         MW = getMolecularWeightForPath(Curves(i).Y);
     end
     if exist('MW')
@@ -169,15 +169,6 @@ for j = 1:length(ObservedDataSets)
                 XDimension = findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                % Check if the observation names match (many warning message
-                % appears and are left aside so far)
-                %{
-            if ~strcmp(ObservedDataSets(j).outputPathList{1}, CurveElements{end})
-                writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
-                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
-            end
-                %}
-                
                 % Convert the output to the correct unit
                 ObservedTime = ObservedDataSets(j).time.*Xfactor;
                 ObservedOutput = ObservedDataSets(j).y{1}.*Yfactor;
@@ -188,10 +179,16 @@ for j = 1:length(ObservedDataSets)
                 % Check if error bars to be plotted
                 if length(ObservedDataSets(j).outputPathList)>1
                     if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
-                        % Geometric SD is assumed for no dimension unit
-                        p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                            ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
-                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                        % Geometric SD is assumed for no dimension unit if
+                        % SD>=1 else it is arithmetic
+                        if ObservedDataSets(j).y{2}>1
+                            p_handle2=errorbar(ObservedTime, ObservedOutput, ...
+                                ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                            setCurveOptions(p_handle2, Curves.CurveOptions);
+                        else
+                            p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                            setCurveOptions(p_handle2, Curves.CurveOptions);
+                        end
                     else
                         errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
@@ -214,14 +211,6 @@ for j = 1:length(ObservedDataSets)
             XDimension = findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            % Check if the observation names match (many warning message
-            % appears and are left aside so far)
-            %{
-            if ~strcmp(ObservedDataSets(j).outputPathList{1}, CurveElements{end})
-                writeToReportLog('WARNING', sprintf('Warning: Curve %s in TimeProfile plot \n Curve path does not match ObservedData Path. \n Curve path: %s \n ObservedData path: %s \n',...
-                    Curves.Name, CurveElements{end}, ObservedDataSets(j).outputPathList{1}));
-            end
-            %}
             % Convert the output to the correct unit
             ObservedTime = ObservedDataSets(j).time.*Xfactor;
             ObservedOutput = ObservedDataSets(j).y{1}.*Yfactor;
@@ -233,10 +222,16 @@ for j = 1:length(ObservedDataSets)
             % Check if error bars to be plotted
             if length(ObservedDataSets(j).outputPathList)>1
                 if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
-                    % Geometric SD is assumed for fraction dimension
-                    p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                        ObservedOutput - ObservedOutput./ObservedDataSets(j).y{2}, ObservedOutput.*ObservedDataSets(j).y{2} - ObservedOutput);
-                    setCurveOptions(p_handle2, Curves.CurveOptions);
+                    % Geometric SD is assumed for no dimension unit if
+                    % SD>=1 else it is arithmetic
+                    if ObservedDataSets(j).y{2}>1
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ...
+                            ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                    else
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                    end
                 else
                     errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
                     p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
