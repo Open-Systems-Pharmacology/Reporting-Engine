@@ -101,7 +101,7 @@ for i=1:length(TaskList)
                         saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
                         clear Curves PopulationAxes
                     catch exception
-                        writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                        writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
                         warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
                         close all;
                     end
@@ -117,7 +117,7 @@ for i=1:length(TaskList)
                     % pause()
                     saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'TimeProfile')
                 catch exception
-                    writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                    writeToReportLog('ERROR', sprintf('Error in TimeProfile plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
                     warning('Error in TimeProfile plot %d. \n %s \n', j, exception.message);
                     close all;
                     
@@ -135,8 +135,12 @@ for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'GOFMergedPlots')
         
         for j=1:length(ConfigurationPlan.Plots.GOFMergedPlots)
-            
-            GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots(j);
+            % Check if misread of GOFMergedPlots as cells
+            if iscell(ConfigurationPlan.Plots.GOFMergedPlots(j))
+                GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots{j};
+            else
+                GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots(j);
+            end
             
             for k=1:length(GOFMerged)
                 
@@ -184,7 +188,7 @@ for i=1:length(TaskList)
                     fclose(fileID);
                     clear AxesOptions nPlotSettings
                 catch exception
-                    writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message), 'true', exception);
+                    writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d "%s", Group %d. \n %s \n', j, nPlotSettings.title, k, exception.message), 'true', exception);
                     warning('Error in GOFMerged plot %d, Group %d. \n %s \n', j, k, exception.message);
                     % Close open figures
                     close all
@@ -204,7 +208,6 @@ for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'ComparisonTimeProfilePlots')
         
         for j=1:length(ConfigurationPlan.Plots.ComparisonTimeProfilePlots)
-            
             ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
             
             % Update plot settings if necessary
@@ -219,6 +222,13 @@ for i=1:length(TaskList)
                 end
             end
             
+            % These lines are to check and convert if the OutputMapping is a cell array
+            % whereas it should be a structure array
+            if ~iscell(ComparisonTimeProfile.OutputMappings)
+                ComparisonTimeProfile.OutputMappings = num2cell(ComparisonTimeProfile.OutputMappings);
+            end
+            
+            
             try
                 plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
@@ -226,7 +236,7 @@ for i=1:length(TaskList)
                 saveQualificationFigure(gcf, ConfigurationPlan.Sections, ComparisonTimeProfile.SectionId, 'ComparisonTimeProfile');
                 clear AxesOptions nPlotSettings
             catch exception
-                writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message), 'true', exception);
+                writeToReportLog('ERROR', sprintf('Error in ComparisonTimeProfile plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
                 warning('Error in ComparisonTimeProfile plot %d. \n %s \n', j, exception.message);
                 close all;
                 clear AxesOptions nPlotSettings
@@ -237,6 +247,7 @@ for i=1:length(TaskList)
 end
 
 %---------------------------------------------------
+
 % Plot of PK Ratio
 for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'PKRatioPlots')
@@ -281,7 +292,7 @@ for i=1:length(TaskList)
                 fclose(fileID);
                 clear AxesOptions nPlotSettings
             catch exception
-                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
+                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
                 warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
                 % Close open figures
                 close all
@@ -349,8 +360,8 @@ for i=1:length(TaskList)
                 clear AxesOptions nPlotSettings
             catch exception
                 %pause()
-                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d. \n %s \n', j, exception.message), 'true', exception);
-                warning('Error in DDIRatio plot %d. \n %s \n', j, exception.message);
+                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
+                warning('Error in DDIRatio plot %d %s. \n %s \n', j, nPlotSettings.title, exception.message);
                 % Close open figures
                 close all
                 clear AxesOptions nPlotSettings

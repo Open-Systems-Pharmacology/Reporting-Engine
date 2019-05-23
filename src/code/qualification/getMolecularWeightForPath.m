@@ -20,23 +20,6 @@ MW = cell2mat(desc(2:end,3));
 
 jj = cellfun(@(x) contains([outputPath '|'],x),strcat('|',compounds,'|'));
 
-%{
-% If no or multiple compounds are found for that path,
-% Boolean vector jj will lead to empty MW or multiple output
-% In this case, the Molecular Weight entry is assumed
-% and a warning output in the log
-
-if sum(jj)==0
-    jj=1;
-    writeToReportLog('WARNING', sprintf(['In getMolecularWeightForPath: no match found between compounds and path %s \n' ...
-        'Compound %s with MW= %f g/mol was assumed \n'], outputPath, compounds{jj}, MW(jj)), 'true');
-elseif sum(jj)>1
-    jj=find(jj==1, 1);
-    writeToReportLog('WARNING', sprintf(['In getMolecularWeightForPath: multiple matches found between compounds and path %s \n' ...
-        'Compound %s with MW= %f g/mol was assumed \n'], outputPath, compounds{jj}, MW(jj)), 'true');
-end
-%}
-
 % set MW
 Compound = compounds{jj};
 MW = MW(jj);

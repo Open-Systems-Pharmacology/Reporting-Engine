@@ -89,12 +89,14 @@ for i=1:length(Groups)
         Group(i).dataTP(j).time = reshape(ObsTime, [], 1);
         
         % Set the min/max of the axis
-        minX=nanmin(min(Obs), minX);
-        maxX=nanmax(max(Obs), maxX);
-        minY=nanmin(min(predicted(comparable_index)), minY);
-        maxY=nanmax(max(predicted(comparable_index)), maxY);
-        maxtime=nanmax(max(ObsTime), maxtime);
-        maxRes=nanmax(max(abs(Yres)), maxRes);
+        PosObs = Group(i).dataTP(j).yobs>0;
+        PosPred = Group(i).dataTP(j).ypred>0;
+        minX=nanmin(nanmin(Group(i).dataTP(j).yobs(PosObs)), minX);
+        maxX=nanmax(nanmax(Group(i).dataTP(j).yobs(PosObs)), maxX);
+        minY=nanmin(nanmin(Group(i).dataTP(j).ypred(PosPred)), minY);
+        maxY=nanmax(nanmax(Group(i).dataTP(j).ypred(PosPred)), maxY);
+        maxtime=nanmax(nanmax(ObsTime), maxtime);
+        maxRes=nanmax(nanmax(abs(Yres)), maxRes);
         
         
     end
@@ -104,7 +106,7 @@ end
 % Plot the figures
 % Observation vs Prediction Figure
 figure(fig_handle1);
-plot([0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], [0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
+plot([0 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], [0 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
 axis([0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY) 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)]);
 
 legendLabels={};
@@ -118,13 +120,18 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels=[legendLabels Groups(i).Caption];
         
-        pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
+        % One legend caption per group
+        if j>1
+            pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred, 'HandleVisibility','off');
+        else
+            pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
+        end
         setCurveOptions(pp, CurveOptions);
         
         Error = [Error; log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
     end
+    legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
@@ -147,11 +154,16 @@ for i=1:length(Groups)
         CurveOptions.Color=Groups(i).OutputMappings(j).Color;
         CurveOptions.Symbol=Groups(i).Symbol;
         CurveOptions.LineStyle='none';
-        legendLabels=[legendLabels Groups(i).Caption];
         
-        pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
+        % One legend caption per group
+        if j>1
+            pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres, 'HandleVisibility','off');
+        else
+            pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
+        end
         setCurveOptions(pp, CurveOptions);
     end
+    legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
@@ -183,14 +195,9 @@ predictedTime=[];
 predicted=[];
 
 % Get dimensions for scaling plots
-dimensionList=getDimensions;
-if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
-    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-else
-    YDimension='Fraction';
-end
+YDimension=findDimensionfromUnit(yAxesOptions.Unit);
 
-TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
+TimeDimension=findDimensionfromUnit(TimeAxesOptions.Unit);
 
 for j = 1:length(SimResult.outputPathList)
     
@@ -220,15 +227,9 @@ function [ObsTime, Obs] = testObservations(Simulations, ObservedDataSets, MW, Ti
 ObsTime=[];
 Obs=[];
 
-dimensionList=getDimensions;
+YDimension=findDimensionfromUnit(yAxesOptions.Unit);
 
-if ~strcmp(yAxesOptions.Dimension, 'Dimensionless')
-    YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-else
-    YDimension='Fraction';
-end
-
-TimeDimension=dimensionList{strContains(TimeAxesOptions.Dimension, dimensionList)};
+TimeDimension=findDimensionfromUnit(TimeAxesOptions.Unit);
 
 for j = 1:length(ObservedDataSets)
     

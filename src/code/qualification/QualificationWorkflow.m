@@ -11,11 +11,10 @@ tic
 % REInput_path = 'QualificationPlanTests\examples\advanced_01\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PKRatio\reporting engine input';
 % REInput_path = 'QualificationPlanTests\examples\PopulationTimeProfile\reporting engine input';
-REInput_path = 'C:\Design2Code\QualiExample01-master\re_input';
-REOutput_path = 'C:\Design2Code\QualiExample01-master\re_output';
-
-% REInput_path = 'QualificationPlanTests\examples\Qualification-Ontogeny-Distribution-GFR-master\re_input';
-
+ REInput_path = 'C:\Design2Code\QualiExample01-master\re_input';
+ REOutput_path = 'C:\Design2Code\QualiExample01-master\re_output';
+%REInput_path = 'C:\Design2Code\Qualification-Ontogeny-Distribution-GFR-master\re_input';
+%REOutput_path = 'C:\Design2Code\Qualification-Ontogeny-Distribution-GFR-master\re_output';
 % --------------------------------------------------------------
 % Get the Configuration Plan Settings
 jsonFile = 'report-configuration-plan.json';

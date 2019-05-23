@@ -31,33 +31,33 @@ legendLabels={};
 for i=1:length(Curves)
     
     % Load the mapped Time Profile Simulation Results
-    [csvSimFile, xmlfile] = getSimFile(Curves(i), SimulationMappings, REInputPath);
+    [csvSimFile, xmlfile] = getSimFile(Curves{i}, SimulationMappings, REInputPath);
     if isempty(csvSimFile)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves(i).Project, Curves(i).Simulation);
+            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves{i}.Project, Curves{i}.Simulation);
         throw(ME);
     end
-    SimResult = loadSimResultcsv(csvSimFile, Curves(i));
+    SimResult = loadSimResultcsv(csvSimFile, Curves{i});
     
     % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
     initSimulation(xmlfile,'none');
-    MW = getMolecularWeightForPath(Curves(i).Output);
+    MW = getMolecularWeightForPath(Curves{i}.Output);
     
-    if ~isfield(Curves(i), 'EndTime') || isempty(Curves(i).EndTime)
-        Curves(i).EndTime = Curves(i).StartTime + CompTimeProfile.SimulationDuration;
+    if ~isfield(Curves{i}, 'EndTime') || isempty(Curves{i}.EndTime)
+        Curves{i}.EndTime = Curves{i}.StartTime + CompTimeProfile.SimulationDuration;
     end
     
     % For simulations: Get the right simulation curve
-    [p_handle_sim, legLabel_sim] = testandplotSimResults(Curves(i), SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+    [p_handle_sim, legLabel_sim] = testandplotSimResults(Curves{i}, SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
     if isempty(p_handle_sim)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, Ouptut %s was not found', i, Curves(i).Output);
+            'In Mapping %d, Ouptut %s was not found', i, Curves{i}.Output);
         throw(ME);
     end
-    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves(i), ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
     if isempty(p_handle_obs)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, ObservedData %s was not found', i, Curves(i).ObservedData);
+            'In Mapping %d, ObservedData %s was not found', i, Curves{i}.ObservedData);
         throw(ME);
     end
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
@@ -83,15 +83,14 @@ for j = 1:length(SimResult.outputPathList)
         if isfield(Curves, 'yAxisType')
             if strcmp(Curves.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                YDimension=findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(SimResult.outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension=findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
                 
-                SimTime = (SimResult.time.*Xfactor >= Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
-                disp(max(SimTime));
+                SimTime = (SimResult.time.*Xfactor >= Curves.StartTime-Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
                 FinalTime = SimResult.time(SimTime).*Xfactor;
                 FinalSim = SimResult.y{j}.*Yfactor;
                 FinalSim = FinalSim(SimTime);
@@ -105,11 +104,11 @@ for j = 1:length(SimResult.outputPathList)
             end
         else
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            YDimension=findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension=findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
             
             SimTime = (SimResult.time.*Xfactor >= Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
@@ -117,7 +116,7 @@ for j = 1:length(SimResult.outputPathList)
             FinalSim = SimResult.y{j}.*Yfactor;
             FinalSim = FinalSim(SimTime);
             
-            p_handle = plot(FinalTime, FinalSim);
+            p_handle = plot(FinalTime-Curves.StartTime, FinalSim);
             
             legendLabels=sprintf('%s Simulated Data', Curves.Caption);
             CurveOptions.Color = Curves.Color;
@@ -145,14 +144,14 @@ for j = 1:length(ObservedDataSets)
         if isfield(Curves, 'yAxisType')
             if strcmp(Curves.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                YDimension=findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension=findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+                p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
                 
                 legendLabels=sprintf('%s Observed Data', Curves.Caption);
                 CurveOptions.Color = Curves.Color;
@@ -164,14 +163,14 @@ for j = 1:length(ObservedDataSets)
             end
         else
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            YDimension=findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension=findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+            p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
             
             legendLabels=sprintf('%s Observed Data', Curves.Caption);
             CurveOptions.Color = Curves.Color;

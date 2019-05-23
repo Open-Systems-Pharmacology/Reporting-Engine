@@ -148,12 +148,12 @@ for i=1:length(DDIRatioGroups)
         % Build the DDI Ratio Table:
         Perpetrator = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
             {'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
-        Victim = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'Substrate', 'RouteSubstrate'}));
+        Victim = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'Victim', 'RouteVictim'}));
         Reference = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'StudyID'}));
         
         % Reshape the ratio table as a line Pred Obs Pred/Obs
         DDIRatioLinePK = reshape([Result(i).RatioPK(:,j), Observations(i).RatioPK(:,j), Result(i).RatioPK(:,j)./Observations(i).RatioPK(:,j)], 1, []);
-        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:}), 0, 0, 0},...
+        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
             num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
         
         DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
@@ -221,7 +221,7 @@ for k=1:length(PKParameter)
     end
     figure(fig_handle(k).predictedVsObserved);
     legend(leg_labels, 'Location', 'northoutside');
-    figure(fig_handle(k).predictedVsObserved);
+    figure(fig_handle(k).residualsVsObserved);
     legend(leg_labels, 'Location', 'northoutside');
 end
 
@@ -231,7 +231,7 @@ for k=1:length(PKParameter)
     DDIRatioHeaderPK = [DDIRatioHeaderPK {sprintf('Predicted %s Ratio', PKParameter{k}), ...
         sprintf('Observed %s Ratio', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
 end
-DDIRatioHeader = [{'Perpetrator', 'Victim', 'Dose gap [h]', 'n', 'Males [%]'}, DDIRatioHeaderPK, {'Reference'}];
+DDIRatioHeader = [{'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
 
 DDIRatioTable = [DDIRatioHeader;
     DDIRatioTableContent];
