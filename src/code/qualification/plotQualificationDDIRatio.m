@@ -71,7 +71,7 @@ for i=1:length(DDIRatioGroups)
         Result(i).AGEDDI(j)=AGEDDI;
         Result(i).BWDDI(j)=BWDDI;
         Result(i).MWDDI(j)=MWDDI;
-        Result(i).drugmassDDI(j)=drugmassControl(1);
+        Result(i).drugmassDDI(j)=drugmassDDI(1);
         
         % Use the right Output for Control
         for k=1:length(SimResultControl.outputPathList)
@@ -116,7 +116,6 @@ for i=1:length(DDIRatioGroups)
         % Get the PK parameters out of the simulation
         allPKpredDDI=getPKParametersForConcentration(DDITime,DDIpred,'Dose', drugmassDDI);
         
-        
         for k=1:length(PKParameter)
             % Get the PK parameters requested in PKParameter
             if strcmpi(PKParameter{k}, 'AUC')
@@ -152,7 +151,11 @@ for i=1:length(DDIRatioGroups)
         Reference = table2cell(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId, {'StudyID'}));
         
         % Reshape the ratio table as a line Pred Obs Pred/Obs
-        DDIRatioLinePK = reshape([Result(i).RatioPK(:,j), Observations(i).RatioPK(:,j), Result(i).RatioPK(:,j)./Observations(i).RatioPK(:,j)], 1, []);
+        DDIRatioLinePK=[];
+        for k=1:length(PKParameter)
+            DDIRatioLinePK = [DDIRatioLinePK Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j), Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j)];
+        end
+        
         DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
             num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
         
@@ -236,6 +239,9 @@ DDIRatioHeader = [{'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
 DDIRatioTable = [DDIRatioHeader;
     DDIRatioTableContent];
 
+testNaN=cellfun(@(x) any(isnan(x)),DDIRatioTable);
+DDIRatioTable(testNaN)={'-'};
+
 disp(DDIRatioTable);
 
 % Get the DDI Ratio Qualification
@@ -266,6 +272,7 @@ drugmass = getParameter('*Application_*|ProtocolSchemaItem|DrugMass',1,'paramete
 
 AGE = getParameter('*|Organism|Age',1,'parametertype','readonly');
 BW = getParameter('*|Organism|Weight',1,'parametertype','readonly');
+
 
 function [UpperLimit, LowerLimit] = DDIRatioGuestEquation(Robs, delta)
 % Upper and Lower limits for DDI Ratio plots as proposed by Guest et al.
