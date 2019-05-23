@@ -48,6 +48,7 @@ for i=1:length(Curves)
         break
     end
 end
+disp(MW)
 
 
 % Perform the plot based on Curves indications
@@ -181,7 +182,7 @@ for j = 1:length(ObservedDataSets)
                     if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
                         % Geometric SD is assumed for no dimension unit if
                         % SD>=1 else it is arithmetic
-                        if ObservedDataSets(j).y{2}>1
+                        if min(ObservedDataSets(j).y{2})>1
                             p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                                 ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
                             setCurveOptions(p_handle2, Curves.CurveOptions);
@@ -224,7 +225,7 @@ for j = 1:length(ObservedDataSets)
                 if strcmp('Fraction', ObservedDataSets(j).outputDimension{2})
                     % Geometric SD is assumed for no dimension unit if
                     % SD>=1 else it is arithmetic
-                    if ObservedDataSets(j).y{2}>1
+                    if min(ObservedDataSets(j).y{2})>1
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                             ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
                         setCurveOptions(p_handle2, Curves.CurveOptions);

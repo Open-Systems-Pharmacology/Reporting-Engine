@@ -208,11 +208,8 @@ for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'ComparisonTimeProfilePlots')
         
         for j=1:length(ConfigurationPlan.Plots.ComparisonTimeProfilePlots)
-            if iscell(ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j))
-                ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots{j};
-            else
-                ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
-            end
+            ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
+            
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, ComparisonTimeProfile);
             
@@ -224,6 +221,13 @@ for i=1:length(TaskList)
                     AxesOptions=[];
                 end
             end
+            
+            % These lines are to check and convert if the OutputMapping is a cell array
+            % whereas it should be a structure array
+            if ~iscell(ComparisonTimeProfile.OutputMappings)
+                ComparisonTimeProfile.OutputMappings = num2cell(ComparisonTimeProfile.OutputMappings);
+            end
+            
             
             try
                 plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, ...
@@ -243,6 +247,7 @@ for i=1:length(TaskList)
 end
 
 %---------------------------------------------------
+
 % Plot of PK Ratio
 for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'PKRatioPlots')
