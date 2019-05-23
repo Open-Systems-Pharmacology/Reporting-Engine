@@ -208,9 +208,11 @@ for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'ComparisonTimeProfilePlots')
         
         for j=1:length(ConfigurationPlan.Plots.ComparisonTimeProfilePlots)
-            
-            ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
-            
+            if iscell(ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j))
+                ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots{j};
+            else
+                ComparisonTimeProfile=ConfigurationPlan.Plots.ComparisonTimeProfilePlots(j);
+            end
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, ComparisonTimeProfile);
             
