@@ -95,3 +95,7 @@ end
 % --------------------------------------------------------------
 % Task list: fields in ConfigurationPlan.Plots
 TaskList = fields(ConfigurationPlan.Plots);
+
+% --------------------------------------------------------------
+% Add the units to unitList.mat if not present
+setAmountMassUnitList
