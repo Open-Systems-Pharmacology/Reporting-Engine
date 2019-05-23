@@ -31,33 +31,33 @@ legendLabels={};
 for i=1:length(Curves)
     
     % Load the mapped Time Profile Simulation Results
-    [csvSimFile, xmlfile] = getSimFile(Curves(i), SimulationMappings, REInputPath);
+    [csvSimFile, xmlfile] = getSimFile(Curves{i}, SimulationMappings, REInputPath);
     if isempty(csvSimFile)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves(i).Project, Curves(i).Simulation);
+            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves{i}.Project, Curves{i}.Simulation);
         throw(ME);
     end
-    SimResult = loadSimResultcsv(csvSimFile, Curves(i));
+    SimResult = loadSimResultcsv(csvSimFile, Curves{i});
     
     % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
     initSimulation(xmlfile,'none');
-    MW = getMolecularWeightForPath(Curves(i).Output);
+    MW = getMolecularWeightForPath(Curves{i}.Output);
     
-    if ~isfield(Curves(i), 'EndTime') || isempty(Curves(i).EndTime)
-        Curves(i).EndTime = Curves(i).StartTime + CompTimeProfile.SimulationDuration;
+    if ~isfield(Curves{i}, 'EndTime') || isempty(Curves{i}.EndTime)
+        Curves{i}.EndTime = Curves{i}.StartTime + CompTimeProfile.SimulationDuration;
     end
     
     % For simulations: Get the right simulation curve
-    [p_handle_sim, legLabel_sim] = testandplotSimResults(Curves(i), SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+    [p_handle_sim, legLabel_sim] = testandplotSimResults(Curves{i}, SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
     if isempty(p_handle_sim)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, Ouptut %s was not found', i, Curves(i).Output);
+            'In Mapping %d, Ouptut %s was not found', i, Curves{i}.Output);
         throw(ME);
     end
-    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves(i), ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
     if isempty(p_handle_obs)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, ObservedData %s was not found', i, Curves(i).ObservedData);
+            'In Mapping %d, ObservedData %s was not found', i, Curves{i}.ObservedData);
         throw(ME);
     end
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
