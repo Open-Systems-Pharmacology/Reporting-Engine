@@ -83,15 +83,14 @@ for j = 1:length(SimResult.outputPathList)
         if isfield(Curves, 'yAxisType')
             if strcmp(Curves.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                YDimension=findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(SimResult.outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension=findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
                 
-                SimTime = (SimResult.time.*Xfactor >= Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
-                disp(max(SimTime));
+                SimTime = (SimResult.time.*Xfactor >= Curves.StartTime-Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
                 FinalTime = SimResult.time(SimTime).*Xfactor;
                 FinalSim = SimResult.y{j}.*Yfactor;
                 FinalSim = FinalSim(SimTime);
@@ -105,11 +104,11 @@ for j = 1:length(SimResult.outputPathList)
             end
         else
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            YDimension=findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(SimResult.outputUnit{j},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension=findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
             
             SimTime = (SimResult.time.*Xfactor >= Curves.StartTime &  SimResult.time.*Xfactor <= Curves.EndTime);
@@ -117,7 +116,7 @@ for j = 1:length(SimResult.outputPathList)
             FinalSim = SimResult.y{j}.*Yfactor;
             FinalSim = FinalSim(SimTime);
             
-            p_handle = plot(FinalTime, FinalSim);
+            p_handle = plot(FinalTime-Curves.StartTime, FinalSim);
             
             legendLabels=sprintf('%s Simulated Data', Curves.Caption);
             CurveOptions.Color = Curves.Color;
@@ -145,14 +144,14 @@ for j = 1:length(ObservedDataSets)
         if isfield(Curves, 'yAxisType')
             if strcmp(Curves.yAxisType, 'Y2')
                 yyaxis right
-                YDimension=dimensionList{strContains(yyAxesOptions.Dimension, dimensionList)};
+                YDimension=findDimensionfromUnit(yyAxesOptions.Unit);
                 Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{j},yyAxesOptions.Unit,YDimension, 'MW',MW);
                 
                 % Convert units to reference unit
-                XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+                XDimension=findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+                p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
                 
                 legendLabels=sprintf('%s Observed Data', Curves.Caption);
                 CurveOptions.Color = Curves.Color;
@@ -164,14 +163,14 @@ for j = 1:length(ObservedDataSets)
             end
         else
             
-            YDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
+            YDimension=findDimensionfromUnit(yAxesOptions.Unit);
             Yfactor=getUnitFactor(ObservedDataSets(j).outputUnit{1},yAxesOptions.Unit,YDimension, 'MW',MW);
             
             % Convert units to reference unit
-            XDimension=dimensionList{strContains(xAxesOptions.Dimension, dimensionList)};
+            XDimension=findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            p_handle = plot(ObservedDataSets(j).time.*Xfactor, ObservedDataSets(j).y{1}.*Yfactor);
+            p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
             
             legendLabels=sprintf('%s Observed Data', Curves.Caption);
             CurveOptions.Color = Curves.Color;
