@@ -29,6 +29,8 @@ if ~strContains(unitList(Mass_index).unit_txt, 'mol')
     
     unitList(Mass_index).unit_txt = Mass_unit_txt;
     unitList(Mass_index).formula = Mass_formula;
+    
+    save(fullfile(MOBI_SETTINGS.application_path,'unitList_3.mat'),'-append','unitList','unitList_dimensionList');
 end
 
 %-----------------------------
@@ -50,6 +52,10 @@ if ~strContains(unitList(Amount_index).unit_txt, 'g')
     
     unitList(Amount_index).unit_txt = Amount_unit_txt;
     unitList(Amount_index).formula = Amount_formula;
-    
+
+    save(fullfile(MOBI_SETTINGS.application_path,'unitList_3.mat'),'-append','unitList','unitList_dimensionList');
 end
 
+
+
+return
