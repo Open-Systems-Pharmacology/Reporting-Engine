@@ -48,8 +48,6 @@ for i=1:length(Curves)
         break
     end
 end
-disp(MW)
-
 
 % Perform the plot based on Curves indications
 legendLabels={};
