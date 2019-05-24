@@ -402,7 +402,7 @@ end
 
 if isfield(StructureInput, 'Title')
     nPlotSettings.title = StructureInput.Title;
-elseif isfield(StructureInput, 'Name')
+elseif isfield(StructureInput.Plot, 'Name')
     nPlotSettings.title = StructureInput.Name;
 else
     nPlotSettings.title = [];
