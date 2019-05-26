@@ -129,7 +129,9 @@ for i=1:length(Groups)
         end
         setCurveOptions(pp, CurveOptions);
         
-        Error = [Error; log10(Group(i).dataTP(j).ypred)-log10(Group(i).dataTP(j).yobs)];
+        PosObs = Group(i).dataTP(j).yobs>0;
+        PosPred = Group(i).dataTP(j).ypred>0;
+        Error = [Error; log10(Group(i).dataTP(j).ypred(PosObs & PosPred))-log10(Group(i).dataTP(j).yobs((PosObs & PosPred)))];
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end
