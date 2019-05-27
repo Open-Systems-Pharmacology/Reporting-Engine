@@ -21,9 +21,15 @@ function [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
 
-% Initialize error for computing GMFE
-leg_labels={};
+% Initialize content of DDI table, and axis
 DDIRatioTableContent={};
+
+for k=1:length(PKParameter)
+    axisObsVsPred(k).min=NaN;
+    axisObsVsPred(k).max=NaN;
+    axisResVsObs(k).min=NaN;
+    axisResVsObs(k).max=NaN;
+end
 
 % Loop on the Ratios to be plotted by PK Ratio plot
 for i=1:length(DDIRatioGroups)
@@ -91,6 +97,11 @@ for i=1:length(DDIRatioGroups)
                 break
             end
         end
+        if isempty(findPathOutput)
+            ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
+                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+            throw(ME);
+        end
         
         % Use the right Output for DDI
         for k=1:length(SimResultDDI.outputPathList)
@@ -108,6 +119,11 @@ for i=1:length(DDIRatioGroups)
                 DDIpred = DDIpred(SimTime);
                 break
             end
+        end
+        if isempty(findPathOutput)
+            ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
+                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+            throw(ME);
         end
         
         % Get the PK parameters out of the simulation
@@ -138,6 +154,12 @@ for i=1:length(DDIRatioGroups)
                 % Assumes currently that the output from PKSim has same unit for Control and DDI
                 Result(i).RatioPK(k,j)=Result(i).DDIPK(k,j)./Result(i).ControlPK(k,j);
                 
+                % Set the axis window
+                axisObsVsPred(k).min=nanmin(nanmin(Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j)),axisObsVsPred(k).min);
+                axisObsVsPred(k).max=nanmax(nanmax(Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j)),axisObsVsPred(k).max);
+                axisResVsObs(k).min=nanmin(Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j),axisResVsObs(k).min);
+                axisResVsObs(k).max=nanmax(Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j),axisResVsObs(k).max);
+                
             else
                 ME = MException('DDIRatio:notFoundInField', ...
                     'Requested PK Parameter %s not found in parameters extracted using getPKParametersForConcentration', PKParameter{k});
@@ -164,12 +186,18 @@ for i=1:length(DDIRatioGroups)
     end
 end
 
-% xRatio and yRatio vectors for Guest et al. equation
-% Load the template for the plot/ Formula not correct at the moment
-xRatio=10.^(-1.5:0.01:1.5);
-[yRatio1, yRatio2] = DDIRatioGuestEquation(xRatio);
+%-------------------------------------------------------------
+% Plot Section
+
+% Initialize Quaklification Measure and
+% Guest equation for each PK Parameter
 
 for k=1:length(PKParameter)
+    
+    % GuestRatio vectors for plotting Guest et al. equation
+    GuestRatio(k).x=10.^(log10(0.8*axisObsVsPred(k).min):0.01:log10(1.2*axisObsVsPred(k).max));
+    [GuestRatio(k).yup, GuestRatio(k).ylo] = DDIRatioGuestEquation(GuestRatio(k).x);
+    
     % Initialize the Qualification Measures
     QualiMeasure(k).PointsTotal = 0;
     QualiMeasure(k).PointsGuest= 0;
@@ -177,27 +205,32 @@ for k=1:length(PKParameter)
 end
 
 for k=1:length(PKParameter)
+    % Initialize legend labels
+    leg_labels={};
+    
     % create figure for Obs vs Pred
     [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle,PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
     figure(fig_handle(k).predictedVsObserved);
-    plot(xRatio, xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, xRatio/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, xRatio*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio1, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel('Observed Ratio'); ylabel('Predicted Ratio');
+    plot(GuestRatio(k).x, GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio', PKParameter{k}));
+    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max]);
     
     % create figure for Residuals
     [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle+1,PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
     figure(fig_handle(k).residualsVsObserved);
-    plot(xRatio, ones(size(xRatio)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, ones(size(xRatio))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, ones(size(xRatio))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio1./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(xRatio, yRatio2./xRatio, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel('Observed Ratio'); ylabel('Residuals');
+    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).yup./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(k).x, GuestRatio(k).ylo./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{k}));
+    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisResVsObs(k).min 1.2*axisResVsObs(k).max]);
     
     for i=1:length(DDIRatioGroups)
         % Update the number of points for each group
@@ -227,6 +260,9 @@ for k=1:length(PKParameter)
     figure(fig_handle(k).residualsVsObserved);
     legend(leg_labels, 'Location', 'northoutside');
 end
+
+%-------------------------------------------------------------
+% Tables Section
 
 % Get the DDI Ratio Table
 DDIRatioHeaderPK={};

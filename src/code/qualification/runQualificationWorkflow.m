@@ -259,38 +259,39 @@ for i=1:length(TaskList)
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, PKRatioPlots);
             
-            % Curve Options and default may be moved within
-            % plotQualificationPKRatio
-            if isfield(PKRatioPlots, 'Color')
-                CurveOptions.Color=PKRatioPlots.Color;
-            else
-                CurveOptions.Color='#000000'; %Black
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'PKRatioPlots')
+                    AxesOptions=AxesSettings(l).PKRatioPlots;
+                    break
+                else
+                    AxesOptions=[];
+                end
             end
-            if isfield(PKRatioPlots, 'Symbol')
-                CurveOptions.Symbol=PKRatioPlots.Symbol;
-            else
-                CurveOptions.Symbol='Circle';
-            end
-            if isfield(AxesSettings, 'PKRatioPlots')
-                AxesOptions=AxesSettings.PKRatioPlots;
-            else
-                AxesOptions=[];
-            end
+            
+            % Get PK Parameters as elements
+            PKRatioPlots.PKParameter=getElementsfromPath(PKRatioPlots.PKParameter);
             
             try
                 % Plot the results
-                [PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots.PKRatios,ObservedDataSets, ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, CurveOptions);
+                [fig_handle, PKRatioTable, PKRatioGMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
+                    ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
-                saveQualificationFigure(gcf, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
-                saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatio');
+                saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioTable');
                 
-                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
-                % Create GMFE markdown
-                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                fileID = fopen(GMFEfile,'wt');
-                fprintf(fileID,'GMFE = %f \n',GMFE);
-                fclose(fileID);
+                for plottedPKparameters=1:length(PKRatioPlots.PKParameter)
+                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
+                    % Create GMFE markdown
+                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_PKRatio%sGMFE%s', indexed_item+1, PKRatioPlots.PKParameter{plottedPKparameters}, '.md'));
+                    fileID = fopen(GMFEfile,'wt');
+                    fprintf(fileID,'GMFE = %f \n', PKRatioGMFE(plottedPKparameters));
+                    fclose(fileID);
+                    
+                    saveQualificationFigure(fig_handle(plottedPKparameters).PKRatio, ConfigurationPlan.Sections, ...
+                        PKRatioPlots.SectionId, sprintf('PKRatio%s', PKRatioPlots.PKParameter{plottedPKparameters}));
+                end
+                
                 clear AxesOptions nPlotSettings
+                
             catch exception
                 writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%s". \n %s \n', j, nPlotSettings.title, exception.message), 'true', exception);
                 warning('Error in PKRatio plot %d. \n %s \n', j, exception.message);
@@ -341,10 +342,11 @@ for i=1:length(TaskList)
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
+                saveQualificationTable(DDIRatioTable, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
+                
                 % Get output plot types as elements
                 DDIRatioPlots.PlotType=getElementsfromPath(DDIRatioPlots.PlotType);
                 for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
-                    saveQualificationTable(DDIRatioTable, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
                     saveQualificationTable(DDIRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
                     for plottedTypes=1:length(DDIRatioPlots.PlotType)
                         if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
@@ -402,8 +404,12 @@ end
 
 if isfield(StructureInput, 'Title')
     nPlotSettings.title = StructureInput.Title;
-elseif isfield(StructureInput.Plot, 'Name')
-    nPlotSettings.title = StructureInput.Plot.Name;
+elseif isfield(StructureInput, 'Caption')
+    nPlotSettings.title = StructureInput.Caption;
+elseif isfield(StructureInput, 'Plot')
+    if isfield(StructureInput.Plot, 'Name')
+        nPlotSettings.title = StructureInput.Plot.Name;
+    end
 else
     nPlotSettings.title = [];
 end
