@@ -21,7 +21,7 @@ function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initialize
 if ~isempty(dir(REOutput_path))
     % Override RE Output if already created
     rmdir(REOutput_path, 's');
-    writeToReportLog('WARNING', sprintf('In initializeQualificationWorkflow, Reset Output RE folder "%s" \n', ...
+    writeToReportLog('WARNING', sprintf('In initializeQualificationWorkflow, Reset existing Output RE folder "%s" \n', ...
                 REOutput_path), 'true');
 end
 mkdir(REOutput_path);
