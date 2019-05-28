@@ -384,6 +384,13 @@ function saveQualificationFigure(figureHandle, Sections, SectionId, PlotType)
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
 
 set(figureHandle,'PaperOrientation','portrait');
+
+% check paper units
+if strcmpi(get(gcf,'PaperUnits'),'centimeters')
+    p = get(gcf,'PaperPosition');
+    set(gcf,'PaperPosition',p*2.5)
+end
+
 saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
 close(figureHandle);
 
