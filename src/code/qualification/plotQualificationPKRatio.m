@@ -111,8 +111,6 @@ for i=1:length(PKRatioPlot.PKRatios)
     % For simulation
     allPKpred=getPKParametersForConcentration(SimTime, Pred, 'Dose', drugmass);
     
-    disp(allPKpred);
-    
     for k=1:length(PKParameter)
         % Get the PK parameters requested in PK Parameters
         % according to Obs Unit
