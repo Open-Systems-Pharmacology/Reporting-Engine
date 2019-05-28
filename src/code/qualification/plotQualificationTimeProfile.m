@@ -182,15 +182,15 @@ for j = 1:length(ObservedDataSets)
                         % SD>=1 else it is arithmetic
                         if min(ObservedDataSets(j).y{2})>1
                             p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                                ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                                ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
                             setCurveOptions(p_handle2, Curves.CurveOptions);
                         else
-                            p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                            p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
                             setCurveOptions(p_handle2, Curves.CurveOptions);
                         end
                     else
                         errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
-                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     end
                     
@@ -225,15 +225,15 @@ for j = 1:length(ObservedDataSets)
                     % SD>=1 else it is arithmetic
                     if min(ObservedDataSets(j).y{2})>1
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                            ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                            ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     else
-                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     end
                 else
                     errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
-                    p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                    p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                     setCurveOptions(p_handle2, Curves.CurveOptions);
                 end
                 
