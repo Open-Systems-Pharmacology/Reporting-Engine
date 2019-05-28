@@ -51,10 +51,13 @@ for i=1:length(PKRatioPlot.PKRatios)
         Result.obsPK(i, k) = table2array(ObservedData(ID, sprintf('%sAvg', PKParameter{k})));
         obsPKUnit = table2array(ObservedData(ID, sprintf('%sAvgUnit', PKParameter{k})));
         Result.obsPKUnit{i, k} = convertPKSimUnit(obsPKUnit);
-        disp(Result.obsPKUnit{i, k})
         Result.obsPKDimension{i, k} = findDimensionfromUnit(Result.obsPKUnit{i, k});
         
-        disp(Result.obsPKDimension{i, k})
+        if isempty(Result.obsPKDimension{i, k})
+            ME = MException('plotQualificationPKRatio:unknownUnit', ...
+                'In PK Ratio plot %d, Ratio %d, Dimension unknown for Unit "%s" in Observed Data Record ID "%d" \n', figureHandle, i, char(Result.obsPKUnit{i, k}), PKRatio.ObservedDataRecordId);
+            throw(ME);
+        end
         
     end
     
@@ -77,6 +80,11 @@ for i=1:length(PKRatioPlot.PKRatios)
     Result.drugmassUnit{i, 1}=drugmassUnit(1);
     
     % Get the right PK Output
+    if isempty(SimResult.outputPathList)
+        ME = MException('plotQualificationPKRatio:emptyOutputPathInSimulation', ...
+            'In PK Ratio plot %d, Ratio %d, OutputPath is empty in Project "%s" or Simulation "%s"', figureHandle, i, PKRatio.Project, PKRatio.Simulation);
+        throw(ME);
+    end
     for j=1:length(SimResult.outputPathList)
         findPathOutput = strfind(SimResult.outputPathList{j}, PKRatio.Output);
         if ~isempty(findPathOutput)
