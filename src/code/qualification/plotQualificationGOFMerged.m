@@ -50,9 +50,24 @@ for i=1:length(Groups)
             throw(ME);
         end
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
+        
+        if isempty(SimResult.outputPathList)
+            ME = MException('plotQualificationGOFMerged:emptyOutputPathInSimulation', ...
+                'In GOF Merged plot %d group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+            throw(ME);
+        end
+        
         % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
         initSimulation(xmlfile,'none');
-        MW = getMolecularWeightForPath(Simulations.Output);
+        % Get Molecular Weight for Conversion
+        try
+            MW = getMolecularWeightForPath(Simulations.Output);
+        catch
+            ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
+                'In GOF Merged plot %d group %d, mapping %d, Compound not found in Path "%s"', figureHandle, i, j, Simulations.Output);
+            throw(ME);
+        end
+        
         
         % Get the right simulation output to be compared
         [predictedTime, predicted] = testSimResults(Simulations, SimResult, MW, TimeAxesOptions, yAxesOptions);
