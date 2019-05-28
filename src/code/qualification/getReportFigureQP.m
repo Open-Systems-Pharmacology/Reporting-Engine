@@ -155,17 +155,7 @@ if ~exist('nCols','var')
     nCols=1;
 end
 
-% set watermark
-% if WSettings.isValidatedSystem
-%     timestamp = false;
-%     watermark = '';
-% else
-watermark = 'Not QCed!';
-%timestamp = true;
-%end
-
-% Get the fontsize if not user defined corresponding to the numbers of
-% figures
+% Get the fontsize if not user defined corresponding to the numbers of figures
 if isnan(fontsize)
     switch max(nCols,nRows)
         case 1
@@ -249,9 +239,9 @@ end
 
 
 % Create textbox
-if ~isempty(watermark)
+if ~isempty(WSettings.Watermark)
     annotation(figureHandle,'textbox',[0.01 0.45 0.99 0.1],...
-        'String',{watermark},...
+        'String',{WSettings.Watermark},...
         'FontSize',fontsize_watermark,...
         'FitBoxToText','off',...
         'Linestyle','None',...

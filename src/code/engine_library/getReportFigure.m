@@ -86,11 +86,9 @@ if ~exist('nCols','var')
 end
 
 % set watermark
- if WSettings.isValidatedSystem
+ if isempty(WSettings.Watermark) || WSettings.isValidatedSystem
     timestamp = false;
-    watermark = '';
  else
-    watermark = 'Not QCed!';
     timestamp = true;
 end
 
@@ -165,9 +163,9 @@ end
 
 
 % Create textbox
-if ~isempty(watermark)
+if ~isempty(WSettings.Watermark)
     annotation(figureHandle,'textbox',[0.01 0.45 0.99 0.1],...
-    'String',{watermark},...
+    'String',{WSettings.Watermark},...
     'FontSize',24,...
     'FitBoxToText','off',...
     'Linestyle','None',...
