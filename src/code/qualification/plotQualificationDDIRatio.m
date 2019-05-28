@@ -56,6 +56,12 @@ for i=1:length(DDIRatioGroups)
         end
         SimResultControl = loadSimResultcsv(csvSimFileControl, DDIRatios(j).SimulationControl.Simulation);
         
+        if isempty(SimResultControl.outputPathList)
+        ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
+            'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+        throw(ME);
+        end
+        
         % All the output are kept so far, may be removed if not necessary
         [AGEControl, BWControl, MWControl, drugmassControl] = getInfofromSimulation(xmlfileControl, DDIRatios(j).Output);
         
@@ -71,6 +77,12 @@ for i=1:length(DDIRatioGroups)
             throw(ME);
         end
         SimResultDDI = loadSimResultcsv(csvSimFileDDI, DDIRatios(j).SimulationDDI.Simulation);
+        
+        if isempty(SimResultDDI.outputPathList)
+        ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
+            'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+        throw(ME);
+        end
         
         [AGEDDI, BWDDI, MWDDI, drugmassDDI] = getInfofromSimulation(xmlfileDDI, DDIRatios(j).Output);
         
@@ -229,7 +241,7 @@ for k=1:length(PKParameter)
     plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
     plot(GuestRatio(k).x, GuestRatio(k).yup./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
     plot(GuestRatio(k).x, GuestRatio(k).ylo./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{k}));
+    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{k}, PKParameter{k}));
     axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisResVsObs(k).min 1.2*axisResVsObs(k).max]);
     
     for i=1:length(DDIRatioGroups)
