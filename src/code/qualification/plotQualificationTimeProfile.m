@@ -34,20 +34,14 @@ if isempty(csvSimFile)
 end
 SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
+if isempty(SimResult.outputPathList)
+    ME = MException('plotQualificationTimeProfile:emptyOutputPathInSimulation', ...
+        'In plot %d: OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, TimeProfile.Project, TimeProfile.Simulation);
+    throw(ME);
+end
+
 % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
 initSimulation(xmlfile,'none');
-
-% Get Molecular Weight for Conversion
-for i=1:length(Curves)
-    OutputType = getElementsfromPath(Curves(i).Y);
-    OutputType = OutputType{2};
-    if ~strcmp(OutputType, 'ObservedData')
-        MW = getMolecularWeightForPath(Curves(i).Y);
-    end
-    if exist('MW')
-        break
-    end
-end
 
 % Perform the plot based on Curves indications
 legendLabels={};
@@ -55,6 +49,15 @@ hold on;
 
 % Plot the Curves indicated by the array of structures Curves
 for i=1:length(Curves)
+    
+    % Get Molecular Weight for Conversion
+    try
+        MW = getMolecularWeightForPath(Curves(i).Y);
+    catch
+        ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
+            'In plot %d, Curves %d: Compound not found in Path "%s"', figureHandle, i, Curves(i).Y);
+        throw(ME);
+    end
     
     % ObservedData type is indicated as 2nd element of Path
     OutputType = getElementsfromPath(Curves(i).Y);
