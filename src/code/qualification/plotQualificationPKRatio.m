@@ -88,15 +88,11 @@ for i=1:length(PKRatioPlot.PKRatios)
     for j=1:length(SimResult.outputPathList)
         findPathOutput = strfind(SimResult.outputPathList{j}, PKRatio.Output);
         if ~isempty(findPathOutput)
-            SimTimeUnit=SimResult.timeUnit;
-            PredUnit=SimResult.outputUnit{j};
-            TimeUnitFactor=getUnitFactor(SimTimeUnit, 'h', 'Time');
-            PredUnitFactor=getUnitFactor(PredUnit, 'mg/l', 'Concentration', 'MW', MW);
-            
-            % Get Time in h and Concentraiton in mg/l
-            % Output PK parameters will have a known unit
-            SimTime=SimResult.time.*TimeUnitFactor;
-            Pred=SimResult.y{j}.*PredUnitFactor;
+            % Get Time and Concentration in PK Sim internal units
+            % Concentration in µmol/l and
+            % Time in min
+            SimTime=SimResult.time;
+            Pred=SimResult.y{j};
             
             break
         end
@@ -113,28 +109,36 @@ for i=1:length(PKRatioPlot.PKRatios)
     
     for k=1:length(PKParameter)
         % Get the PK parameters requested in PK Parameters
+        % Internal Units are assumed for PK parameters
         % according to Obs Unit
         if strcmp(Result.obsPKDimension(i, k), 'AUC (mass)')
+            % Internal Unit for AUC is µmol*min/l and MW in g/mol
+            AUCpred = getfield(allPKpred, 'AUC_last')*MW;
+            AUCpredUnitFactor = getUnitFactor('µg*min/l', Result.obsPKUnit{i, k}, 'AUC (mass)');
+            Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
+            
+        elseif strcmp(Result.obsPKDimension(i, k), 'AUC (molar)')
+            % Internal Unit for AUC is µmol*min/l
             AUCpred = getfield(allPKpred, 'AUC_last');
-            AUCpredUnitFactor = getUnitFactor('mg*h/l', Result.obsPKUnit{i, k}, 'AUC (mass)', 'MW', MW);
+            AUCpredUnitFactor = getUnitFactor('µmol*min/l', Result.obsPKUnit{i, k}, 'AUC (molar)');
             Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'Concentration')
-            
+            % Internal Unit for Cmax is µmol/l
             CMAXpred = getfield(allPKpred, 'cMax');
-            CMAXpredUnitFactor = getUnitFactor('mg/l', Result.obsPKUnit{i, k}, 'Concentration', 'MW', MW);
+            CMAXpredUnitFactor = getUnitFactor('µmol/l', Result.obsPKUnit{i, k}, 'Concentration', 'MW', MW);
             Result.predPK(i, k) = CMAXpred.*CMAXpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'Flow')
-            
+            % Internal Unit for CL is l/min
             CLpred = getfield(allPKpred, 'CL');
-            CLpredUnitFactor = getUnitFactor('l/h', Result.obsPKUnit{i, k}, 'Flow');
+            CLpredUnitFactor = getUnitFactor('l/min', Result.obsPKUnit{i, k}, 'Flow');
             Result.predPK(i, k) = CLpred.*CLpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'Flow per weight')
-            
+            % Internal Units for CL is l/min and for BW is kg
             CLpred = getfield(allPKpred, 'CL')/BW;
-            CLpredUnitFactor = getUnitFactor('l/h/kg', Result.obsPKUnit{i, k}, 'Flow per weight');
+            CLpredUnitFactor = getUnitFactor('l/min/kg', Result.obsPKUnit{i, k}, 'Flow per weight');
             Result.predPK(i, k) = CLpred.*CLpredUnitFactor;
             
         else
