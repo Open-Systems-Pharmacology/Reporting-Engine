@@ -93,7 +93,7 @@ for i=1:length(PKRatioPlot.PKRatios)
             TimeUnitFactor=getUnitFactor(SimTimeUnit, 'h', 'Time');
             PredUnitFactor=getUnitFactor(PredUnit, 'mg/l', 'Concentration', 'MW', MW);
             
-            % Get Time in h and Concentraiton in g/l
+            % Get Time in h and Concentraiton in mg/l
             % Output PK parameters will have a known unit
             SimTime=SimResult.time.*TimeUnitFactor;
             Pred=SimResult.y{j}.*PredUnitFactor;
