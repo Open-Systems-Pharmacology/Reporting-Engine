@@ -321,8 +321,12 @@ for iAx=1:length(ax_handles)
     
     % Set legend
     l=legend;
+    % Set legend above the figure
+    set(l, 'Interpreter', 'none');
+    set(l, 'Location', 'northoutside');
     set(l,'FontSize',fontsize_legend);
     set(l,'FontWeight','bold');
+    
     
     % set hold on
     set(ax_handles(iAx),'NextPlot','add')
