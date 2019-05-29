@@ -32,14 +32,34 @@ for i=1:length(PKRatioPlot.PKRatios)
             break
         end
     end
-    if isempty(ObservedData.ID(ObservedData.ID==PKRatio.ObservedDataRecordId))
+    
+    % Get the matching Record ID in the Table
+    ID = (ObservedData.ID==PKRatio.ObservedDataRecordId);
+    
+    if max(ID)==0
         ME = MException('plotQualificationPKRatio:notFoundInPath', ...
             'In PK Ratio plot %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', figureHandle, i, PKRatio.ObservedDataRecordId);
         throw(ME);
     end
     
-    Study = table2array(ObservedData(ObservedData.ID==PKRatio.ObservedDataRecordId,'Study'));
-    Result.Study{i,1} = Study{1};
+    % Get the Study
+    Result.Study(i,1) = ObservedData.Study(ID);
+    
+    % Get the requested PK Parameters, their unit and dimension
+    for k=1:length(PKParameter)
+        
+        Result.obsPK(i, k) = table2array(ObservedData(ID, sprintf('%sAvg', PKParameter{k})));
+        obsPKUnit = table2array(ObservedData(ID, sprintf('%sAvgUnit', PKParameter{k})));
+        Result.obsPKUnit{i, k} = convertPKSimUnit(obsPKUnit);
+        Result.obsPKDimension{i, k} = findDimensionfromUnit(Result.obsPKUnit{i, k});
+        
+        if isempty(Result.obsPKDimension{i, k})
+            ME = MException('plotQualificationPKRatio:unknownUnit', ...
+                'In PK Ratio plot %d, Ratio %d, Dimension unknown for Unit "%s" in Observed Data Record ID "%d" \n', figureHandle, i, char(Result.obsPKUnit{i, k}), PKRatio.ObservedDataRecordId);
+            throw(ME);
+        end
+        
+    end
     
     % Load the mapped Time Profile Simulation Results
     [csvSimFile, xmlfile] = getSimFile(PKRatio, SimulationMappings, REInputPath);
@@ -51,23 +71,29 @@ for i=1:length(PKRatioPlot.PKRatios)
     SimResult = loadSimResultcsv(csvSimFile, PKRatio.Simulation);
     
     % All the output are kept so far, may be removed if not necessary
-    [AGE, BW, MW, drugmass] = getInfofromSimulation(xmlfile, PKRatio.Output);
+    [AGE, BW, MW, drugmass, drugmassUnit] = getInfofromSimulation(xmlfile, PKRatio.Output);
     
     Result.AGE(i, 1)=AGE;
     Result.BW(i, 1)=BW;
     Result.MW(i, 1)=MW;
     Result.drugmass(i, 1)=drugmass(1);
+    Result.drugmassUnit{i, 1}=drugmassUnit(1);
     
     % Get the right PK Output
+    if isempty(SimResult.outputPathList)
+        ME = MException('plotQualificationPKRatio:emptyOutputPathInSimulation', ...
+            'In PK Ratio plot %d, Ratio %d, OutputPath is empty in Project "%s" or Simulation "%s"', figureHandle, i, PKRatio.Project, PKRatio.Simulation);
+        throw(ME);
+    end
     for j=1:length(SimResult.outputPathList)
         findPathOutput = strfind(SimResult.outputPathList{j}, PKRatio.Output);
         if ~isempty(findPathOutput)
-            Pred=SimResult.y{j};
-            PredUnit=SimResult.outputUnit{j};
+            % Get Time and Concentration in PK Sim internal units
+            % Concentration in µmol/l and
+            % Time in min
             SimTime=SimResult.time;
-            SimTimeUnit=SimResult.timeUnit;
+            Pred=SimResult.y{j};
             
-            PredDimension = findDimensionfromUnit(PredUnit);
             break
         end
     end
@@ -77,65 +103,59 @@ for i=1:length(PKRatioPlot.PKRatios)
         throw(ME);
     end
     
-    % Get the observation time and PK profile in the right unit for study
-    ObsTime = ObservedData.Time(ObservedData.ID==PKRatio.ObservedDataRecordId);
-    ObsTimeUnit = ObservedData.TimeUnit(ObservedData.ID==PKRatio.ObservedDataRecordId);
-    ObsTimeUnit = ObsTimeUnit(1);
-    Obs = ObservedData.Avg(ObservedData.ID==PKRatio.ObservedDataRecordId);
-    if iscell(Obs)
-        Obs = str2double(Obs);
-    end
-    ObsUnit = ObservedData.AvgUnit(ObservedData.ID==PKRatio.ObservedDataRecordId);
-    ObsUnit = ObsUnit{1};
-    
-    % Get comparable units to pred
-    Timefactor=getUnitFactor(ObsTimeUnit,SimTimeUnit,'time');
-    % Because of encoding issues, some time ? is read as ? or ?
-    try
-        Obsfactor=getUnitFactor(ObsUnit,PredUnit,PredDimension, 'MW', MW);
-    catch
-        ObsUnit = convertPKSimUnit(ObsUnit);
-        Obsfactor=getUnitFactor(ObsUnit,PredUnit,PredDimension, 'MW', MW);
-    end
-    ObsTime = ObsTime.*Timefactor;
-    Obs = Obs.*Obsfactor;
-    
     % Get PK parameters from the curves
     % For simulation
     allPKpred=getPKParametersForConcentration(SimTime, Pred, 'Dose', drugmass);
     
-    % For Observations
-    allPKobs=getPKParametersForConcentration(ObsTime, Obs, 'Dose', drugmass);
-    
     for k=1:length(PKParameter)
-        % Get the PK parameters requested in PKParameter
-        if strcmpi(PKParameter{k}, 'AUC')
-            PKpredField{k}= 'AUC_last';
-        elseif strcmpi(PKParameter{k}, 'CMAX')
-            PKpredField{k}= 'cMax';
-        else
-            PKpredField{k}=PKParameter{k};
-        end
-        if isfield(allPKpred, PKpredField{k}) && isfield(allPKobs, PKpredField{k})
+        % Get the PK parameters requested in PK Parameters
+        % Internal Units are assumed for PK parameters
+        % according to Obs Unit
+        if strcmp(Result.obsPKDimension(i, k), 'AUC (mass)')
+            % Internal Unit for AUC is µmol*min/l and MW in g/mol
+            AUCpred = getfield(allPKpred, 'AUC_last')*MW;
+            AUCpredUnitFactor = getUnitFactor('µg*min/l', Result.obsPKUnit{i, k}, 'AUC (mass)');
+            Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
             
-            % Get the observation PK
-            Result.obsPK(i, k) = getfield(allPKobs, PKpredField{k});
-            % Get the predicted PK
-            Result.predPK(i, k) = getfield(allPKpred, PKpredField{k});
-            % Get the Ration
-            Result.RatioPK(i, k) = Result.predPK(i, k)./Result.obsPK(i, k);
+        elseif strcmp(Result.obsPKDimension(i, k), 'AUC (molar)')
+            % Internal Unit for AUC is µmol*min/l
+            AUCpred = getfield(allPKpred, 'AUC_last');
+            AUCpredUnitFactor = getUnitFactor('µmol*min/l', Result.obsPKUnit{i, k}, 'AUC (molar)');
+            Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
+            
+        elseif strcmp(Result.obsPKDimension(i, k), 'Concentration')
+            % Internal Unit for Cmax is µmol/l
+            CMAXpred = getfield(allPKpred, 'cMax');
+            CMAXpredUnitFactor = getUnitFactor('µmol/l', Result.obsPKUnit{i, k}, 'Concentration', 'MW', MW);
+            Result.predPK(i, k) = CMAXpred.*CMAXpredUnitFactor;
+            
+        elseif strcmp(Result.obsPKDimension(i, k), 'Flow')
+            % Internal Unit for CL is l/min
+            CLpred = getfield(allPKpred, 'CL');
+            CLpredUnitFactor = getUnitFactor('l/min', Result.obsPKUnit{i, k}, 'Flow');
+            Result.predPK(i, k) = CLpred.*CLpredUnitFactor;
+            
+        elseif strcmp(Result.obsPKDimension(i, k), 'Flow per weight')
+            % Internal Units for CL is l/min and for BW is kg
+            CLpred = getfield(allPKpred, 'CL')/BW;
+            CLpredUnitFactor = getUnitFactor('l/min/kg', Result.obsPKUnit{i, k}, 'Flow per weight');
+            Result.predPK(i, k) = CLpred.*CLpredUnitFactor;
             
         else
             ME = MException('PKRatio:notFoundInField', ...
                 'Requested PK Parameter "%s" not found in parameters extracted using getPKParametersForConcentration', PKParameter{k});
             throw(ME);
         end
+        
+        % Get the Ratio
+        Result.RatioPK(i, k) = Result.predPK(i, k)./Result.obsPK(i, k);
+        
     end
 end
 
 %--------------------------------------
 % Plot Section
-% Get X parameter:
+% Check that X parameter is AGE
 for k=1:length(AxesOptions)
     if strcmp(AxesOptions(k).Type, 'X')
         Xparam = AxesOptions(k).Dimension;
@@ -143,6 +163,10 @@ for k=1:length(AxesOptions)
         % implmented for different X parameters
         if strcmpi(Xparam, 'AGE')
             Xparam = 'AGE';
+        else
+            ME = MException('plotQualificationPKRatio:XaxisDimension', ...
+                'In PK Ratio plot %d, X-axis does not correspond to Age', figureHandle);
+            throw(ME);
         end
         break
     end
@@ -203,19 +227,21 @@ for k=1:length(PKParameter)
     fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
 end
 
-function [AGE, BW, MW, drugmass] = getInfofromSimulation(xmlfile, Output)
+function [AGE, BW, MW, drugmass, drugmassUnit] = getInfofromSimulation(xmlfile, Output)
 
 initSimulation(xmlfile,'none');
 
 MW = getMolecularWeightForPath(Output);
 
 drugmass = getParameter('*Application_*|ProtocolSchemaItem|DrugMass',1,'parametertype','readonly');
+drugmassUnit = getParameter('*Application_*|ProtocolSchemaItem|DrugMass',1,'parametertype','readonly', 'property', 'Unit');
 
 AGE = getParameter('*|Organism|Age',1,'parametertype','readonly');
 BW = getParameter('*|Organism|Weight',1,'parametertype','readonly');
 
 function UnitOut = convertPKSimUnit(UnitIn)
 
-UnitOut = UnitIn;
-UnitOut(UnitIn=='L')='l';
-UnitOut(1)='µ';
+UnitOut = string(UnitIn);
+UnitOut = replace(UnitOut,'L','l');
+
+%UnitOut(1)='µ';

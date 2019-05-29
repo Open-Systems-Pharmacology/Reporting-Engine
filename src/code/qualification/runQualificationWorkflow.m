@@ -40,7 +40,6 @@ end
 
 
 %---------------------------------------------------
-
 % Plot Time Profile
 for i=1:length(TaskList)
     
@@ -247,7 +246,6 @@ for i=1:length(TaskList)
 end
 
 %---------------------------------------------------
-
 % Plot of PK Ratio
 for i=1:length(TaskList)
     if strcmp(TaskList{i}, 'PKRatioPlots')

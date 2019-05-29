@@ -18,6 +18,12 @@ function [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initialize
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 % Create output directory
+if ~isempty(dir(REOutput_path))
+    % Override RE Output if already created
+    rmdir(REOutput_path, 's');
+    writeToReportLog('WARNING', sprintf('In initializeQualificationWorkflow, Reset existing Output RE folder "%s" \n', ...
+                REOutput_path), 'true');
+end
 mkdir(REOutput_path);
 
 % Get complete for REOutput and REInput paths

@@ -34,20 +34,14 @@ if isempty(csvSimFile)
 end
 SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
+if isempty(SimResult.outputPathList)
+    ME = MException('plotQualificationTimeProfile:emptyOutputPathInSimulation', ...
+        'In plot %d: OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, TimeProfile.Project, TimeProfile.Simulation);
+    throw(ME);
+end
+
 % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
 initSimulation(xmlfile,'none');
-
-% Get Molecular Weight for Conversion
-for i=1:length(Curves)
-    OutputType = getElementsfromPath(Curves(i).Y);
-    OutputType = OutputType{2};
-    if ~strcmp(OutputType, 'ObservedData')
-        MW = getMolecularWeightForPath(Curves(i).Y);
-    end
-    if exist('MW')
-        break
-    end
-end
 
 % Perform the plot based on Curves indications
 legendLabels={};
@@ -55,6 +49,9 @@ hold on;
 
 % Plot the Curves indicated by the array of structures Curves
 for i=1:length(Curves)
+    
+    % Get Molecular Weight for Conversion
+    MW = getMolecularWeightForPath(Curves(i).Y);
     
     % ObservedData type is indicated as 2nd element of Path
     OutputType = getElementsfromPath(Curves(i).Y);
@@ -182,15 +179,15 @@ for j = 1:length(ObservedDataSets)
                         % SD>=1 else it is arithmetic
                         if min(ObservedDataSets(j).y{2})>1
                             p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                                ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                                ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
                             setCurveOptions(p_handle2, Curves.CurveOptions);
                         else
-                            p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                            p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
                             setCurveOptions(p_handle2, Curves.CurveOptions);
                         end
                     else
                         errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
-                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     end
                     
@@ -225,15 +222,15 @@ for j = 1:length(ObservedDataSets)
                     % SD>=1 else it is arithmetic
                     if min(ObservedDataSets(j).y{2})>1
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ...
-                            ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1));
+                            ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     else
-                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2});
+                        p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
                         setCurveOptions(p_handle2, Curves.CurveOptions);
                     end
                 else
                     errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
-                    p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor);
+                    p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                     setCurveOptions(p_handle2, Curves.CurveOptions);
                 end
                 
