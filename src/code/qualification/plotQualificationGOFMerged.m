@@ -60,14 +60,7 @@ for i=1:length(Groups)
         % Initialize simulation, and get Molecular Weight in g/mol for correct use of getUnitFactor
         initSimulation(xmlfile,'none');
         % Get Molecular Weight for Conversion
-        try
-            MW = getMolecularWeightForPath(Simulations.Output);
-        catch
-            ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'In GOF Merged plot %d group %d, mapping %d, Compound not found in Path "%s"', figureHandle, i, j, Simulations.Output);
-            throw(ME);
-        end
-        
+        MW = getMolecularWeightForPath(Simulations.Output);
         
         % Get the right simulation output to be compared
         [predictedTime, predicted] = testSimResults(Simulations, SimResult, MW, TimeAxesOptions, yAxesOptions);

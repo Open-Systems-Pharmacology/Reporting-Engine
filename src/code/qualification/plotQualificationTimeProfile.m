@@ -51,13 +51,7 @@ hold on;
 for i=1:length(Curves)
     
     % Get Molecular Weight for Conversion
-    try
-        MW = getMolecularWeightForPath(Curves(i).Y);
-    catch
-        ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-            'In plot %d, Curves %d: Compound not found in Path "%s"', figureHandle, i, Curves(i).Y);
-        throw(ME);
-    end
+    MW = getMolecularWeightForPath(Curves(i).Y);
     
     % ObservedData type is indicated as 2nd element of Path
     OutputType = getElementsfromPath(Curves(i).Y);
