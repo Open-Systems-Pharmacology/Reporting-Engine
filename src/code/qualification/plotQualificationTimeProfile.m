@@ -79,8 +79,7 @@ for i=1:length(Curves)
     legendLabels=[legendLabels legLabel];
     
 end
-legend(legendLabels, 'Location', 'northoutside');
-%legend('off')
+legend(legendLabels); 
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit
@@ -143,6 +142,9 @@ end
 % For observation: Get the right observation curve with right unit
 function [p_handle, legendLabels] = testandplotObservations(Curves, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions)
 
+p_handle=[];
+legendLabels={};
+    
 % Split the Curve path into its elements
 CurveElements = getElementsfromPath(Curves.Y);
 
@@ -171,6 +173,7 @@ for j = 1:length(ObservedDataSets)
                 
                 % Plot the output
                 p_handle = plot(ObservedTime, ObservedOutput);
+                setCurveOptions(p_handle, Curves.CurveOptions);
                 
                 % Check if error bars to be plotted
                 if length(ObservedDataSets(j).outputPathList)>1
@@ -180,15 +183,15 @@ for j = 1:length(ObservedDataSets)
                         if min(ObservedDataSets(j).y{2})>1
                             p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                                 ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
-                            setCurveOptions(p_handle2, Curves.CurveOptions);
+                            setCurveOptions(p_handle2, p_handle);
                         else
                             p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
-                            setCurveOptions(p_handle2, Curves.CurveOptions);
+                            setCurveOptions(p_handle2, p_handle);
                         end
                     else
                         errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
-                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                        setCurveOptions(p_handle2, p_handle);
                     end
                     
                 end
@@ -213,7 +216,7 @@ for j = 1:length(ObservedDataSets)
             
             % Plot the output
             p_handle = plot(ObservedTime, ObservedOutput);
-            
+            setCurveOptions(p_handle, Curves.CurveOptions);
             
             % Check if error bars to be plotted
             if length(ObservedDataSets(j).outputPathList)>1
@@ -223,15 +226,15 @@ for j = 1:length(ObservedDataSets)
                     if min(ObservedDataSets(j).y{2})>1
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ...
                             ObservedOutput.*(1-1./ObservedDataSets(j).y{2}), ObservedOutput.*(ObservedDataSets(j).y{2}-1), 'HandleVisibility','off');
-                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                        setCurveOptions(p_handle2, p_handle);
                     else
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}, 'HandleVisibility','off');
-                        setCurveOptions(p_handle2, Curves.CurveOptions);
+                        setCurveOptions(p_handle2, p_handle);
                     end
                 else
                     errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
                     p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
-                    setCurveOptions(p_handle2, Curves.CurveOptions);
+                    setCurveOptions(p_handle2, p_handle);
                 end
                 
             end
@@ -242,12 +245,7 @@ for j = 1:length(ObservedDataSets)
     end
     
 end
-if exist('p_handle')
-    setCurveOptions(p_handle, Curves.CurveOptions);
-else
-    p_handle=[];
-    legendLabels=[];
-end
+
 
 function [pp, legendLabels] = plotPopulationStatistics(time, Y, Curves)
 pp=[];

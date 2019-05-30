@@ -1,7 +1,21 @@
 function setCurveOptions(pp, CurveOptions)
+% setCurveOptions Auxiliary to Set propeerties of plotted curves
 
+% If CurveOptions is directly a plot handle, 
+% Get the plot handle properties as a structure
+
+if ~isstruct(CurveOptions)
+    CurveOptions = struct(CurveOptions);
+end
+
+% Set plot color
 if isfield(CurveOptions, 'Color')
-    rgb= hex2rgb(CurveOptions.Color);
+    % If color is in hex translate to RGB, else use RGB
+    if ischar(CurveOptions.Color)
+        rgb = hex2rgb(CurveOptions.Color);
+    else
+        rgb = CurveOptions.Color;
+    end
     set(pp, 'Color', rgb);
 end
 
@@ -35,4 +49,8 @@ if isfield(CurveOptions, 'Symbol')
     end
     
     set(pp, 'Marker', CurveOptions.Symbol);
+end
+
+if isfield(CurveOptions, 'Marker')
+    set(pp, 'Marker', CurveOptions.Marker);
 end

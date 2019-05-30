@@ -142,8 +142,8 @@ for i=1:length(PKRatioPlot.PKRatios)
             Result.predPK(i, k) = CLpred.*CLpredUnitFactor;
             
         else
-            ME = MException('PKRatio:notFoundInField', ...
-                'Requested PK Parameter "%s" not found in parameters extracted using getPKParametersForConcentration', PKParameter{k});
+            ME = MException('plotQualificationPKRatio:unknownDimension', ...
+            'In PK Ratio plot %d, Ratio %d, Observed Study ID "%d", PK Parameter "%s" \n Unknown dimension for observed unit "%s" ', figureHandle, i, PKRatio.ObservedDataRecordId, PKParameter{k}, char(Result.obsPKUnit{i, k}));
             throw(ME);
         end
         
@@ -206,15 +206,15 @@ PKRatioHeader={};
 PKRatioResults=[];
 
 for k=1:length(PKParameter)
-    PKRatioHeader = [PKRatioHeader {sprintf('Predicted %s', PKParameter{k}), ...
-        sprintf('Observed %s', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
+    PKRatioHeader = [PKRatioHeader {sprintf('Predicted %s [%s]', PKParameter{k}, Result.obsPKUnit{1, k}), ...
+        sprintf('Observed %s [%s]', PKParameter{k}, Result.obsPKUnit{1, k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
     
     PKRatioResults = [PKRatioResults Result.predPK(:,k), Result.obsPK(:,k), Result.RatioPK(:,k)];
     
 end
 
 % Definition of the PKRatio table
-PKRatioHeader = [{'Study ID', 'Age (y)', 'BodyWeight (kg)'}, PKRatioHeader];
+PKRatioHeader = [{'Study ID', 'Age [y]', 'BodyWeight [kg]'}, PKRatioHeader];
 
 PKRatioTable = [PKRatioHeader ; ...
     Result.Study num2cell([Result.AGE, Result.BW, PKRatioResults])];

@@ -57,7 +57,7 @@ for i = 1:length(SectionsIn)
     if isfield(SectionsIn{i}, 'Sections')
         if ~isempty(SectionsIn{i}.Sections)
             % Repeat the process from this folder
-            SubSectionsOut = generateOutputFolders(SectionsIn{i}.Sections, REInputFolder, REOutputFolder);
+            SubSectionsOut = generateOutputFolders(SectionsIn{i}.Sections, REInputFolder, Path);
             for j=1:length(SubSectionsOut)
                 SectionsOut(SectionIndex+j)=SubSectionsOut(j);
             end
