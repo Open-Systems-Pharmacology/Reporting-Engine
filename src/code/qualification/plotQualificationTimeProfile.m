@@ -1,19 +1,23 @@
 function plotQualificationTimeProfile(WSettings,figureHandle,TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
-%PLOTQUALIFICATIONTIMEPROFILE Plots the time profile of a population in comparison to a reference population
+%PLOTQUALIFICATIONTIMEPROFILE Plots time profile from Configuration Plan
 %
-% plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions,PlotSettings)
+% plotQualificationTimeProfile(WSettings,figureHandle,
+%   TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
-%       WSettings (structure)    definition of properties used in all
+%   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle ( handle) handle of figure
-%   TimeProfile (structure) with Project and Simulation to be mapped
-%   ObservedDataSets (structure) of all loaded observed data
-%   SimulationMappings (structure) to mapping linking simulations to there path
-%   Curves (structure) to internal path of simulations or observations
-%   AxesOptions (structure) to set plot options
+%   figureHandle (integer) number to pass to figure handle
+%   TimeProfile (structure) TimeProfile plot information
+%   Curves (structure) Curves information
+%   ObservedDataSets (structure) Observed data
+%   SimulationMappings (structure) Map simulation results to project
+%   AxesOptions (structure) to set axes options
 %   PlotSettings (structure) to set plot options
+%   REInputPath (string) path of RE input files and folders
+% Output
 %
+
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 %---------------------------------------------
