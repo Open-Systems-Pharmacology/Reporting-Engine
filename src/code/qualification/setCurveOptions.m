@@ -3,9 +3,13 @@ function setCurveOptions(pp, CurveOptions)
 
 % If CurveOptions is directly a plot handle, 
 % Get the plot handle properties as a structure
+% Warning message for this modification are turned off
 
 if ~isstruct(CurveOptions)
-    CurveOptions = struct(CurveOptions);
+    warning('off', 'MATLAB:hg:EraseModeIgnored');
+    warning('off', 'MATLAB:hg:willberemoved');
+    warning('off', 'MATLAB:structOnObject');
+    CurveOptions = struct(CurveOptions); 
 end
 
 % Set plot color

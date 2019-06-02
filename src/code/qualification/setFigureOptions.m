@@ -73,19 +73,20 @@ if ~isempty(yyAxesOptions)
     if ~isfield(yyAxesOptions, 'Unit')
         yyAxesOptions.Unit=[];
     end
-    if isfield(yyAxesOptions, 'Dimension')
-        yyLabelFinal = getLabelWithUnit(yyAxesOptions.Dimension,yyAxesOptions.Unit);
-        ylabel(yyLabelFinal);
-    end
+    % Use PK Sim Dimension instead of input
+    yyAxesOptions.Dimension = findDimensionfromUnit(yyAxesOptions.Unit);
+    yyLabelFinal = getLabelWithUnit(getYlabelfromDimension(yyAxesOptions.Dimension),yyAxesOptions.Unit);
+    ylabel(yyLabelFinal);
     yyaxis left
 end
 if ~isfield(yAxesOptions, 'Unit')
     yAxesOptions.Unit=[];
 end
-if isfield(yAxesOptions, 'Dimension')
-    yLabelFinal = getLabelWithUnit(yAxesOptions.Dimension,yAxesOptions.Unit);
-    ylabel(yLabelFinal);
-end
+% Use PK Sim Dimension instead of input
+yAxesOptions.Dimension = findDimensionfromUnit(yAxesOptions.Unit);
+yLabelFinal = getLabelWithUnit(getYlabelfromDimension(yAxesOptions.Dimension),yAxesOptions.Unit);
+ylabel(yLabelFinal);
+
 
 
 % Set Grid options
@@ -130,3 +131,18 @@ if isfield(yAxesOptions, 'Scaling')
         set(gca, 'YScale', 'log');
     end
 end
+
+function Ylabel = getYlabelfromDimension(inputDimension)
+
+if strcmp(inputDimension, 'Concentration (mass)')
+    Ylabel = 'Concentration';
+elseif strcmp(inputDimension, 'Concentration (molar)')
+    Ylabel = 'Concentration';
+elseif strcmp(inputDimension, 'AUC (mass)')
+    Ylabel = 'AUC';
+elseif strcmp(inputDimension, 'AUC (molar)')
+    Ylabel = 'AUC';
+else
+    Ylabel = inputDimension;
+end
+
