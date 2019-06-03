@@ -1,19 +1,23 @@
 function plotQualificationComparisonTimeProfile(WSettings,figureHandle,CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
-%PLOTCOMPARISONQUALIFICATIONTIMEPROFILE Plots the time profile of a population in comparison to a reference population
+%PLOTCOMPARISONQUALIFICATIONTIMEPROFILE Plots comparison of time profiles from Configuration Plan
 %
-% plotQualificationTimeProfile(WSettings,figureHandle,SimTL,DataTP, Curves, AxesOptions,PlotSettings)
+% plotQualificationComparisonTimeProfile(WSettings,figureHandle,
+%   CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
-%       WSettings (structure)    definition of properties used in all
+%   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle ( handle) handle of figure
-%   TimeProfile (structure) with Project and Simulation to be mapped
-%   ObservedDataSets (structure) of all loaded observed data
-%   SimulationMappings (structure) to mapping linking simulations to there path
-%   Curves (structure) to internal path of simulations or observations
-%   AxesOptions (structure) to set plot options
+%   figureHandle (integer) number to pass to figure handle
+%   CompTimeProfile (structure) TimeProfile Comparison plot information
+%   Curves (structure) Curves information
+%   ObservedDataSets (structure) Observed data
+%   SimulationMappings (structure) Map simulation results to project
+%   AxesOptions (structure) to set axes options
 %   PlotSettings (structure) to set plot options
+%   REInputPath (string) path of RE input files and folders
+% Output
 %
+
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
 %---------------------------------------------
@@ -133,7 +137,6 @@ function [p_handle, legendLabels] = testandplotObservations(Curves, ObservedData
 
 % Initialize output as empty. If return an empty plot handle, the path was
 % not found in the loop
-dimensionList=getDimensions;
 p_handle=[];
 legendLabels=[];
 
@@ -151,7 +154,11 @@ for j = 1:length(ObservedDataSets)
                 XDimension=findDimensionfromUnit(xAxesOptions.Unit);
                 Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
                 
-                p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
+                ObsTime = (ObservedDataSets(j).time.*Xfactor >= Curves.StartTime &  ObservedDataSets(j).time.*Xfactor <= Curves.EndTime);
+                FinalTime = ObservedDataSets(j).time(ObsTime).*Xfactor-Curves.StartTime;
+                Obs = ObservedDataSets(j).y{1}.*Yfactor;
+                FinalObs = Obs(ObsTime);
+                p_handle = plot(FinalTime, FinalObs);
                 
                 legendLabels=sprintf('%s Observed Data', Curves.Caption);
                 CurveOptions.Color = Curves.Color;
@@ -170,7 +177,12 @@ for j = 1:length(ObservedDataSets)
             XDimension=findDimensionfromUnit(xAxesOptions.Unit);
             Xfactor=getUnitFactor(ObservedDataSets(j).timeUnit,xAxesOptions.Unit,XDimension);
             
-            p_handle = plot(ObservedDataSets(j).time.*Xfactor-Curves.StartTime, ObservedDataSets(j).y{1}.*Yfactor);
+            ObsTime = (ObservedDataSets(j).time.*Xfactor >= Curves.StartTime &  ObservedDataSets(j).time.*Xfactor <= Curves.EndTime);
+            FinalTime = ObservedDataSets(j).time(ObsTime).*Xfactor-Curves.StartTime;
+            Obs = ObservedDataSets(j).y{1}.*Yfactor;
+            FinalObs = Obs(ObsTime);
+            
+            p_handle = plot(FinalTime, FinalObs);
             
             legendLabels=sprintf('%s Observed Data', Curves.Caption);
             CurveOptions.Color = Curves.Color;

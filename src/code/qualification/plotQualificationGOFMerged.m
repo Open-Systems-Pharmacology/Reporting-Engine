@@ -1,40 +1,38 @@
-function  GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
-% PLOTQUALIFICATIONGOFMERGED plot predcited vs observed and residuals vs time
+function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+%PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan 
 %
-% GMFE=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, PlotSettings)
+% [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,
+%   Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
-%       WSettings (structure)    definition of properties used in all
+%   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle ( handle) handle of figure
-%   Groups (structure) with simulated results
-%   ObservedDataSets (structure) of all loaded observed data
-%   SimulationMappings (structure) to map simulations with observations
-%   AxesOptions (structure) to set plot options
+%   figureHandle (integer) number to pass to figure handle
+%   Groups (structure) Goodness of fit plot information
+%   ObservedDataSets (structure) Observed data
+%   SimulationMappings (structure) Map simulation results to project
+%   AxesOptions (structure) to set axes options
 %   PlotSettings (structure) to set plot options
-%
+%   REInputPath (string) path of RE input files and folders
 % Output
-%   GMFE (numeric) measure of goodness of fit
+%   fig_handle (handle) handle of output figures
+%   GMFE (cells)  Geometric Mean Fold Error
+%
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
+
+%---------------------------------------------
 
 % Initialize the unity line and the time line of the plot
 minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN; maxRes=NaN;
 
 % create figure for Obs vs Pred
-[ax, fig_handle1] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+[ax1, fig_handle.PredictedVsObserved] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
 [xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsPredictedVsObserved);
 
 % create figure for Residuals vs time
-[ax, fig_handle2] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
+[ax2, fig_handle.ResidualsOverTime] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
 [TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsResidualsOverTime);
-
-if ~strcmp(ResAxesOptions.Dimension, 'Dimensionless')
-    dimensionList=getDimensions;
-    ResDimension=dimensionList{strContains(yAxesOptions.Dimension, dimensionList)};
-else
-    ResDimension='';
-end
 
 % Map for each group the corresponding observations within a same structure
 for i=1:length(Groups)
@@ -87,10 +85,10 @@ for i=1:length(Groups)
         Group(i).dataTP(j).yobs = reshape(Obs, [], 1);
         Group(i).dataTP(j).ypred = reshape(predicted(comparable_index), [], 1);
         Yres = predicted(comparable_index)-Obs;
-        if strcmp(ResDimension,'')
+        if strcmp(ResAxesOptions.Dimension,'Fraction')
             Yres=Yres./Obs;
         else
-            Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResDimension, 'MW',MW);
+            Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResAxesOptions.Dimension, 'MW',MW);
             Yres=Yres.*Resfactor;
         end
         Group(i).dataTP(j).yres= reshape(Yres, [], 1);
@@ -113,10 +111,9 @@ end
 % -------------------------------------------------------------
 % Plot the figures
 % Observation vs Prediction Figure
-figure(fig_handle1);
+set(0, 'CurrentFigure', fig_handle.PredictedVsObserved);
 plot([0 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], [0 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)], '--k', 'Linewidth', 1,'HandleVisibility','off');
 axis([0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY) 0.8*nanmin(minX, minY) 1.2*nanmax(maxX, maxY)]);
-
 legendLabels={};
 
 % Initialize error for computing GMFE
@@ -136,7 +133,6 @@ for i=1:length(Groups)
             pp=plot(Group(i).dataTP(j).yobs, Group(i).dataTP(j).ypred);
         end
         setCurveOptions(pp, CurveOptions);
-        
         PosObs = Group(i).dataTP(j).yobs>0;
         PosPred = Group(i).dataTP(j).ypred>0;
         Error = [Error; log10(Group(i).dataTP(j).ypred(PosObs & PosPred))-log10(Group(i).dataTP(j).yobs((PosObs & PosPred)))];
@@ -153,7 +149,7 @@ legend(legendLabels, 'Location', 'northoutside');
 
 % Residuals vs Time Figure
 % create figure for Residuals vs time
-figure(fig_handle2);
+set(0, 'CurrentFigure', fig_handle.ResidualsOverTime);
 plot([0 1.2*maxtime], [0 0], '--k', 'Linewidth', 1, 'HandleVisibility','off');
 axis([0 1.2*maxtime -1.2*abs(maxRes) 1.2*abs(maxRes)]);
 
@@ -171,7 +167,7 @@ for i=1:length(Groups)
         else
             pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
         end
-        setCurveOptions(pp, CurveOptions);
+        setCurveOptions(pp, CurveOptions);        
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end

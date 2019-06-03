@@ -1,20 +1,25 @@
 function [fig_handle, PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,figureHandle,PKParameter,PKRatioPlot,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
-%PLOTQUALIFICATIONPKRATIO Plots PK ratio from qualification workflow
+%PLOTQUALIFICATIONPKRATIO Plots PK Ratios from Configuration Plan 
 %
-% plotQualificationPKRatio(WSettings,figureHandle,PKParameter,PKRatios,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings)
+% [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,
+%   PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
-%       WSettings (structure)    definition of properties used in all
+%   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle ( handle) handle of figure
-%   PKParameter (string) name of the PK parameter to be evaluated
-%   PKRatios (struct) with direction to plot the results
-%   ObservedDataSets (structure) of all loaded observed data
-%   SimulationMappings (structure) to map simulations with observations
+%   figureHandle (integer) number to pass to figure handle
+%   PKParameter (cells) name of the PK parameter to be evaluated
+%   PKRatioPlot (structure) PK Ratio plot information
+%   ObservedDataSets (structure) Observed data
+%   SimulationMappings (structure) Map simulation results to project
 %   AxesOptions (structure) to set axes options
 %   PlotSettings (structure) to set plot options
+%   REInputPath (string) path of RE input files and folders
 % Output
-%   csv (cellarray) table with numeric information to the plot
+%   fig_handle (handle) handle of output figures
+%   PKRatioTable (cells) Table of DDI Ratio information
+%   GMFE (cells)  Geometric Mean Fold Error
+%
 
 % Open Systems Pharmacology Suite;  http://open-systems-pharmacology.org
 
@@ -181,7 +186,6 @@ for k=1:length(PKParameter)
     [ax, fig_handle(k).PKRatio] = getReportFigureQP(WSettings,1,1,k+figureHandle,PlotSettings);
     setFigureOptions(AxesOptions);
     % Ratio limits
-    figure(fig_handle(k).PKRatio);
     plot(Xrange, Yrange, '-k', 'LineWidth', 1, 'HandleVisibility','off');
     plot(Xrange, Yrange/2, '--r', 'LineWidth', 1, 'HandleVisibility','off');
     plot(Xrange, Yrange*2, '--r', 'LineWidth', 1, 'HandleVisibility','off');

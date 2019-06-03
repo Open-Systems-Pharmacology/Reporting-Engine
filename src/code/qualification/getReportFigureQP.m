@@ -180,7 +180,7 @@ else
 end
 
 set(0, 'CurrentFigure', figureHandle);
-
+set(figureHandle, 'visible', 'off');
 % set Figure Format
 % Normalization reference TBD 
 set(0, 'Units', 'points');

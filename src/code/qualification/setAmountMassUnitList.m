@@ -4,24 +4,33 @@ global MOBI_SETTINGS;
 % initialize MoBiSettings
 MoBiSettings;
 
+% delete current unitFile
+delete(fullfile(MOBI_SETTINGS.application_path,'unitList_3.mat'));
+
 [unitList,unitList_dimensionList]=iniUnitList(0);
 
-% load unitFile
+% load clean unitFile
 load(fullfile(MOBI_SETTINGS.application_path,'unitList_3.mat'));
 
-% Get lists for Mass and Amount
+% Get Unit lists for Mass and Amount from Dimension
 Mass_index = find(strcmp(unitList_dimensionList, 'Mass'));
 Amount_index = find(strcmp(unitList_dimensionList, 'Amount'));
 
+% Unify the unit list and formulas of amount and mass
+Mass_unit_txt = [unitList(Mass_index).unit_txt, unitList(Amount_index).unit_txt];
+% Unify the formulas of amount and mass
+Mass_formula = [unitList(Mass_index).formula, strcat('1E-9*', unitList(Amount_index).formula, '*MW')];
+
+% Unify the list of amount and mass
+Amount_unit_txt = [unitList(Amount_index).unit_txt, unitList(Mass_index).unit_txt];
+% Unify the formulas of amount and mass
+Amount_formula = [unitList(Amount_index).formula, strcat('1E9*', unitList(Mass_index).formula, '/MW')];
+
 %-----------------------------
-% For add Amount to Mass
+% For adding Amount to Mass
 
 % Check if the unit does not already contains the other values
 if ~strContains(unitList(Mass_index).unit_txt, 'mol')
-    % Unify the list of amount and mass
-    Mass_unit_txt = [unitList(Mass_index).unit_txt unitList(Amount_index).unit_txt];
-    Mass_formula = [unitList(Mass_index).formula strcat('1E-9*', unitList(Amount_index).formula, '*MW')];
-    
     % Update the values and formaulas for Mass
     unitList(Mass_index).par_descriptions = {'Molweight [g/mol]'};
     unitList(Mass_index).par_names = {'MW'};
@@ -37,14 +46,8 @@ end
 % For add Mass to Amount
 
 % Check if the unit does not already contains the other values
-if ~strContains(unitList(Amount_index).unit_txt, 'g')
-    % Unify the list of amount and mass
-    Amount_unit_txt = [unitList(Amount_index).unit_txt unitList(Mass_index).unit_txt];
-    
-    % Unify the formulas of amount and mass
-    
-    Amount_formula = [unitList(Amount_index).formula strcat('1E9*', unitList(Mass_index).formula, '/MW')];
-    
+if ~strContains(unitList(Amount_index).unit_txt, 'kg')
+
     % Update the values and formaulas for Amount
     unitList(Amount_index).par_descriptions = {'Molweight [g/mol]'};
     unitList(Amount_index).par_names = {'MW'};

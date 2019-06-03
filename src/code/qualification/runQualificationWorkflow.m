@@ -38,7 +38,6 @@ for i=1:length(TaskList)
     end
 end
 
-
 %---------------------------------------------------
 % Plot Time Profile
 for i=1:length(TaskList)
@@ -167,17 +166,17 @@ for i=1:length(TaskList)
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
                 try
-                    GMFE = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,...
+                    [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,...
                         ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                     
                     % Pause option for debugging
                     % pause()
                     % Check plot type to perform predictedVsObserved, residualsOverTime or both
                     if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
-                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
+                        saveQualificationFigure(GOF_handle.ResidualsOverTime, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
                     end
                     if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                        saveQualificationFigure(gcf, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
+                        saveQualificationFigure(GOF_handle.PredictedVsObserved, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
                     end
                     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
                     % Create GMFE markdown
@@ -381,12 +380,13 @@ function saveQualificationFigure(figureHandle, Sections, SectionId, PlotType)
 
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
 
+set(figureHandle,'visible','off');
 set(figureHandle,'PaperOrientation','portrait');
 
 % check paper units
-if strcmpi(get(gcf,'PaperUnits'),'centimeters')
-    p = get(gcf,'PaperPosition');
-    set(gcf,'PaperPosition',p*2.5)
+if strcmpi(get(figureHandle,'PaperUnits'),'centimeters')
+    p = get(figureHandle,'PaperPosition');
+    set(figureHandle,'PaperPosition',p*2.5)
 end
 
 saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
