@@ -25,6 +25,35 @@ computerName = getenv('COMPUTERNAME');
 % check if is a validated system 
 WSettings.isValidatedSystem = ismember(computerName,TRE.ListOfValidatedComputers);
 
+% if Watermark is not an input load default
+if ~isfield(WSettings,'Watermark') 
+    if WSettings.isValidatedSystem
+        WSettings.Watermark = '';
+    else
+        userDir = fullfile(getenv('APPDATA') , SuiteInstallationSubfolder , 'ReportingEngine' );
+        if ~exist(userDir,'dir')
+            mkdir(userDir)
+        end
+        if exist(fullfile(userDir,'watermark.mat'),'file')
+            load(fullfile(userDir,'watermark.mat')); %#ok<LOAD>
+        else
+           prompt={['Enter the default value for a watermark in plots' newline '(empty string will disable all watermarks):']};
+           name='Watermark';
+           numlines=1;
+           defaultanswer={'Not QCed! Preliminary data!'};
+ 
+           answer={};
+           while isempty(answer)
+              answer=inputdlg(prompt,name,numlines,defaultanswer);
+           end
+           watermark = answer{1};
+           save(fullfile(userDir,'watermark.mat'),'watermark');
+        end
+        WSettings.Watermark = watermark;
+    end
+end
+    
+
 
 % add OSPSuite version
 T = OSPSuiteVersionInfo;
