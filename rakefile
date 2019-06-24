@@ -1,0 +1,116 @@
+require_relative 'scripts/setup'
+require_relative 'scripts/copy-dependencies'
+
+PRODUCT_NAME = 'Reporting Engine'
+MANUFACTURER = 'Open Systems Pharmacology'
+
+
+task :create_portable_setup, [:product_version] do |t, args|
+  product_version = args.product_version
+  release_version_split= product_version.split('.')
+  product_release_version = "#{release_version_split[0]}.#{release_version_split[1]}"
+  @product_full_name = "#{PRODUCT_NAME} #{product_release_version}"
+
+	#Clean up before creating portable setup
+  Rake::Task['prepare'].invoke
+  
+  archive_path = File.join(setup_dir, "#{@product_full_name}.zip")
+
+  create_portable_archive archive_path, deploy_dir
+end
+
+
+desc "cleanup files before starting compilation"
+task :prepare do
+  FileUtils.rm_rf  deploy_dir
+  FileUtils.rm_rf  src_lib_dir
+
+  FileUtils.mkdir_p deploy_dir
+  FileUtils.mkdir_p src_lib_dir
+
+  Rake::Task['copy_lib'].invoke
+
+  copy_src_to_deploy_dir
+end
+
+desc "Copy all required binaries under the lib folder located under src."
+task :copy_lib do
+  copy_to_lib_dir src_lib_dir  
+end
+
+desc "restore all nuget packages in the packages folder"
+task :restore_nuget_packages do
+  command_line = %W[restore -PackagesDirectory packages]
+  Utils.run_cmd 'nuget', command_line
+end
+
+task :restore_nuget_and_copy_to_lib => [:restore_nuget_packages] do
+  Rake::Task['copy_lib'].invoke
+end
+
+private
+
+def copy_src_to_deploy_dir 
+  FileUtils.cp_r  "#{src_dir}/.", deploy_dir
+
+  copy_depdencies solution_dir, deploy_dir do
+    copy_file 'README.md'
+    copy_file 'LICENSE'
+  end
+
+  Dir.glob(File.join(deploy_dir,"**/**/.git")).each do |f| 
+    puts "Deleting #{f}".red
+    FileUtils.rm_f(f)
+  end
+
+end
+
+def copy_to_lib_dir(target_lib_dir) 
+  copy_depdencies lib_dir, target_lib_dir do
+    copy_files File.join('DCI','x64'), 'dll'
+    copy_schema_xsd
+    copy_dcimatlab_dll
+    copy_dcimatlab_mexw64
+    copy_dimensions_xml
+  end
+
+  architecture = '/**/x64/**/Release'
+  packages_dir =  File.join(solution_dir, 'packages')
+
+  copy_depdencies packages_dir, target_lib_dir do
+    copy_files 'OSPSuite.SimModelComp', 'xml'
+    copy_files "OSPSuite.SimModelComp#{architecture}", 'dll'
+    copy_files "OSPSuite.SimModel#{architecture}", 'dll'
+    copy_files "OSPSuite.FuncParser#{architecture}", 'dll'
+    copy_files "OSPSuite.SimModelSolver_CVODES#{architecture}", 'dll'    
+  end
+end
+
+def create_portable_archive(archive_path, portable_dir)	
+  command_line = %W[a #{archive_path} #{portable_dir}]
+  zip command_line
+end
+
+def deploy_dir
+  File.join(setup_dir, @product_full_name)
+end
+
+def src_lib_dir
+  File.join(src_dir, "lib")
+end
+
+def setup_dir
+  File.join(solution_dir, "setup")
+end
+
+def solution_dir
+  File.dirname(__FILE__)
+end
+
+def src_dir
+  File.join(solution_dir,'src')
+end
+
+def lib_dir
+  File.join(solution_dir,'lib')
+end
