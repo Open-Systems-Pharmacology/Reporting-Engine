@@ -29,7 +29,7 @@ for i = 1:length(SectionsIn)
     SectionsOut(SectionIndex).Title=SectionsIn{i}.Title;
     
     % Create folder and add its path in the structure
-    Path = fullfile(REOutputFolder, removeForbiddenLetters(SectionsIn{i}.Title));
+    Path = fullfile(REOutputFolder, sprintf('%0.3d_%s', i, removeForbiddenLetters(SectionsIn{i}.Title)));
     SectionsOut(SectionIndex).Path = Path;
     
     try
