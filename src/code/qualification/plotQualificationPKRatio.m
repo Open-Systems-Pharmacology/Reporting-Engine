@@ -196,7 +196,7 @@ for k=1:length(PKParameter)
     setCurveOptions(pp, PKRatioPlot);
     
     ylabel(sprintf('Predicted %s / Observed %s', PKParameter{k}, PKParameter{k}));
-    axis([Xrange 0.8*min(min(Result.RatioPK(k,:)), 0.5) 1.2*max(max(Result.RatioPK(k,:)), 2)]);
+    axis([Xrange 0.8*min(min(Result.RatioPK(:,k)), 0.5) 1.2*max(max(Result.RatioPK(:,k)), 2)]);
     
     legend('off');
     
