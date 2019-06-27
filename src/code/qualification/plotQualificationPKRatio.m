@@ -94,7 +94,7 @@ for i=1:length(PKRatioPlot.PKRatios)
         findPathOutput = strfind(SimResult.outputPathList{j}, PKRatio.Output);
         if ~isempty(findPathOutput)
             % Get Time and Concentration in PK Sim internal units
-            % Concentration in µmol/l and
+            % Concentration in Âµmol/l and
             % Time in min
             SimTime=SimResult.time;
             Pred=SimResult.y{j};
@@ -117,21 +117,21 @@ for i=1:length(PKRatioPlot.PKRatios)
         % Internal Units are assumed for PK parameters
         % according to Obs Unit
         if strcmp(Result.obsPKDimension(i, k), 'AUC (mass)')
-            % Internal Unit for AUC is µmol*min/l and MW in g/mol
+            % Internal Unit for AUC is Âµmol*min/l and MW in g/mol
             AUCpred = getfield(allPKpred, 'AUC_last')*MW;
-            AUCpredUnitFactor = getUnitFactor('µg*min/l', Result.obsPKUnit{i, k}, 'AUC (mass)');
+            AUCpredUnitFactor = getUnitFactor('Âµg*min/l', Result.obsPKUnit{i, k}, 'AUC (mass)');
             Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'AUC (molar)')
-            % Internal Unit for AUC is µmol*min/l
+            % Internal Unit for AUC is Âµmol*min/l
             AUCpred = getfield(allPKpred, 'AUC_last');
-            AUCpredUnitFactor = getUnitFactor('µmol*min/l', Result.obsPKUnit{i, k}, 'AUC (molar)');
+            AUCpredUnitFactor = getUnitFactor('Âµmol*min/l', Result.obsPKUnit{i, k}, 'AUC (molar)');
             Result.predPK(i, k) = AUCpred.*AUCpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'Concentration')
-            % Internal Unit for Cmax is µmol/l
+            % Internal Unit for Cmax is Âµmol/l
             CMAXpred = getfield(allPKpred, 'cMax');
-            CMAXpredUnitFactor = getUnitFactor('µmol/l', Result.obsPKUnit{i, k}, 'Concentration', 'MW', MW);
+            CMAXpredUnitFactor = getUnitFactor('Âµmol/l', Result.obsPKUnit{i, k}, 'Concentration', 'MW', MW);
             Result.predPK(i, k) = CMAXpred.*CMAXpredUnitFactor;
             
         elseif strcmp(Result.obsPKDimension(i, k), 'Flow')
@@ -226,7 +226,7 @@ PKRatioTable = [PKRatioHeader ; ...
 disp(PKRatioTable);
 
 % Calculation of GMFE
-GMFE = 10.^(sum(abs(log(Result.RatioPK)))./length(Result.obsPK));
+GMFE = 10.^(sum(abs(log10(Result.RatioPK)))./length(Result.obsPK));
 for k=1:length(PKParameter)
     fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
 end
@@ -248,4 +248,4 @@ function UnitOut = convertPKSimUnit(UnitIn)
 UnitOut = string(UnitIn);
 UnitOut = replace(UnitOut,'L','l');
 
-%UnitOut(1)='µ';
+%UnitOut(1)='Âµ';
