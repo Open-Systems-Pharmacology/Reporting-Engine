@@ -38,6 +38,9 @@ function createQualificationReport(qualificationWorkflow)
             tline = fgetl(fid);
         end
         
+		fclose(fid);
+		fid = invalidFileIdentifier;
+		
     catch ex
         if fid ~= invalidFileIdentifier
             fclose(fid);
