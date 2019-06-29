@@ -5,13 +5,9 @@ function createQualificationReport(qualificationWorkflow)
 %#function DCIMatlabR2017b6_1Copy
 % LINUX: DCIMatlabR2017b6_1.mexglx must be present in matlab path
 %#function DCIMatlabR2017b6_1
-
-%    slCharacterEncoding();
-%    which('MoBiSettings')
-    
+   
     libPath = fullfile(fileparts(which('MoBiSettings')),'../../lib');
     setenv('path', [libPath ';' getenv('path')]);
-%    getenv('path')
     simModelSchemaPath = fullfile(libPath, 'OSPSuite.SimModel.xsd');
     simModelCompConfigPath = fullfile(libPath, 'OSPSuite_SimModelComp.xml');
     MoBiSettings(simModelSchemaPath, simModelCompConfigPath);
