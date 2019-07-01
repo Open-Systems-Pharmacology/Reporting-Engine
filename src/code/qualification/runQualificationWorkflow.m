@@ -270,12 +270,13 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, PKRatioTable, PKRatioGMFE] = plotQualificationPKRatio(WSettings,[],PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
+                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,[],PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
                 saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioTable');
                 
                 for plottedPKparameters=1:length(PKRatioPlots.PKParameter)
+                    saveQualificationTable(PKRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioQualification');
                     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
                     % Create GMFE markdown
                     GMFEfile = fullfile(SectionPath, sprintf('%0.3d_PKRatio%sGMFE%s', indexed_item+1, PKRatioPlots.PKParameter{plottedPKparameters}, '.md'));

@@ -1,5 +1,5 @@
-function [fig_handle, PKRatioTable, GMFE] = plotQualificationPKRatio(WSettings,figureHandle,PKParameter,PKRatioPlot,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
-%PLOTQUALIFICATIONPKRATIO Plots PK Ratios from Configuration Plan 
+function [fig_handle, PKRatioTable, PKRatioQuali, GMFE] = plotQualificationPKRatio(WSettings,figureHandle,PKParameter,PKRatioPlot,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+%PLOTQUALIFICATIONPKRATIO Plots PK Ratios from Configuration Plan
 %
 % [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,
 %   PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
@@ -148,7 +148,7 @@ for i=1:length(PKRatioPlot.PKRatios)
             
         else
             ME = MException('plotQualificationPKRatio:unknownDimension', ...
-            'In PK Ratio plot %d, Ratio %d, Observed Study ID "%d", PK Parameter "%s" \n Unknown dimension for observed unit "%s" ', figureHandle, i, PKRatio.ObservedDataRecordId, PKParameter{k}, char(Result.obsPKUnit{i, k}));
+                'In PK Ratio plot %d, Ratio %d, Observed Study ID "%d", PK Parameter "%s" \n Unknown dimension for observed unit "%s" ', figureHandle, i, PKRatio.ObservedDataRecordId, PKParameter{k}, char(Result.obsPKUnit{i, k}));
             throw(ME);
         end
         
@@ -205,7 +205,13 @@ end
 % --------------------------------------
 % Table and Qualification Section
 
-% Get the DDI Ratio Table
+% Calculation of GMFE
+GMFE = 10.^(sum(abs(log10(Result.RatioPK)))./length(Result.obsPK));
+for k=1:length(PKParameter)
+    fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
+end
+
+% Get the PK Ratio Table
 PKRatioHeader={};
 PKRatioResults=[];
 
@@ -225,10 +231,30 @@ PKRatioTable = [PKRatioHeader ; ...
 
 disp(PKRatioTable);
 
-% Calculation of GMFE
-GMFE = 10.^(sum(abs(log10(Result.RatioPK)))./length(Result.obsPK));
+% Get the PK Ratio Qualification
 for k=1:length(PKParameter)
-    fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
+    % Update the number of points for each group
+    conditionPoints = ~isnan(Result.RatioPK(:, k));
+    QualiMeasure(k).PointsTotal = length(Result.RatioPK(conditionPoints,k));
+    condition15fold = (Result.RatioPK(:,k) >= 1/1.5 & Result.RatioPK(:,k) <= 1.5);
+    QualiMeasure(k).Points15fold= length(Result.RatioPK(condition15fold,k));
+    condition2fold = (Result.RatioPK(:,k) >= 0.5 & Result.RatioPK(:,k) <= 2);
+    QualiMeasure(k).Points2fold= length(Result.RatioPK(condition2fold,k));
+    
+    PKRatioQualiHeader = {PKParameter{k}, 'Number', 'Ratio [%]'};
+    PKRatioQuali_1st_Column = {'Points total'; 'Points within 1.5 fold'; 'Points within 2-fold'};
+    PKRatioQuali_Other_Columns = num2cell([QualiMeasure(k).PointsTotal NaN; ...
+        QualiMeasure(k).Points15fold 100.*QualiMeasure(k).Points15fold./QualiMeasure(k).PointsTotal; ...
+        QualiMeasure(k).Points2fold 100.*QualiMeasure(k).Points2fold./QualiMeasure(k).PointsTotal]);
+    PKRatioQuali_Other_Columns{1,2}='-';
+    
+    
+    PKRatioQuali(k).Output = [PKRatioQualiHeader  ; ...
+        PKRatioQuali_1st_Column PKRatioQuali_Other_Columns];
+    
+    fprintf('Qualification Measures for PK parameter %s \n', PKParameter{k});
+    disp(PKRatioQuali(k).Output);
+    
 end
 
 function [AGE, BW, MW, drugmass, drugmassUnit] = getInfofromSimulation(xmlfile, Output)
