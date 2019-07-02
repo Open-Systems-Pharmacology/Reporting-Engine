@@ -94,7 +94,7 @@ for i=1:length(TaskList)
                     end
                     
                     try
-                        plotQualificationTimeProfile(WSettings, jj, TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
+                        plotQualificationTimeProfile(WSettings, [], TimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                             Curves, PopulationAxes, nPlotSettings, ConfigurationPlan.REInput_path);
                         saveQualificationFigure(gcf, ConfigurationPlan.Sections, TimeProfile.SectionId, 'PopulationTimeProfile')
                         clear Curves PopulationAxes
@@ -109,7 +109,7 @@ for i=1:length(TaskList)
                 
                 % Plot the Time Profile results
                 try
-                    plotQualificationTimeProfile(WSettings, j, TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, ...
+                    plotQualificationTimeProfile(WSettings, [], TimeProfile, ObservedDataSets,ConfigurationPlan.SimulationMappings, TimeProfile.Plot.Curves, ...
                         TimeProfile.Plot.Axes, nPlotSettings, ConfigurationPlan.REInput_path);
                     % Pause option for debugging
                     % pause()
@@ -166,7 +166,7 @@ for i=1:length(TaskList)
                 
                 % Plot the Goodness of fit as obs vs pred and residuals
                 try
-                    [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,j,Groups,ObservedDataSets,...
+                    [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,[],Groups,ObservedDataSets,...
                         ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                     
                     % Pause option for debugging
@@ -228,7 +228,7 @@ for i=1:length(TaskList)
             
             
             try
-                plotQualificationComparisonTimeProfile(WSettings, j, ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, ...
+                plotQualificationComparisonTimeProfile(WSettings, [], ComparisonTimeProfile, ObservedDataSets, ConfigurationPlan.SimulationMappings, ComparisonTimeProfile.OutputMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 %pause()
                 saveQualificationFigure(gcf, ConfigurationPlan.Sections, ComparisonTimeProfile.SectionId, 'ComparisonTimeProfile');
@@ -270,9 +270,9 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, PKRatioTable, PKRatioGMFE] = plotQualificationPKRatio(WSettings,j,PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
+                [fig_handle, PKRatioTable, PKRatioGMFE] = plotQualificationPKRatio(WSettings,[],PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
-                
+                fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
                 saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioTable');
                 
                 for plottedPKparameters=1:length(PKRatioPlots.PKParameter)
@@ -335,7 +335,7 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,j,DDIRatioPlots.PKParameter, ...
+                [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,[],DDIRatioPlots.PKParameter, ...
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
