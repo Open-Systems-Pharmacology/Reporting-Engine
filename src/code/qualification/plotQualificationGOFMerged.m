@@ -139,8 +139,9 @@ for i=1:length(Groups)
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end
-xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);
-yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
+
+xLabelFinal = getLabelWithUnit(sprintf('Observed %s', findDimensionfromUnit(xAxesOptions.Unit)),xAxesOptions.Unit);
+yLabelFinal = getLabelWithUnit(sprintf('Simulated %s', findDimensionfromUnit(yAxesOptions.Unit)),yAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 GMFE = 10.^(sum(abs(Error))/length(Error));

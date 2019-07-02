@@ -270,12 +270,13 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, PKRatioTable, PKRatioGMFE] = plotQualificationPKRatio(WSettings,[],PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
+                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,[],PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
                 saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioTable');
                 
                 for plottedPKparameters=1:length(PKRatioPlots.PKParameter)
+                    saveQualificationTable(PKRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioQualification');
                     [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
                     % Create GMFE markdown
                     GMFEfile = fullfile(SectionPath, sprintf('%0.3d_PKRatio%sGMFE%s', indexed_item+1, PKRatioPlots.PKParameter{plottedPKparameters}, '.md'));
@@ -335,7 +336,7 @@ for i=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,[],DDIRatioPlots.PKParameter, ...
+                [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE] = plotQualificationDDIRatio(WSettings,[],DDIRatioPlots.PKParameter, ...
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
@@ -355,6 +356,13 @@ for i=1:length(TaskList)
                                 DDIRatioPlots.SectionId, sprintf('DDIRatio%sresidualsVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
                         end
                     end
+                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, DDIRatioPlots.SectionId);
+                    % Create GMFE markdown
+                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_DDIRatio%sGMFE%s', indexed_item+1, DDIRatioPlots.PKParameter{plottedPKparameters}, '.md'));
+                    fileID = fopen(GMFEfile,'wt');
+                    fprintf(fileID,'GMFE = %f \n', DDIRatioGMFE(plottedPKparameters));
+                    fclose(fileID);
+                    
                 end
                 clear AxesOptions nPlotSettings
             catch exception

@@ -1,4 +1,4 @@
-function [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE] = plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %PLOTQUALIFICATIONDDIRATIO Plots DDI Ratios from Configuration Plan
 %
 % [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,
@@ -304,6 +304,17 @@ for k=1:length(PKParameter)
     legend(leg_labels, 'Location', 'northoutside');
 end
 
+% Calculation of GMFE
+RatioPK=[];
+for i=1:length(DDIRatioGroups)
+    RatioPK = [RatioPK Result(i).RatioPK];
+end
+RatioPK = reshape(RatioPK, [], length(PKParameter));
+GMFE = 10.^(sum(abs(log10(RatioPK)))./length(RatioPK));
+for k=1:length(PKParameter)
+    fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
+end
+
 %-------------------------------------------------------------
 % Tables Section
 
@@ -338,6 +349,7 @@ for k=1:length(PKParameter)
     
     fprintf('Qualification Measures for PK parameter %s \n', PKParameter{k});
     disp(DDIRatioQuali(k).Output);
+    
 end
 
 
