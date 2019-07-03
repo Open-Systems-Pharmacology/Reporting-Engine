@@ -119,6 +119,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(ControlTimeUnit,DDIRatios(j).SimulationControl.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationControl.StartTime(isempty(DDIRatios(j).SimulationControl.StartTime)) = min(ControlTime.*Xfactor);
+                DDIRatios(j).SimulationControl.EndTime(isempty(DDIRatios(j).SimulationControl.EndTime)) = max(ControlTime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationControl.EndTime, 'Inf')
+                    DDIRatios(j).SimulationControl.EndTime = Inf;
+                end
+                
                 SimTime = (ControlTime.*Xfactor >= DDIRatios(j).SimulationControl.StartTime &  ControlTime.*Xfactor <= DDIRatios(j).SimulationControl.EndTime);
                 ControlTime = ControlTime(SimTime).*Xfactor;
                 Controlpred = Controlpred(SimTime);
@@ -151,6 +160,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(DDITimeUnit,DDIRatios(j).SimulationDDI.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationDDI.StartTime(isempty(DDIRatios(j).SimulationDDI.StartTime)) = min(DDITime.*Xfactor);
+                DDIRatios(j).SimulationDDI.EndTime(isempty(DDIRatios(j).SimulationDDI.EndTime)) = max(DDITime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationControl.EndTime, 'Inf')
+                    DDIRatios(j).SimulationDDI.EndTime = Inf;
+                end
+                
                 SimTime = (DDITime.*Xfactor >= DDIRatios(j).SimulationDDI.StartTime &  DDITime.*Xfactor <= DDIRatios(j).SimulationDDI.EndTime);
                 DDITime = DDITime(SimTime).*Xfactor;
                 DDIpred = DDIpred(SimTime);
@@ -181,7 +199,11 @@ for i=1:length(DDIRatioGroups)
         for k=1:length(PKParameter)
             % Get the PK parameters requested in PKParameter
             if strcmpi(PKParameter{k}, 'AUC')
-                PKpredField{k}= 'AUC_last';
+                if isinf(DDIRatios(j).SimulationControl.EndTime) && isinf(DDIRatios(j).SimulationDDI.EndTime)
+                    PKpredField{k}= 'AUC_inf';
+                else
+                    PKpredField{k}= 'AUC_last';
+                end
             elseif strcmpi(PKParameter{k}, 'CMAX')
                 PKpredField{k}= 'cMax';
             else
