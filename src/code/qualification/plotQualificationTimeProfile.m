@@ -83,7 +83,7 @@ for i=1:length(Curves)
     curvesLegend=[curvesLegend legLabel];
     curvesHandle=[curvesHandle p_handle];
 end
-legend(curvesHandle, curvesLegend); 
+legend(curvesHandle, curvesLegend);
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit
@@ -112,7 +112,7 @@ for j = 1:length(SimResult.outputPathList)
                 
                 if isfield(Curves, 'Type')
                     if strcmp(Curves.Type, 'Population')
-                        [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves);
+                        [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves, yAxesOptions.Scaling);
                         yyaxis left
                         break
                     end
@@ -134,7 +134,7 @@ for j = 1:length(SimResult.outputPathList)
             Xfactor=getUnitFactor(SimResult.timeUnit,xAxesOptions.Unit,XDimension);
             if isfield(Curves, 'Type')
                 if strcmp(Curves.Type, 'Population')
-                    [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves);
+                    [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves, yAxesOptions.Scaling);
                 end
             else
                 p_handle = plot(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor);
@@ -150,7 +150,7 @@ function [p_handle, legendLabels] = testandplotObservations(Curves, ObservedData
 
 p_handle=[];
 legendLabels={};
-    
+
 % Split the Curve path into its elements
 CurveElements = getElementsfromPath(Curves.Y);
 
@@ -253,7 +253,7 @@ for j = 1:length(ObservedDataSets)
 end
 
 
-function [p_handle, legendLabels] = plotPopulationStatistics(time, Y, Curves)
+function [p_handle, legendLabels] = plotPopulationStatistics(time, Y, Curves, Scaling)
 p_handle=[];
 
 time = reshape(time, 1, []);
@@ -265,50 +265,57 @@ end
 for i=1:length(Curves.Statistics)
     if strcmp(Curves.Statistics(i).Id, 'ArithmeticMean')
         p_handle(i) = plot(time, mean(Y));
-        legendLabels{i}=sprintf('Arithmetic Mean %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Arithmetic Mean', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'ArithmeticStandardDeviation')
         p_handle(i) = plot([time NaN time], [mean(Y)-std(Y) NaN mean(Y)+std(Y)]);
-        legendLabels{i}=sprintf('Arithmetic Standard Deviation %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Arithmetic Standard Deviation', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'GeometricMean')
         p_handle(i) = plot(time, geomean(Y));
-        legendLabels{i}=sprintf('Geometric Mean %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Geometric Mean', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'GeometricStandardDeviation')
         p_handle(i) = plot([time NaN time], [exp(mean(log(Y))-std(log(Y))) NaN exp(mean(log(Y))+std(log(Y)))]);
-        legendLabels{i}=sprintf('Geometric Standard Deviation %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Geometric Standard Deviation', Curves.Y);
         setCurveOptions(p_handle(i) , Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'Median')
         p_handle(i) = plot(time, median(Y));
-        legendLabels{i}=sprintf('Median %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Median', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'Min')
         p_handle(i) = plot(time, min(Y));
-        legendLabels{i}=sprintf('Min %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Min', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if strcmp(Curves.Statistics(i).Id, 'Max')
         p_handle(i) = plot(time, max(Y));
-        legendLabels{i}=sprintf('Max %s', Curves.Y);
+        legendLabels{i}=sprintf('%s-Max', Curves.Y);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if contains(Curves.Statistics(i).Id, 'Percentile')
         perc=sscanf(Curves.Statistics(i).Id, 'Percentile_%d')/100;
         p_handle(i) = plot(time, quantile(Y, perc));
-        legendLabels{i}=sprintf('Percentile %d %s ', perc*100, Curves.Y);
+        legendLabels{i}=sprintf('%s-Percentile %d%%', Curves.Y, perc*100);
         setCurveOptions(p_handle(i), Curves.Statistics(i));
     end
     if contains(Curves.Statistics(i).Id, 'Range')
         perc = sscanf(Curves.Statistics(i).Id, 'Range%d')/100;
         ran = quantile(Y, [(1-perc)/2 (1+perc)/2]);
+        if strcmpi(Scaling, 'Log')
+            % Remove 0s from plot in log
+            zeros2remove = min(ran==0);
+            time(zeros2remove) = [];
+            ran(:,zeros2remove) = [];
+        end
         p_handle(i) = patch([time time(end:-1:1)], [ran(1,:) ran(2,end:-1:1)], [perc perc perc]);
-        legendLabels{i}=sprintf('Range %d %s ', perc*100, Curves.Y);
+        legendLabels{i}=sprintf('%s-Range %d%% to %d%%', Curves.Y, round(100*(1-perc)/2), round(100*(1+perc)/2));
         setCurveOptions(p_handle(i), Curves.Statistics(i));
+        set(p_handle(i), 'FaceAlpha', 0.5);
     end
 end
