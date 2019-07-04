@@ -2,7 +2,9 @@ function setAmountMassUnitList
 
 global MOBI_SETTINGS;
 % initialize MoBiSettings
-MoBiSettings;
+if isempty(MOBI_SETTINGS)
+    MoBiSettings;
+end
 
 % delete current unitFile
 delete(fullfile(MOBI_SETTINGS.application_path,'unitList_3.mat'));
