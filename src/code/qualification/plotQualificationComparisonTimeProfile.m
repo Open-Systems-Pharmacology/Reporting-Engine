@@ -38,7 +38,7 @@ for i=1:length(Curves)
     [csvSimFile, xmlfile] = getSimFile(Curves{i}, SimulationMappings, REInputPath);
     if isempty(csvSimFile)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves{i}.Project, Curves{i}.Simulation);
+            'In Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', i, Curves{i}.Project, Curves{i}.Simulation);
         throw(ME);
     end
     SimResult = loadSimResultcsv(csvSimFile, Curves{i});
