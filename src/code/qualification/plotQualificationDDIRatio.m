@@ -165,7 +165,7 @@ for i=1:length(DDIRatioGroups)
                 DDIRatios(j).SimulationDDI.EndTime(isempty(DDIRatios(j).SimulationDDI.EndTime)) = max(DDITime.*Xfactor);
                 
                 % Check if end time was read as a string for Inf value
-                if strcmpi(DDIRatios(j).SimulationControl.EndTime, 'Inf')
+                if strcmpi(DDIRatios(j).SimulationDDI.EndTime, 'Inf')
                     DDIRatios(j).SimulationDDI.EndTime = Inf;
                 end
                 
