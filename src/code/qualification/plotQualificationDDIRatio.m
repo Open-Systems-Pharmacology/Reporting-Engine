@@ -57,7 +57,7 @@ for i=1:length(DDIRatioGroups)
         
         if max(ID)==0
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', figureHandle, i, j, DDIRatios(j).ObservedDataRecordId);
+                'In Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', i, j, DDIRatios(j).ObservedDataRecordId);
             throw(ME);
         end
         
@@ -68,14 +68,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileControl, xmlfileControl] = getSimFile(DDIRatios(j).SimulationControl, SimulationMappings, REInputPath);
         if isempty(csvSimFileControl)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         SimResultControl = loadSimResultcsv(csvSimFileControl, DDIRatios(j).SimulationControl.Simulation);
         
         if isempty(SimResultControl.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         
@@ -90,14 +90,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileDDI, xmlfileDDI] = getSimFile(DDIRatios(j).SimulationDDI, SimulationMappings, REInputPath);
         if isempty(csvSimFileDDI)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         SimResultDDI = loadSimResultcsv(csvSimFileDDI, DDIRatios(j).SimulationDDI.Simulation);
         
         if isempty(SimResultDDI.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -135,8 +135,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(ControlTime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                        ['In Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
                     throw(ME);
                 end
                 
@@ -145,7 +145,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -176,8 +176,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(DDITime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                        ['In Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
                     throw(ME);
                 end
                 
@@ -186,7 +186,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
