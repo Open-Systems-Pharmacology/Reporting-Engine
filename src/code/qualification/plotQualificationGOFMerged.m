@@ -44,14 +44,14 @@ for i=1:length(Groups)
         [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings, REInputPath);
         if isempty(csvSimFile)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'In GOF Merged plot %d group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In Group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
         
         if isempty(SimResult.outputPathList)
             ME = MException('plotQualificationGOFMerged:emptyOutputPathInSimulation', ...
-                'In GOF Merged plot %d group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In Group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         
