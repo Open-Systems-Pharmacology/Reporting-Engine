@@ -43,7 +43,7 @@ for i=1:length(PKRatioPlot.PKRatios)
     
     if max(ID)==0
         ME = MException('plotQualificationPKRatio:notFoundInPath', ...
-            'In PK Ratio plot %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', figureHandle, i, PKRatio.ObservedDataRecordId);
+            'In Ratio %d, Study ID "%d" was not found in Observed Dataset', i, PKRatio.ObservedDataRecordId);
         throw(ME);
     end
     
@@ -60,7 +60,7 @@ for i=1:length(PKRatioPlot.PKRatios)
         
         if isempty(Result.obsPKDimension{i, k})
             ME = MException('plotQualificationPKRatio:unknownUnit', ...
-                'In PK Ratio plot %d, Ratio %d, Dimension unknown for Unit "%s" in Observed Data Record ID "%d" \n', figureHandle, i, char(Result.obsPKUnit{i, k}), PKRatio.ObservedDataRecordId);
+                'In Ratio %d, Dimension unknown for Unit "%s" in Observed Data Record ID "%d" \n', i, char(Result.obsPKUnit{i, k}), PKRatio.ObservedDataRecordId);
             throw(ME);
         end
         
@@ -70,7 +70,7 @@ for i=1:length(PKRatioPlot.PKRatios)
     [csvSimFile, xmlfile] = getSimFile(PKRatio, SimulationMappings, REInputPath);
     if isempty(csvSimFile)
         ME = MException('plotQualificationPKRatio:notFoundInPath', ...
-            'In PK Ratio plot %d, Ratio %d, Project "%s" or Simulation "%s" was not found in SimulationMappings', figureHandle, i, PKRatio.Project, PKRatio.Simulation);
+            'In Ratio %d, Project "%s" or Simulation "%s" was not found in SimulationMappings', i, PKRatio.Project, PKRatio.Simulation);
         throw(ME);
     end
     SimResult = loadSimResultcsv(csvSimFile, PKRatio.Simulation);
@@ -87,7 +87,7 @@ for i=1:length(PKRatioPlot.PKRatios)
     % Get the right PK Output
     if isempty(SimResult.outputPathList)
         ME = MException('plotQualificationPKRatio:emptyOutputPathInSimulation', ...
-            'In PK Ratio plot %d, Ratio %d, OutputPath is empty in Project "%s" or Simulation "%s"', figureHandle, i, PKRatio.Project, PKRatio.Simulation);
+            'In Ratio %d, OutputPath is empty in Project "%s" or Simulation "%s"', i, PKRatio.Project, PKRatio.Simulation);
         throw(ME);
     end
     for j=1:length(SimResult.outputPathList)
@@ -104,7 +104,7 @@ for i=1:length(PKRatioPlot.PKRatios)
     end
     if isempty(findPathOutput)
         ME = MException('plotQualificationPKRatio:notFoundInPath', ...
-            'In PK Ratio plot %d, Ratio %d, Output "%s" was not found in Project "%s" or Simulation "%s"', figureHandle, i, PKRatio.Output, PKRatio.Project, PKRatio.Simulation);
+            'In Ratio %d, Output "%s" was not found in Project "%s" or Simulation "%s"', i, PKRatio.Output, PKRatio.Project, PKRatio.Simulation);
         throw(ME);
     end
     
@@ -148,7 +148,7 @@ for i=1:length(PKRatioPlot.PKRatios)
             
         else
             ME = MException('plotQualificationPKRatio:unknownDimension', ...
-                'In PK Ratio plot %d, Ratio %d, Observed Study ID "%d", PK Parameter "%s" \n Unknown dimension for observed unit "%s" ', figureHandle, i, PKRatio.ObservedDataRecordId, PKParameter{k}, char(Result.obsPKUnit{i, k}));
+                'In Ratio %d, Observed Study ID "%d", PK Parameter "%s" \n Unknown dimension for observed unit "%s" ', i, PKRatio.ObservedDataRecordId, PKParameter{k}, char(Result.obsPKUnit{i, k}));
             throw(ME);
         end
         
@@ -170,7 +170,7 @@ for k=1:length(AxesOptions)
             Xparam = 'AGE';
         else
             ME = MException('plotQualificationPKRatio:XaxisDimension', ...
-                'In PK Ratio plot %d, X-axis does not correspond to Age', figureHandle);
+                'X-axis does not correspond to Age');
             throw(ME);
         end
         break
