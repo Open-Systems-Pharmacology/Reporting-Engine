@@ -1,13 +1,13 @@
-function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan 
 %
-% [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,
+% [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,
 %   Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   Groups (structure) Goodness of fit plot information
 %   ObservedDataSets (structure) Observed data
 %   SimulationMappings (structure) Map simulation results to project
@@ -27,11 +27,11 @@ function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,G
 minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN; maxRes=NaN;
 
 % create figure for Obs vs Pred
-[ax1, fig_handle.PredictedVsObserved] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+[ax1, fig_handle.PredictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 [xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsPredictedVsObserved);
 
 % create figure for Residuals vs time
-[ax2, fig_handle.ResidualsOverTime] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
+[ax2, fig_handle.ResidualsOverTime] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 [TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsResidualsOverTime);
 
 % Map for each group the corresponding observations within a same structure
@@ -44,14 +44,14 @@ for i=1:length(Groups)
         [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings, REInputPath);
         if isempty(csvSimFile)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'In GOF Merged plot %d group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In GOF Merged Plot %d, Group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', plotIndex, i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
         
         if isempty(SimResult.outputPathList)
             ME = MException('plotQualificationGOFMerged:emptyOutputPathInSimulation', ...
-                'In GOF Merged plot %d group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In GOF Merged Plot %d, Group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', plotIndex, i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         
@@ -65,7 +65,7 @@ for i=1:length(Groups)
         
         if isempty(predicted)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'Group %d SubGroup %d : %s not found', i, j, Simulations.Output);
+                'In GOF Merged Plot %d, Group %d SubGroup %d : %s not found', plotIndex, i, j, Simulations.Output);
             throw(ME);
         end
         
@@ -74,7 +74,7 @@ for i=1:length(Groups)
         
         if isempty(Obs)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'Group %d SubGroup %d : %s not found', i, j, Simulations.ObservedData);
+                'In GOF Merged Plot %d, Group %d SubGroup %d : %s not found', plotIndex, i, j, Simulations.ObservedData);
             throw(ME);
         end
         

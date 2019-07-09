@@ -1,13 +1,13 @@
-function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE] = plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE] = plotQualificationDDIRatio(WSettings,plotIndex,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %PLOTQUALIFICATIONDDIRATIO Plots DDI Ratios from Configuration Plan
 %
-% [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,
+% [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,plotIndex,
 %   PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   PKParameter (cells) name of the PK parameter to be evaluated
 %   DDIRatioGroups (structure) DDI Ratio plot information
 %   ObservedDataSets (structure) Observed data
@@ -57,7 +57,7 @@ for i=1:length(DDIRatioGroups)
         
         if max(ID)==0
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', figureHandle, i, j, DDIRatios(j).ObservedDataRecordId);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', plotIndex, i, j, DDIRatios(j).ObservedDataRecordId);
             throw(ME);
         end
         
@@ -68,14 +68,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileControl, xmlfileControl] = getSimFile(DDIRatios(j).SimulationControl, SimulationMappings, REInputPath);
         if isempty(csvSimFileControl)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', plotIndex, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         SimResultControl = loadSimResultcsv(csvSimFileControl, DDIRatios(j).SimulationControl.Simulation);
         
         if isempty(SimResultControl.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', plotIndex, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         
@@ -90,14 +90,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileDDI, xmlfileDDI] = getSimFile(DDIRatios(j).SimulationDDI, SimulationMappings, REInputPath);
         if isempty(csvSimFileDDI)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', plotIndex, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         SimResultDDI = loadSimResultcsv(csvSimFileDDI, DDIRatios(j).SimulationDDI.Simulation);
         
         if isempty(SimResultDDI.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', plotIndex, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -119,6 +119,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(ControlTimeUnit,DDIRatios(j).SimulationControl.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationControl.StartTime(isempty(DDIRatios(j).SimulationControl.StartTime)) = min(ControlTime.*Xfactor);
+                DDIRatios(j).SimulationControl.EndTime(isempty(DDIRatios(j).SimulationControl.EndTime)) = max(ControlTime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationControl.EndTime, 'Inf')
+                    DDIRatios(j).SimulationControl.EndTime = Inf;
+                end
+                
                 SimTime = (ControlTime.*Xfactor >= DDIRatios(j).SimulationControl.StartTime &  ControlTime.*Xfactor <= DDIRatios(j).SimulationControl.EndTime);
                 ControlTime = ControlTime(SimTime).*Xfactor;
                 Controlpred = Controlpred(SimTime);
@@ -126,8 +135,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(ControlTime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                        ['In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
                     throw(ME);
                 end
                 
@@ -136,7 +145,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -151,6 +160,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(DDITimeUnit,DDIRatios(j).SimulationDDI.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationDDI.StartTime(isempty(DDIRatios(j).SimulationDDI.StartTime)) = min(DDITime.*Xfactor);
+                DDIRatios(j).SimulationDDI.EndTime(isempty(DDIRatios(j).SimulationDDI.EndTime)) = max(DDITime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationDDI.EndTime, 'Inf')
+                    DDIRatios(j).SimulationDDI.EndTime = Inf;
+                end
+                
                 SimTime = (DDITime.*Xfactor >= DDIRatios(j).SimulationDDI.StartTime &  DDITime.*Xfactor <= DDIRatios(j).SimulationDDI.EndTime);
                 DDITime = DDITime(SimTime).*Xfactor;
                 DDIpred = DDIpred(SimTime);
@@ -158,8 +176,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(DDITime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                        ['In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
                     throw(ME);
                 end
                 
@@ -168,7 +186,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -181,7 +199,11 @@ for i=1:length(DDIRatioGroups)
         for k=1:length(PKParameter)
             % Get the PK parameters requested in PKParameter
             if strcmpi(PKParameter{k}, 'AUC')
-                PKpredField{k}= 'AUC_last';
+                if isinf(DDIRatios(j).SimulationControl.EndTime) && isinf(DDIRatios(j).SimulationDDI.EndTime)
+                    PKpredField{k}= 'AUC_inf';
+                else
+                    PKpredField{k}= 'AUC_last';
+                end
             elseif strcmpi(PKParameter{k}, 'CMAX')
                 PKpredField{k}= 'cMax';
             else
@@ -208,7 +230,7 @@ for i=1:length(DDIRatioGroups)
                 
             else
                 ME = MException('DDIRatio:notFoundInField', ...
-                    'Requested PK Parameter %s not found in parameters extracted using getPKParametersForConcentration', PKParameter{k});
+                    'In DDI Ratio Plot %d, Requested PK Parameter %s not found in parameters extracted using getPKParametersForConcentration', plotIndex, PKParameter{k});
                 throw(ME);
             end
         end
@@ -254,7 +276,7 @@ for k=1:length(PKParameter)
     leg_labels={};
     
     % create figure for Obs vs Pred
-    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle,PlotSettings);
+    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
     plot(GuestRatio(k).x, GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
     plot(GuestRatio(k).x, GuestRatio(k).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
@@ -265,7 +287,7 @@ for k=1:length(PKParameter)
     axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max]);
     
     % create figure for Residuals
-    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle+1,PlotSettings);
+    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
     plot(GuestRatio(k).x, ones(size(GuestRatio(k).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
     plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
