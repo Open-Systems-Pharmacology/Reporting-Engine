@@ -1,13 +1,13 @@
-function plotQualificationTimeProfile(WSettings,figureHandle,TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
+function plotQualificationTimeProfile(WSettings,plotIndex,TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %PLOTQUALIFICATIONTIMEPROFILE Plots time profile from Configuration Plan
 %
-% plotQualificationTimeProfile(WSettings,figureHandle,
+% plotQualificationTimeProfile(WSettings,plotIndex,
 %   TimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   TimeProfile (structure) TimeProfile plot information
 %   Curves (structure) Curves information
 %   ObservedDataSets (structure) Observed data
@@ -25,7 +25,7 @@ function plotQualificationTimeProfile(WSettings,figureHandle,TimeProfile,Observe
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
 
-ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+ax = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 
 [xAxesOptions, yAxesOptions, yyAxesOptions] = setFigureOptions(AxesOptions);
 
@@ -33,14 +33,14 @@ ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
 [csvSimFile, xmlfile] = getSimFile(TimeProfile, SimulationMappings, REInputPath);
 if isempty(csvSimFile)
     ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-        'In Project "%s" or Simulation "%s" were not found in SimulationMappings', TimeProfile.Project, TimeProfile.Simulation);
+        'In Time Profile Plot %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', plotIndex, TimeProfile.Project, TimeProfile.Simulation);
     throw(ME);
 end
 SimResult = loadSimResultcsv(csvSimFile, TimeProfile);
 
 if isempty(SimResult.outputPathList)
     ME = MException('plotQualificationTimeProfile:emptyOutputPathInSimulation', ...
-        'In Project "%s" Simulation "%s", OutputPath is empty', TimeProfile.Project, TimeProfile.Simulation);
+        'In Time Profile Plot %d Project "%s" Simulation "%s", OutputPath is empty', plotIndex, TimeProfile.Project, TimeProfile.Simulation);
     throw(ME);
 end
 
@@ -67,7 +67,7 @@ for i=1:length(Curves)
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-                'In Curves %d : %s not found', i, Curves(i).Y);
+                'In Time Profile Plot %d, Curves %d : %s not found', plotIndex, i, Curves(i).Y);
             throw(ME);
         end
     else
@@ -76,7 +76,7 @@ for i=1:length(Curves)
         % If the output was not found
         if isempty(p_handle)
             ME = MException('plotQualificationTimeProfile:notFoundInPath', ...
-                'In Curves %d : %s not found', i, Curves(i).Y);
+                'In Time Profile Plot %d, Curves %d : %s not found', plotIndex, i, Curves(i).Y);
             throw(ME);
         end
     end
