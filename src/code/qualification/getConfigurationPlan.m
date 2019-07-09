@@ -14,10 +14,10 @@ function ConfigurationPlan = getConfigurationPlan(jsonFile)
 % Read .json file and output its structure
 
 try
-    currentEncoding = slCharacterEncoding;
-    slCharacterEncoding('UTF-8');
+    currentEncoding = feature('DefaultCharacterSet');
+    feature('DefaultCharacterSet', 'UTF8');
     jsonFileContent = fileread(jsonFile);
-    slCharacterEncoding(currentEncoding);
+    feature('DefaultCharacterSet', currentEncoding);
     ConfigurationPlan = jsondecode(jsonFileContent);
     writeToReportLog('INFO',[jsonFile ' was extracted successfully'],'true');
 catch exception
