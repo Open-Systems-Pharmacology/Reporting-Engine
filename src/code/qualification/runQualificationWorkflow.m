@@ -140,59 +140,55 @@ for TaskListIndex=1:length(TaskList)
                 GOFMerged=ConfigurationPlan.Plots.GOFMergedPlots(GOFMergedIndex);
             end
             
-            for GOFMergedGroupIndex=1:length(GOFMerged)
-                
-                % Update plot settings if necessary
-                nPlotSettings = setPlotSettings(PlotSettings, GOFMerged(GOFMergedGroupIndex));
-                
-                for l=1:length(AxesSettings)
-                    if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
-                        AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
-                        break
-                    else
-                        AxesOptions.GOFMergedPlotsPredictedVsObserved=[];
-                    end
+            % Update plot settings if necessary
+            nPlotSettings = setPlotSettings(PlotSettings, GOFMerged);
+            
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'GOFMergedPlotsPredictedVsObserved')
+                    AxesOptions.GOFMergedPlotsPredictedVsObserved=AxesSettings(l).GOFMergedPlotsPredictedVsObserved;
+                    break
+                else
+                    AxesOptions.GOFMergedPlotsPredictedVsObserved=[];
                 end
-                for l=1:length(AxesSettings)
-                    if isfield(AxesSettings(l), 'GOFMergedPlotsResidualsOverTime')
-                        AxesOptions.GOFMergedPlotsResidualsOverTime=AxesSettings(l).GOFMergedPlotsResidualsOverTime;
-                        break
-                    else
-                        AxesOptions.GOFMergedPlotsResidualsOverTime=[];
-                    end
+            end
+            for l=1:length(AxesSettings)
+                if isfield(AxesSettings(l), 'GOFMergedPlotsResidualsOverTime')
+                    AxesOptions.GOFMergedPlotsResidualsOverTime=AxesSettings(l).GOFMergedPlotsResidualsOverTime;
+                    break
+                else
+                    AxesOptions.GOFMergedPlotsResidualsOverTime=[];
                 end
-                % Get all the groups for one GOF merged plot
-                Groups = GOFMerged.Groups;
+            end
+            % Get all the groups for one GOF merged plot
+            Groups = GOFMerged.Groups;
+            
+            % Plot the Goodness of fit as obs vs pred and residuals
+            try
+                [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,GOFMergedIndex,Groups,ObservedDataSets,...
+                    ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
-                % Plot the Goodness of fit as obs vs pred and residuals
-                try
-                    [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,GOFMergedIndex,Groups,ObservedDataSets,...
-                        ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
-                    
-                    % Pause option for debugging
-                    % pause()
-                    % Check plot type to perform predictedVsObserved, residualsOverTime or both
-                    if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
-                        saveQualificationFigure(GOF_handle.ResidualsOverTime, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
-                    end
-                    if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                        saveQualificationFigure(GOF_handle.PredictedVsObserved, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
-                    end
-                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
-                    % Create GMFE markdown
-                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                    fileID = fopen(GMFEfile,'wt');
-                    fprintf(fileID,'GMFE = %f \n',GMFE);
-                    fclose(fileID);
-                    clear AxesOptions nPlotSettings
-                catch exception
-                    writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d "%s", Group %d. \n %s \n', GOFMergedIndex, nPlotSettings.title, GOFMergedGroupIndex, exception.message), 'true', exception);
-                    warning('Error in GOFMerged plot %d, Group %d. \n %s \n', GOFMergedIndex, GOFMergedGroupIndex, exception.message);
-                    % Close open figures
-                    close all
-                    clear AxesOptions nPlotSettings
+                % Pause option for debugging
+                % pause()
+                % Check plot type to perform predictedVsObserved, residualsOverTime or both
+                if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
+                    saveQualificationFigure(GOF_handle.ResidualsOverTime, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
                 end
-                
+                if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
+                    saveQualificationFigure(GOF_handle.PredictedVsObserved, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
+                end
+                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
+                % Create GMFE markdown
+                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
+                fileID = fopen(GMFEfile,'wt');
+                fprintf(fileID,'GMFE = %f \n',GMFE);
+                fclose(fileID);
+                clear AxesOptions nPlotSettings
+            catch exception
+                writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d "%s". \n %s \n', GOFMergedIndex, nPlotSettings.title, exception.message), 'true', exception);
+                warning('Error in GOFMerged plot %d. \n %s \n', GOFMergedIndex, exception.message);
+                % Close open figures
+                close all
+                clear AxesOptions nPlotSettings
             end
             
         end
