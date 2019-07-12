@@ -199,25 +199,32 @@ for i=1:length(DDIRatioGroups)
         for k=1:length(PKParameter)
             % Get the PK parameters requested in PKParameter
             if strcmpi(PKParameter{k}, 'AUC')
-                if isinf(DDIRatios(j).SimulationControl.EndTime) && isinf(DDIRatios(j).SimulationDDI.EndTime)
-                    PKpredField{k}= 'AUC_inf';
+                if isinf(DDIRatios(j).SimulationDDI.EndTime)
+                    PKpredField(k).DDI = 'AUC_inf';
                 else
-                    PKpredField{k}= 'AUC_last';
+                    PKpredField(k).DDI = 'AUC_last';
+                end
+                if isinf(DDIRatios(j).SimulationControl.EndTime)
+                    PKpredField(k).Control = 'AUC_inf';
+                else
+                    PKpredField(k).Control = 'AUC_last';
                 end
             elseif strcmpi(PKParameter{k}, 'CMAX')
-                PKpredField{k}= 'cMax';
+                PKpredField(k).DDI = 'cMax';
+                PKpredField(k).Control = 'cMax';
             else
-                PKpredField{k}=PKParameter{k};
+                PKpredField(k).DDI = PKParameter{k};
+                PKpredField(k).Control = PKParameter{k};
             end
-            if isfield(allPKpredControl, PKpredField{k}) && isfield(allPKpredDDI, PKpredField{k})
+            if isfield(allPKpredControl, PKpredField(k).Control) && isfield(allPKpredDDI, PKpredField(k).DDI)
                 
                 % Get the observation Ratios
                 Observations(i).RatioPK(k,j) = table2array(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
                     (strcmpi(ObservedData.Properties.VariableNames, [PKParameter{k} 'RAvg']))));
                 
-                Result(i).DDIPK(k,j)=getfield(allPKpredDDI, PKpredField{k});
+                Result(i).DDIPK(k,j)=getfield(allPKpredDDI, PKpredField(k).DDI);
                 
-                Result(i).ControlPK(k,j)=getfield(allPKpredControl, PKpredField{k});
+                Result(i).ControlPK(k,j)=getfield(allPKpredControl, PKpredField(k).Control);
                 
                 % Assumes currently that the output from PKSim has same unit for Control and DDI
                 Result(i).RatioPK(k,j)=Result(i).DDIPK(k,j)./Result(i).ControlPK(k,j);
