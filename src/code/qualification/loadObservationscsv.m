@@ -65,7 +65,7 @@ if ~isfile(LLOQcsvfile)
 else
     tLLOQ = readtable(LLOQcsvfile, 'Encoding', 'UTF-8');
     % outputs
-    Data.LLOQ = tLLOQ{1};
-    Data.LLOQUnit = tLLOQ{2};
+    Data.LLOQ = tLLOQ{1,1};
+    Data.LLOQUnit = tLLOQ{1,2};
 end
 
