@@ -56,3 +56,16 @@ Data.individualIdVector = individualIdVector;
 Data.outputPathList = outputPathList;
 Data.outputUnit = outputUnit;
 Data.outputDimension = outputDimension;
+
+% Check and add LLOQ to Data
+LLOQcsvfile = replace(csvfile, '.csv', '_LLOQ.csv');
+if ~isfile(LLOQcsvfile)
+    Data.LLOQ = [];
+    Data.LLOQUnit = [];
+else
+    tLLOQ = readtable(LLOQcsvfile, 'Encoding', 'UTF-8');
+    % outputs
+    Data.LLOQ = tLLOQ{1,1};
+    Data.LLOQUnit = tLLOQ{1,2};
+end
+

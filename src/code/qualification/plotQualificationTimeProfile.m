@@ -112,7 +112,7 @@ for j = 1:length(SimResult.outputPathList)
                 
                 if isfield(Curves, 'Type')
                     if strcmp(Curves.Type, 'Population')
-                        [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves, yAxesOptions.Scaling);
+                        [p_handle, legendLabels] = plotPopulationStatistics(SimResult.time.*Xfactor, SimResult.y{j}.*Yfactor, Curves, yyAxesOptions.Scaling);
                         yyaxis left
                         break
                     end
@@ -195,11 +195,17 @@ for j = 1:length(ObservedDataSets)
                             setCurveOptions(p_handle2, p_handle);
                         end
                     else
-                        errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yAxesOptions.Unit,YDimension, 'MW',MW);
+                        errorfactor=getUnitFactor(ObservedDataSets(j).outputUnit{2},yyAxesOptions.Unit,YDimension, 'MW',MW);
                         p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                         setCurveOptions(p_handle2, p_handle);
                     end
-                    
+                end
+                % Check for LLOQ to be plotted
+                if ~isempty(ObservedDataSets(j).LLOQ)
+                    LLOQfactor = getUnitFactor(ObservedDataSets(j).LLOQUnit,yyAxesOptions.Unit,YDimension, 'MW',MW);
+                    yLLOQ = LLOQfactor.*ObservedDataSets(j).LLOQ*[1 1];
+                    xLLOQ = get(gca, 'xlim');
+                    LLOQ_handle = plot(xLLOQ, yLLOQ, 'k-', 'HandleVisibility','off');
                 end
                 
                 yyaxis left
@@ -242,7 +248,13 @@ for j = 1:length(ObservedDataSets)
                     p_handle2=errorbar(ObservedTime, ObservedOutput, ObservedDataSets(j).y{2}.*errorfactor, 'HandleVisibility','off');
                     setCurveOptions(p_handle2, p_handle);
                 end
-                
+            end
+            % Check for LLOQ to be plotted
+            if ~isempty(ObservedDataSets(j).LLOQ)
+                LLOQfactor = getUnitFactor(ObservedDataSets(j).LLOQUnit,yAxesOptions.Unit,YDimension, 'MW',MW);
+                yLLOQ = LLOQfactor.*ObservedDataSets(j).LLOQ*[1 1];
+                xLLOQ = get(gca, 'xlim');
+                LLOQ_handle = plot(xLLOQ, yLLOQ, 'k-', 'HandleVisibility','off');
             end
             
         end
