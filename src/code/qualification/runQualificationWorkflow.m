@@ -164,25 +164,19 @@ for TaskListIndex=1:length(TaskList)
             
             % Plot the Goodness of fit as obs vs pred and residuals
             try
-                [GOF_handle, GMFE] = plotQualificationGOFMerged(WSettings,GOFMergedIndex,Groups,ObservedDataSets,...
+                [GOF_handle, GOFMergedGMFE] = plotQualificationGOFMerged(WSettings,GOFMergedIndex,Groups,ObservedDataSets,...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
-                % Pause option for debugging
-                % pause()
-                % Check plot type to perform predictedVsObserved, residualsOverTime or both
-                if ~isempty(strfind(GOFMerged.PlotType, 'residualsOverTime'))
-                    saveQualificationFigure(GOF_handle.ResidualsOverTime, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedResiduals');
-                end
-                if ~isempty(strfind(GOFMerged.PlotType, 'predictedVsObserved'))
-                    saveQualificationFigure(GOF_handle.PredictedVsObserved, ConfigurationPlan.Sections, GOFMerged.SectionId, 'GOFMergedPredictedVsObserved');
-                end
-                [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, GOFMerged.SectionId);
-                % Create GMFE markdown
-                GMFEfile = fullfile(SectionPath, sprintf('%0.3d_GMFE%s', indexed_item+1, '.md'));
-                fileID = fopen(GMFEfile,'wt');
-                fprintf(fileID,'GMFE = %f \n',GMFE);
-                fclose(fileID);
+                GOFMergedPlotsArtifacts(GOFMergedIndex).Plot = GOF_handle;
+                GOFMergedPlotsArtifacts(GOFMergedIndex).GMFE = GOFMergedGMFE;
+                
+                % Get Plot Types as elements
+                GOFMerged.PlotType=getElementsfromPath(GOFMerged.PlotType);
+                
+                saveArtifacts(GOFMergedPlotsArtifacts(GOFMergedIndex), GOFMerged, ConfigurationPlan, 'GOFMerged');
+                
                 clear AxesOptions nPlotSettings
+                
             catch exception
                 writeToReportLog('ERROR', sprintf('Error in GOFMerged plot %d "%s". \n %s \n', GOFMergedIndex, nPlotSettings.title, exception.message), 'true', exception);
                 warning('Error in GOFMerged plot %d. \n %s \n', GOFMergedIndex, exception.message);
@@ -246,8 +240,13 @@ for TaskListIndex=1:length(TaskList)
     if strcmp(TaskList{TaskListIndex}, 'PKRatioPlots')
         
         for PKRatioIndex=1:length(ConfigurationPlan.Plots.PKRatioPlots)
-            
-            PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots(PKRatioIndex);
+            % HideArtifacts optional field may change the size of PK Ratios
+            % leading to switch from struct to cell
+            if iscell(ConfigurationPlan.Plots.PKRatioPlots(PKRatioIndex))
+                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots{PKRatioIndex};
+            else
+                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots(PKRatioIndex);
+            end
             
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, PKRatioPlots);
@@ -266,23 +265,16 @@ for TaskListIndex=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,PKRatioIndex,PKRatioPlots.PKParameter, PKRatioPlots, ObservedDataSets, ...
+                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,PKRatioIndex,PKRatioPlots.PKParameter, PKRatioPlots.Groups, ObservedDataSets, ...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
-                saveQualificationTable(PKRatioTable, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioTable');
                 
-                for plottedPKparameters=1:length(PKRatioPlots.PKParameter)
-                    saveQualificationTable(PKRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, PKRatioPlots.SectionId, 'PKRatioQualification');
-                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, PKRatioPlots.SectionId);
-                    % Create GMFE markdown
-                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_PKRatio%sGMFE%s', indexed_item+1, PKRatioPlots.PKParameter{plottedPKparameters}, '.md'));
-                    fileID = fopen(GMFEfile,'wt');
-                    fprintf(fileID,'GMFE = %f \n', PKRatioGMFE(plottedPKparameters));
-                    fclose(fileID);
-                    
-                    saveQualificationFigure(fig_handle(plottedPKparameters).PKRatio, ConfigurationPlan.Sections, ...
-                        PKRatioPlots.SectionId, sprintf('PKRatio%s', PKRatioPlots.PKParameter{plottedPKparameters}));
-                end
+                PKRatioPlotsArtifacts(PKRatioIndex).Plot = fig_handle;
+                PKRatioPlotsArtifacts(PKRatioIndex).Measure = PKRatioQuali;
+                PKRatioPlotsArtifacts(PKRatioIndex).GMFE = PKRatioGMFE;
+                PKRatioPlotsArtifacts(PKRatioIndex).Table = PKRatioTable;
+                
+                saveArtifacts(PKRatioPlotsArtifacts(PKRatioIndex), PKRatioPlots, ConfigurationPlan, 'PKRatio');
                 
                 clear AxesOptions nPlotSettings
                 
@@ -293,6 +285,7 @@ for TaskListIndex=1:length(TaskList)
                 close all
                 clear AxesOptions nPlotSettings
             end
+            
         end
         break
     end
@@ -304,8 +297,13 @@ for TaskListIndex=1:length(TaskList)
     if strcmp(TaskList{TaskListIndex}, 'DDIRatioPlots')
         
         for DDIRatioIndex=1:length(ConfigurationPlan.Plots.DDIRatioPlots)
-            
-            DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioIndex);
+            % Artifacts optional field may change the size of DDI Ratios
+            % leading to switch from struct to cell
+            if iscell(ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioIndex))
+                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots{DDIRatioIndex};
+            else
+                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioIndex);
+            end
             
             % Update plot settings if necessary
             nPlotSettings = setPlotSettings(PlotSettings, DDIRatioPlots);
@@ -336,31 +334,15 @@ for TaskListIndex=1:length(TaskList)
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
-                saveQualificationTable(DDIRatioTable, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioTable');
+                DDIRatioPlotsArtifacts(DDIRatioIndex).Plot = fig_handle;
+                DDIRatioPlotsArtifacts(DDIRatioIndex).Measure = DDIRatioQuali;
+                DDIRatioPlotsArtifacts(DDIRatioIndex).GMFE = DDIRatioGMFE;
+                DDIRatioPlotsArtifacts(DDIRatioIndex).Table = DDIRatioTable;
                 
-                % Get output plot types as elements
-                DDIRatioPlots.PlotType=getElementsfromPath(DDIRatioPlots.PlotType);
-                for plottedPKparameters=1:length(DDIRatioPlots.PKParameter)
-                    saveQualificationTable(DDIRatioQuali(plottedPKparameters).Output, ConfigurationPlan.Sections, DDIRatioPlots.SectionId, 'DDIRatioQualification');
-                    for plottedTypes=1:length(DDIRatioPlots.PlotType)
-                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'predictedVsObserved')
-                            saveQualificationFigure(fig_handle(plottedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
-                                DDIRatioPlots.SectionId, sprintf('DDIRatio%spredictedVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
-                        end
-                        if strcmp(DDIRatioPlots.PlotType{plottedTypes}, 'residualsVsObserved')
-                            saveQualificationFigure(fig_handle(plottedPKparameters).residualsVsObserved, ConfigurationPlan.Sections, ...
-                                DDIRatioPlots.SectionId, sprintf('DDIRatio%sresidualsVsObserved', DDIRatioPlots.PKParameter{plottedPKparameters}));
-                        end
-                    end
-                    [SectionPath, indexed_item] = getSection(ConfigurationPlan.Sections, DDIRatioPlots.SectionId);
-                    % Create GMFE markdown
-                    GMFEfile = fullfile(SectionPath, sprintf('%0.3d_DDIRatio%sGMFE%s', indexed_item+1, DDIRatioPlots.PKParameter{plottedPKparameters}, '.md'));
-                    fileID = fopen(GMFEfile,'wt');
-                    fprintf(fileID,'GMFE = %f \n', DDIRatioGMFE(plottedPKparameters));
-                    fclose(fileID);
-                    
-                end
+                saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
+                
                 clear AxesOptions nPlotSettings
+                
             catch exception
                 %pause()
                 writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d "%s". \n %s \n', DDIRatioIndex, nPlotSettings.title, exception.message), 'true', exception);
@@ -422,3 +404,85 @@ elseif isfield(StructureInput, 'Plot')
 else
     nPlotSettings.title = [];
 end
+
+function saveGMFE(GMFE, Sections, SectionId, PlotTitle)
+
+[SectionPath, indexed_item] = getSection(Sections, SectionId);
+
+% Create GMFE markdown
+GMFEfile = fullfile(SectionPath, sprintf('%0.3d_%sGMFE%s', indexed_item+1, PlotTitle, '.md'));
+fileID = fopen(GMFEfile,'wt');
+fprintf(fileID,'GMFE = %f \n', GMFE);
+fclose(fileID);
+
+function saveArtifacts(Artifacts, PlotConfiguration, ConfigurationPlan, PlotType)
+
+% Check Configuration of Artifacts
+if ~isfield(PlotConfiguration, 'Artifacts') || isempty(PlotConfiguration.Artifacts)
+    % If field missing or empty, plot everything as Plot, GMFE, Measure and Table
+    PlotConfiguration.Artifacts = {'Plot', 'GMFE', 'Measure', 'Table'};
+    if strcmp(PlotType, 'GOFMerged')
+        % GOF Merged does not have Measure or Table output
+        PlotConfiguration.Artifacts = {'Plot', 'GMFE'};
+    end
+end
+
+
+for indexArtifacts=1:length(PlotConfiguration.Artifacts)
+    % DDI and PK Ratios have Plots, GMFEs and Measures per PK parameter
+    if isfield(PlotConfiguration, 'PKParameter')
+        for savedPKparameters=1:length(PlotConfiguration.PKParameter)
+            if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'Plot')
+                % DDI Ratio
+                if isfield(PlotConfiguration, 'PlotType')
+                    for plottedTypes=1:length(PlotConfiguration.PlotType)
+                        if strcmp(PlotConfiguration.PlotType{plottedTypes}, 'predictedVsObserved')
+                            saveQualificationFigure(Artifacts.Plot(savedPKparameters).predictedVsObserved, ConfigurationPlan.Sections, ...
+                                PlotConfiguration.SectionId, sprintf('%s%sPredictedVsObserved', PlotType, PlotConfiguration.PKParameter{savedPKparameters}));
+                        end
+                        if strcmp(PlotConfiguration.PlotType{plottedTypes}, 'residualsVsObserved')
+                            saveQualificationFigure(Artifacts.Plot(savedPKparameters).residualsVsObserved, ConfigurationPlan.Sections, ...
+                                PlotConfiguration.SectionId, sprintf('%s%sResidualsVsObserved', PlotType, PlotConfiguration.PKParameter{savedPKparameters}));
+                        end
+                    end
+                    % PK Ratio
+                else
+                    saveQualificationFigure(Artifacts.Plot(savedPKparameters).PKRatio, ConfigurationPlan.Sections, ...
+                        PlotConfiguration.SectionId, sprintf('%s%s', PlotType, PlotConfiguration.PKParameter{savedPKparameters}));
+                end
+                
+            end
+            if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'GMFE')
+                UpdatedPlotType = sprintf('%s%s', PlotType, PlotConfiguration.PKParameter{savedPKparameters});
+                saveGMFE(Artifacts.GMFE(savedPKparameters), ConfigurationPlan.Sections, PlotConfiguration.SectionId, UpdatedPlotType);
+            end
+            if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'Measure')
+                saveQualificationTable(Artifacts.Measure(savedPKparameters).Output, ConfigurationPlan.Sections, PlotConfiguration.SectionId, ...
+                    sprintf('%s%sQualificationMeasure', PlotType, PlotConfiguration.PKParameter{savedPKparameters}));
+            end
+        end
+        if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'Table')
+            saveQualificationTable(Artifacts.Table, ConfigurationPlan.Sections, PlotConfiguration.SectionId, sprintf('%sQualificationTable', PlotType));
+        end
+        % Else GOF Merged plot (Only Plot and GMFE are possible options)
+    else
+        if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'Plot')
+            if isfield(PlotConfiguration, 'PlotType')
+                for plottedTypes=1:length(PlotConfiguration.PlotType)
+                    if strcmp(PlotConfiguration.PlotType{plottedTypes}, 'predictedVsObserved')
+                        saveQualificationFigure(Artifacts.Plot.PredictedVsObserved, ConfigurationPlan.Sections, ...
+                            PlotConfiguration.SectionId, sprintf('%sPredictedVsObserved', PlotType));
+                    end
+                    if strcmp(PlotConfiguration.PlotType{plottedTypes}, 'residualsOverTime')
+                        saveQualificationFigure(Artifacts.Plot.ResidualsOverTime, ConfigurationPlan.Sections, ...
+                            PlotConfiguration.SectionId, sprintf('%sResidualsOverTime', PlotType));
+                    end
+                end
+            end
+        end
+        if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'GMFE')
+            saveGMFE(Artifacts.GMFE, ConfigurationPlan.Sections, PlotConfiguration.SectionId, PlotType);
+        end
+    end
+end
+
