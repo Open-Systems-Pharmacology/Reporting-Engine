@@ -31,7 +31,7 @@ function  [parPathsNew,parValuesNew,SensPointer] = generateSensitivityParameterS
 [jj,ij] = ismember(sensParameterList(:,1),parPaths);
 parPathsNew = parPaths;
 % find new ones
-ixPar = length(parPaths) + 1:sum(~jj);
+ixPar = length(parPaths) + [1:sum(~jj)];
 parPathsNew(ixPar) = sensParameterList(~jj,1);
 parValues(1,ixPar) = cell2mat(sensParameterList(~jj,5));
 
