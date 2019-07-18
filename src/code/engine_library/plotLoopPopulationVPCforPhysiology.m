@@ -61,7 +61,7 @@ end
 for iSet = 1:nOuterLoop
         
     %initialize new sheet
-    header = sprintf('Physiology of %s',populationReportName{iSet});
+    header = sprintf('Demography of %s vs. %s',populationReportName{iSet},populationReportName{iSet});
     FP = FP.iniCaptiontextFigtextArray(header,sheetNameList{iSet});
     
     % merge population if necessary but take only different pop.csvs
