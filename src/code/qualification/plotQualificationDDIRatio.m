@@ -37,7 +37,7 @@ for k=1:length(PKParameter)
     axisResVsObs(k).max=NaN;
 end
 
-% Loop on the Ratios to be plotted by PK Ratio plot
+% Loop on the Ratio Groups to be plotted by DDI Ratio plot
 for i=1:length(DDIRatioGroups)
     
     DDIRatios=DDIRatioGroups(i).DDIRatios;
