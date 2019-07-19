@@ -239,13 +239,13 @@ end
 for TaskListIndex=1:length(TaskList)
     if strcmp(TaskList{TaskListIndex}, 'PKRatioPlots')
         
-        for PKRatioIndex=1:length(ConfigurationPlan.Plots.PKRatioPlots)
+        for PKRatioPlotIndex=1:length(ConfigurationPlan.Plots.PKRatioPlots)
             % HideArtifacts optional field may change the size of PK Ratios
             % leading to switch from struct to cell
-            if iscell(ConfigurationPlan.Plots.PKRatioPlots(PKRatioIndex))
-                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots{PKRatioIndex};
+            if iscell(ConfigurationPlan.Plots.PKRatioPlots(PKRatioPlotIndex))
+                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots{PKRatioPlotIndex};
             else
-                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots(PKRatioIndex);
+                PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots(PKRatioPlotIndex);
             end
             
             % Update plot settings if necessary
@@ -265,22 +265,22 @@ for TaskListIndex=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,PKRatioIndex,PKRatioPlots.PKParameter, PKRatioPlots.Groups, ObservedDataSets, ...
+                [fig_handle, PKRatioTable, PKRatioQuali, PKRatioGMFE] = plotQualificationPKRatio(WSettings,PKRatioPlotIndex,PKRatioPlots.PKParameter, PKRatioPlots.Groups, ObservedDataSets, ...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
                 
-                PKRatioPlotsArtifacts(PKRatioIndex).Plot = fig_handle;
-                PKRatioPlotsArtifacts(PKRatioIndex).Measure = PKRatioQuali;
-                PKRatioPlotsArtifacts(PKRatioIndex).GMFE = PKRatioGMFE;
-                PKRatioPlotsArtifacts(PKRatioIndex).Table = PKRatioTable;
+                PKRatioPlotsArtifacts(PKRatioPlotIndex).Plot = fig_handle;
+                PKRatioPlotsArtifacts(PKRatioPlotIndex).Measure = PKRatioQuali;
+                PKRatioPlotsArtifacts(PKRatioPlotIndex).GMFE = PKRatioGMFE;
+                PKRatioPlotsArtifacts(PKRatioPlotIndex).Table = PKRatioTable;
                 
-                saveArtifacts(PKRatioPlotsArtifacts(PKRatioIndex), PKRatioPlots, ConfigurationPlan, 'PKRatio');
+                saveArtifacts(PKRatioPlotsArtifacts(PKRatioPlotIndex), PKRatioPlots, ConfigurationPlan, 'PKRatio');
                 
                 clear AxesOptions nPlotSettings
                 
             catch exception
-                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%s". \n %s \n', PKRatioIndex, nPlotSettings.title, exception.message), 'true', exception);
-                warning('Error in PKRatio plot %d. \n %s \n', PKRatioIndex, exception.message);
+                writeToReportLog('ERROR', sprintf('Error in PKRatio plot %d "%s". \n %s \n', PKRatioPlotIndex, nPlotSettings.title, exception.message), 'true', exception);
+                warning('Error in PKRatio plot %d. \n %s \n', PKRatioPlotIndex, exception.message);
                 % Close open figures
                 close all
                 clear AxesOptions nPlotSettings
