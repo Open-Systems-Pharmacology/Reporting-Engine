@@ -240,8 +240,8 @@ for TaskListIndex=1:length(TaskList)
     if strcmp(TaskList{TaskListIndex}, 'PKRatioPlots')
         
         for PKRatioPlotIndex=1:length(ConfigurationPlan.Plots.PKRatioPlots)
-            % HideArtifacts optional field may change the size of PK Ratios
-            % leading to switch from struct to cell
+            % Artifacts optional field may change switch of PK Ratios
+            % struct to cell format
             if iscell(ConfigurationPlan.Plots.PKRatioPlots(PKRatioPlotIndex))
                 PKRatioPlots=ConfigurationPlan.Plots.PKRatioPlots{PKRatioPlotIndex};
             else
@@ -296,13 +296,13 @@ end
 for TaskListIndex=1:length(TaskList)
     if strcmp(TaskList{TaskListIndex}, 'DDIRatioPlots')
         
-        for DDIRatioIndex=1:length(ConfigurationPlan.Plots.DDIRatioPlots)
-            % Artifacts optional field may change the size of DDI Ratios
-            % leading to switch from struct to cell
-            if iscell(ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioIndex))
-                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots{DDIRatioIndex};
+        for DDIRatioPlotIndex=1:length(ConfigurationPlan.Plots.DDIRatioPlots)
+            % Artifacts optional field may change switch of DDI Ratios
+            % struct to cell format
+            if iscell(ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioPlotIndex))
+                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots{DDIRatioPlotIndex};
             else
-                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioIndex);
+                DDIRatioPlots=ConfigurationPlan.Plots.DDIRatioPlots(DDIRatioPlotIndex);
             end
             
             % Update plot settings if necessary
@@ -330,23 +330,23 @@ for TaskListIndex=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE] = plotQualificationDDIRatio(WSettings,DDIRatioIndex,DDIRatioPlots.PKParameter, ...
+                [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE] = plotQualificationDDIRatio(WSettings,DDIRatioPlotIndex,DDIRatioPlots.PKParameter, ...
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
-                DDIRatioPlotsArtifacts(DDIRatioIndex).Plot = fig_handle;
-                DDIRatioPlotsArtifacts(DDIRatioIndex).Measure = DDIRatioQuali;
-                DDIRatioPlotsArtifacts(DDIRatioIndex).GMFE = DDIRatioGMFE;
-                DDIRatioPlotsArtifacts(DDIRatioIndex).Table = DDIRatioTable;
+                DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Plot = fig_handle;
+                DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Measure = DDIRatioQuali;
+                DDIRatioPlotsArtifacts(DDIRatioPlotIndex).GMFE = DDIRatioGMFE;
+                DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Table = DDIRatioTable;
                 
-                saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
+                saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioPlotIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
                 
                 clear AxesOptions nPlotSettings
                 
             catch exception
                 %pause()
-                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d "%s". \n %s \n', DDIRatioIndex, nPlotSettings.title, exception.message), 'true', exception);
-                warning('Error in DDIRatio plot %d %s. \n %s \n', DDIRatioIndex, nPlotSettings.title, exception.message);
+                writeToReportLog('ERROR', sprintf('Error in DDIRatio plot %d "%s". \n %s \n', DDIRatioPlotIndex, nPlotSettings.title, exception.message), 'true', exception);
+                warning('Error in DDIRatio plot %d %s. \n %s \n', DDIRatioPlotIndex, nPlotSettings.title, exception.message);
                 % Close open figures
                 close all
                 clear AxesOptions nPlotSettings
