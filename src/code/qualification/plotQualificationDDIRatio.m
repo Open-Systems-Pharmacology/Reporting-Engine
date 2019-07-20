@@ -328,9 +328,12 @@ for k=1:length(PKParameter)
         end
     end
     set(0, 'CurrentFigure', fig_handle(k).predictedVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
+    lgd = legend(leg_labels, 'Location', 'northoutside');
+    reshapeQualificationLegend(lgd);
+    
     set(0, 'CurrentFigure', fig_handle(k).residualsVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
+    lgd = legend(leg_labels, 'Location', 'northoutside');
+    reshapeQualificationLegend(lgd);
 end
 
 % Calculation of GMFE

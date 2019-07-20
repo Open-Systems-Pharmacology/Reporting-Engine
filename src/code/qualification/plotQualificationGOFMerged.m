@@ -1,5 +1,5 @@
 function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
-%PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan 
+%PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan
 %
 % [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,
 %   Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
@@ -145,8 +145,13 @@ yLabelFinal = getLabelWithUnit(sprintf('Simulated %s', findDimensionfromUnit(yAx
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 GMFE = 10.^(sum(abs(Error))/length(Error));
-%legend('off')
-legend(legendLabels, 'Location', 'northoutside');
+
+if ~isempty(legendLabels)
+    lgd = legend(legendLabels, 'Location', 'northoutside');
+    reshapeQualificationLegend(lgd);
+else
+    legend('off');
+end
 
 % Residuals vs Time Figure
 % create figure for Residuals vs time
@@ -168,15 +173,20 @@ for i=1:length(Groups)
         else
             pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
         end
-        setCurveOptions(pp, CurveOptions);        
+        setCurveOptions(pp, CurveOptions);
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
 yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
-%legend('off')
-legend(legendLabels, 'Location', 'northoutside');
+
+if ~isempty(legendLabels)
+    lgd = legend(legendLabels, 'Location', 'northoutside');
+    reshapeQualificationLegend(lgd);
+else
+    legend('off');
+end
 
 % ---------------- Auxiliary function ------------------------------------
 

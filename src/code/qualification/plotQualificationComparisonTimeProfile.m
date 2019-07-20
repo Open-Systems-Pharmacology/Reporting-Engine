@@ -66,8 +66,12 @@ for i=1:length(Curves)
     end
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
 end
-legend(legendLabels, 'Location', 'northoutside');
-%legend('off')
+if ~isempty(legendLabels)
+    lgd = legend(legendLabels, 'Location', 'northoutside');
+    reshapeQualificationLegend(lgd);
+else
+    legend('off');
+end
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit

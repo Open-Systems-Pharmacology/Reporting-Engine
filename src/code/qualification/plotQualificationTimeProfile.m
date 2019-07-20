@@ -83,7 +83,8 @@ for i=1:length(Curves)
     curvesLegend=[curvesLegend legLabel];
     curvesHandle=[curvesHandle p_handle];
 end
-legend(curvesHandle, curvesLegend);
+lgd = legend(curvesHandle, curvesLegend);
+reshapeQualificationLegend(lgd);
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit
