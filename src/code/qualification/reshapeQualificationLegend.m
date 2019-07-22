@@ -1,8 +1,8 @@
-function lgd = reshapeQualificationLegend(lgd, figureHandle)
+function lgd = reshapeQualificationLegend(lgd)
 % Algorithm that break lines if is too long
 
 % Get figure position as [x0 y0 width height]
-figPosition = get(figureHandle, 'Position');
+figPosition = get(gca, 'Position');
 
 % If caption is too wide split line in half 
 LegendLengths = cellfun(@(x)size(x, 2), lgd.String);
@@ -21,7 +21,7 @@ for LegendIndex = 1:length(lgd.String)
             LegendSplit = strsplit(lgd.String{LegendIndex}, '-');
             if length(LegendSplit)<2
                 lgd.String{LegendIndex} = [lgd.String{LegendIndex}(1:ceil(LegendLengths(LegendIndex)/2)) ...
-                newline LegendSplit(ceil(LegendLengths(LegendIndex)/2)+1:end)];
+                newline lgd.String{LegendIndex}(ceil(LegendLengths(LegendIndex)/2)+1:end)];
             else
                 lgd.String{LegendIndex} = strjoin([LegendSplit(1:ceil(length(LegendSplit)/2)) ...
                 strjoin([newline LegendSplit(ceil(length(LegendSplit)/2)+1:end)],'')], '-');
@@ -29,21 +29,21 @@ for LegendIndex = 1:length(lgd.String)
         case 3
             LegendSplit = strsplit(lgd.String{LegendIndex}, '-');
             if length(LegendSplit)<3
-                lgd.String{LegendIndex} = [LegendSplit(1:ceil(LegendLengths(LegendIndex)/3)) ...
-                newline LegendSplit(ceil(LegendLengths(LegendIndex)/3)+1:ceil(2*LegendLengths(LegendIndex)/3)) ...
-                newline LegendSplit(ceil(2*LegendLengths(LegendIndex)/3)+1:end)];
+                lgd.String{LegendIndex} = [lgd.String{LegendIndex}(1:ceil(LegendLengths(LegendIndex)/3)) ...
+                newline lgd.String{LegendIndex}(ceil(LegendLengths(LegendIndex)/3)+1:ceil(2*LegendLengths(LegendIndex)/3)) ...
+                newline lgd.String{LegendIndex}(ceil(2*LegendLengths(LegendIndex)/3)+1:end)];
             else
                 lgd.String{LegendIndex} = strjoin([LegendSplit(1:ceil(length(LegendSplit)/3)) ...
                 strjoin([newline LegendSplit(ceil(length(LegendSplit)/3)+1:ceil(2*length(LegendSplit)/3))],'') ...
-                strjoin([newline LegendSplit(ceil(2*length(LegendSplit)/3)+1:end)]),''], '-');
+                strjoin([newline LegendSplit(ceil(2*length(LegendSplit)/3)+1:end)],'')], '-');
             end
         case 4
             LegendSplit = strsplit(lgd.String{LegendIndex}, '-');
             if length(LegendSplit)<4
-                lgd.String{LegendIndex} = [LegendSplit(1:ceil(LegendLengths(LegendIndex)/4)) ...
-                newline LegendSplit(ceil(LegendLengths(LegendIndex)/4)+1:ceil(2*LegendLengths(LegendIndex)/4)) ...
-                newline LegendSplit(ceil(2*LegendLengths(LegendIndex)/4)+1:ceil(3*LegendLengths(LegendIndex)/4)) ...
-                newline LegendSplit(ceil(3*LegendLengths(LegendIndex)/4)+1:end)];
+                lgd.String{LegendIndex} = [lgd.String{LegendIndex}(1:ceil(LegendLengths(LegendIndex)/4)) ...
+                newline lgd.String{LegendIndex}(ceil(LegendLengths(LegendIndex)/4)+1:ceil(2*LegendLengths(LegendIndex)/4)) ...
+                newline lgd.String{LegendIndex}(ceil(2*LegendLengths(LegendIndex)/4)+1:ceil(3*LegendLengths(LegendIndex)/4)) ...
+                newline lgd.String{LegendIndex}(ceil(3*LegendLengths(LegendIndex)/4)+1:end)];
             else
                 lgd.String{LegendIndex} = strjoin([LegendSplit(1:ceil(length(LegendSplit)/4)) ...
                 strjoin([newline LegendSplit(ceil(length(LegendSplit)/4)+1:ceil(2*length(LegendSplit)/4))],'') ...
@@ -54,16 +54,23 @@ for LegendIndex = 1:length(lgd.String)
 end
 
 lgd.Location = 'South';
-set(figureHandle, 'Position', get(lgd, 'Position'));
+set(gca, 'Position', get(lgd, 'Position'));
 
-CurvesProperties = get(figureHandle,'children'); % Get the curves properties
 AnnotationTags = findall(gcf,'Type', 'Textbox'); % Get the Watermarks and other annotations
 
 for AnnotationIndex=1:length(AnnotationTags)
     set(AnnotationTags(AnnotationIndex), 'visible', 'off');
 end
 
+axis off;
+
+yyaxis left
+CurvesProperties = get(gca,'children');          % Get the curves properties
 for CurveIndex=1:length(CurvesProperties)
     CurvesProperties(CurveIndex).XData = NaN*CurvesProperties(CurveIndex).XData;
 end
-axis off;
+yyaxis right
+CurvesProperties = get(gca,'children');          % Get the curves properties
+for CurveIndex=1:length(CurvesProperties)
+    CurvesProperties(CurveIndex).XData = NaN*CurvesProperties(CurveIndex).XData;
+end

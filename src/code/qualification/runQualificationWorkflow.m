@@ -366,6 +366,7 @@ function saveQualificationFigure(figureHandle, Sections, SectionId, PlotType)
 
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
 
+set(0, 'CurrentFigure', figureHandle);
 set(figureHandle,'visible','off');
 set(figureHandle,'PaperOrientation','portrait');
 
