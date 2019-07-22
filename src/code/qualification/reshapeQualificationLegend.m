@@ -1,8 +1,8 @@
-function lgd = reshapeQualificationLegend(lgd)
+function lgd = reshapeQualificationLegend(lgd, figureHandle)
 % Algorithm that break lines if is too long
 
 % Get figure position as [x0 y0 width height]
-figPosition = get(gca, 'Position');
+figPosition = get(figureHandle, 'Position');
 
 % If caption is too wide split line in half 
 LegendLengths = cellfun(@(x)size(x, 2), lgd.String);
@@ -41,9 +41,9 @@ for LegendIndex = 1:length(lgd.String)
             LegendSplit = strsplit(lgd.String{LegendIndex}, '-');
             if length(LegendSplit)<4
                 lgd.String{LegendIndex} = [LegendSplit(1:ceil(LegendLengths(LegendIndex)/4)) ...
-                strjoin([newline LegendSplit(ceil(LegendLengths(LegendIndex)/4)+1:ceil(2*LegendLengths(LegendIndex)/4))]) ...
-                strjoin([newline LegendSplit(ceil(2*LegendLengths(LegendIndex)/4)+1:ceil(3*LegendLengths(LegendIndex)/4))]) ...
-                strjoin([newline LegendSplit(ceil(3*LegendLengths(LegendIndex)/4)+1:end)])];
+                newline LegendSplit(ceil(LegendLengths(LegendIndex)/4)+1:ceil(2*LegendLengths(LegendIndex)/4)) ...
+                newline LegendSplit(ceil(2*LegendLengths(LegendIndex)/4)+1:ceil(3*LegendLengths(LegendIndex)/4)) ...
+                newline LegendSplit(ceil(3*LegendLengths(LegendIndex)/4)+1:end)];
             else
                 lgd.String{LegendIndex} = strjoin([LegendSplit(1:ceil(length(LegendSplit)/4)) ...
                 strjoin([newline LegendSplit(ceil(length(LegendSplit)/4)+1:ceil(2*length(LegendSplit)/4))],'') ...
@@ -54,9 +54,9 @@ for LegendIndex = 1:length(lgd.String)
 end
 
 lgd.Location = 'South';
-set(gca, 'Position', get(lgd, 'Position'));
+set(figureHandle, 'Position', get(lgd, 'Position'));
 
-CurvesProperties = get(gca,'children');          % Get the curves properties
+CurvesProperties = get(figureHandle,'children'); % Get the curves properties
 AnnotationTags = findall(gcf,'Type', 'Textbox'); % Get the Watermarks and other annotations
 
 for AnnotationIndex=1:length(AnnotationTags)
