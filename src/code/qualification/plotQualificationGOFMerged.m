@@ -147,8 +147,7 @@ xlabel(xLabelFinal); ylabel(yLabelFinal);
 GMFE = 10.^(sum(abs(Error))/length(Error));
 
 if ~isempty(legendLabels)
-    lgd = legend(legendLabels, 'Location', 'northoutside');
-    reshapeQualificationLegend(lgd);
+    legend(legendLabels, 'Location', 'northoutside');
 else
     legend('off');
 end
@@ -182,8 +181,7 @@ yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 if ~isempty(legendLabels)
-    lgd = legend(legendLabels, 'Location', 'northoutside');
-    reshapeQualificationLegend(lgd);
+    legend(legendLabels, 'Location', 'northoutside');
 else
     legend('off');
 end

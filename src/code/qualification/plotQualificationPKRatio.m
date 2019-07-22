@@ -243,8 +243,7 @@ for k=1:length(PKParameter)
     end
     
     if ~isempty(legendLabels)
-        lgd = legend(legendLabels, 'Location', 'northoutside');
-        reshapeQualificationLegend(lgd);
+        legend(legendLabels, 'Location', 'northoutside');
     else
         legend('off');
     end

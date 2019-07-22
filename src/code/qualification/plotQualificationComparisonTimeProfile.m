@@ -67,8 +67,7 @@ for i=1:length(Curves)
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
 end
 if ~isempty(legendLabels)
-    lgd = legend(legendLabels, 'Location', 'northoutside');
-    reshapeQualificationLegend(lgd);
+    legend(legendLabels, 'Location', 'northoutside');
 else
     legend('off');
 end
