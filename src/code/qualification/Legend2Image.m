@@ -1,8 +1,9 @@
-function lgd = reshapeQualificationLegend(lgd)
+function ImageLegend = Legend2Image(lgd)
 % Algorithm that break lines if is too long
 
 % Get figure position as [x0 y0 width height]
-figPosition = get(gca, 'Position');
+figHandle = gcf;
+figPosition = figHandle.Position;
 
 % If caption is too wide split line in half 
 LegendLengths = cellfun(@(x)size(x, 2), lgd.String);
@@ -53,24 +54,12 @@ for LegendIndex = 1:length(lgd.String)
     end
 end
 
-lgd.Location = 'South';
-set(gca, 'Position', get(lgd, 'Position'));
+% getframe uses units in pixels
+set(lgd, 'Units', 'pixels');
 
-AnnotationTags = findall(gcf,'Type', 'Textbox'); % Get the Watermarks and other annotations
+% Get a snapshot of legend only
+% Caution, getframe works only if legend is within plot limits
+FrameLegendPosition = lgd.Position;
+FrameLegend = getframe(gcf, FrameLegendPosition);
+ImageLegend = FrameLegend.cdata;
 
-for AnnotationIndex=1:length(AnnotationTags)
-    set(AnnotationTags(AnnotationIndex), 'visible', 'off');
-end
-
-axis off;
-
-yyaxis left
-CurvesProperties = get(gca,'children');          % Get the curves properties
-for CurveIndex=1:length(CurvesProperties)
-    CurvesProperties(CurveIndex).XData = NaN*CurvesProperties(CurveIndex).XData;
-end
-yyaxis right
-CurvesProperties = get(gca,'children');          % Get the curves properties
-for CurveIndex=1:length(CurvesProperties)
-    CurvesProperties(CurveIndex).XData = NaN*CurvesProperties(CurveIndex).XData;
-end

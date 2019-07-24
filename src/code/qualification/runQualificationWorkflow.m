@@ -389,11 +389,11 @@ end
 legend('off');
 saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+2, PlotType)), 'png');
 
-% Re-add legend and save legend only
+% Re-add, reshape legend and save legend only
 lgd = legend();
-reshapeQualificationLegend(lgd);
+ImageLegend = Legend2Image(lgd);
 
-saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_legend%s', indexed_item+1, PlotType)), 'png');
+imwrite(ImageLegend,sprintf('%s.png', fullfile(SectionPath, sprintf('%0.3d_legend%s', indexed_item+1, PlotType))));
 close(figureHandle);
 
 function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
