@@ -386,14 +386,7 @@ if strcmpi(get(figureHandle,'PaperUnits'),'centimeters')
 end
 
 % Remove Legend and Save Figure
-legend('off');
-saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+2, PlotType)), 'png');
-
-% Re-add, reshape legend and save legend only
-lgd = legend();
-ImageLegend = Legend2Image(lgd);
-
-imwrite(ImageLegend,sprintf('%s.png', fullfile(SectionPath, sprintf('%0.3d_legend%s', indexed_item+1, PlotType))));
+saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
 close(figureHandle);
 
 function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
