@@ -130,7 +130,7 @@ for i=1:length(PKRatioGroups)
             elseif strcmp(Result(i).obsPKDimension(j, k), 'AUC (molar)')
                 % Internal Unit for AUC is umol*min/l
                 AUCpred = getfield(allPKpred, 'AUC_last');
-                AUCpredUnitFactor = getUnitFactor([mu, 'mol*min/l]', Result(i).obsPKUnit{j, k}, 'AUC (molar)');
+                AUCpredUnitFactor = getUnitFactor([mu, 'mol*min/l'], Result(i).obsPKUnit{j, k}, 'AUC (molar)');
                 Result(i).predPK(j, k) = AUCpred.*AUCpredUnitFactor;
                 
             elseif strcmp(Result(i).obsPKDimension(j, k), 'Concentration')
