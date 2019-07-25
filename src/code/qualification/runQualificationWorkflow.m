@@ -167,6 +167,8 @@ for TaskListIndex=1:length(TaskList)
                 [GOF_handle, GOFMergedGMFE] = plotQualificationGOFMerged(WSettings,GOFMergedIndex,Groups,ObservedDataSets,...
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
+                % Save the results into a structure that can be called and
+                % saved using saveArtifacts
                 GOFMergedPlotsArtifacts(GOFMergedIndex).Plot = GOF_handle;
                 GOFMergedPlotsArtifacts(GOFMergedIndex).GMFE = GOFMergedGMFE;
                 
@@ -269,6 +271,8 @@ for TaskListIndex=1:length(TaskList)
                     ConfigurationPlan.SimulationMappings, AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 fig_handle.PKRatio.CurrentAxes.YTick=[0.1,0.25,0.5,1,2,4,10];
                 
+                % Save the results into a structure that can be called and
+                % saved using saveArtifacts
                 PKRatioPlotsArtifacts(PKRatioPlotIndex).Plot = fig_handle;
                 PKRatioPlotsArtifacts(PKRatioPlotIndex).Measure = PKRatioQuali;
                 PKRatioPlotsArtifacts(PKRatioPlotIndex).GMFE = PKRatioGMFE;
@@ -334,10 +338,15 @@ for TaskListIndex=1:length(TaskList)
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
                 
+                % Save the results into a structure that can be called and
+                % saved using saveArtifacts
                 DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Plot = fig_handle;
                 DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Measure = DDIRatioQuali;
                 DDIRatioPlotsArtifacts(DDIRatioPlotIndex).GMFE = DDIRatioGMFE;
                 DDIRatioPlotsArtifacts(DDIRatioPlotIndex).Table = DDIRatioTable;
+                
+                % get Elements of Plot Type to save Artifacts
+                DDIRatioPlots.PlotType=getElementsfromPath(DDIRatioPlots.PlotType);
                 
                 saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioPlotIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
                 
@@ -366,6 +375,7 @@ function saveQualificationFigure(figureHandle, Sections, SectionId, PlotType)
 
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
 
+set(0, 'CurrentFigure', figureHandle);
 set(figureHandle,'visible','off');
 set(figureHandle,'PaperOrientation','portrait');
 
@@ -375,6 +385,7 @@ if strcmpi(get(figureHandle,'PaperUnits'),'centimeters')
     set(figureHandle,'PaperPosition',p*2.5)
 end
 
+% Remove Legend and Save Figure
 saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
 close(figureHandle);
 
