@@ -86,12 +86,19 @@ end
 legend(curvesHandle, curvesLegend);
 
 % Scale X-Axis according to data if xlim is not provided
-if ~isfield(xAxesOptions, 'Min') && ~isfield(xAxesOptions, 'Max')
-    PlottedData = get(gca, 'children');
+PlottedData = get(gca, 'children');
+if isfield(xAxesOptions, 'Min')
+    Xmin = xAxesOptions.Min;
+else
     Xmin = min(cellfun(@min, arrayfun(@(x) getfield(x, 'XData'), PlottedData, 'UniformOutput', false)));
-    Xmax = max(cellfun(@max, arrayfun(@(x) getfield(x, 'XData'), PlottedData, 'UniformOutput', false)));
-    xlim([Xmin Xmax]);
 end
+if isfield(xAxesOptions, 'Max')
+    Xmax = xAxesOptions.Max;
+else
+    Xmax = max(cellfun(@max, arrayfun(@(x) getfield(x, 'XData'), PlottedData, 'UniformOutput', false)));
+end
+
+xlim([Xmin Xmax]);
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit
