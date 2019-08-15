@@ -1,5 +1,5 @@
 environment:
-  app_version: '3.0.0'
+  app_version: '3.0.1'
 
 version: '$(app_version).{build}'
 
