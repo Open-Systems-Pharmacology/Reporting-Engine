@@ -53,4 +53,4 @@ system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path]);
 % alternative #2: (CAUTION) ReportOutput_path will be cleared first
 %system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path ' -f']);
 
-
+mergeQualificationMarkdown([ReportOutput_path filesep 'markdown_for_pdf'], [ReportOutput_path filesep 'report_merged.md']);
