@@ -21,6 +21,13 @@ REOutput_path = 'C:\re_output';
 jsonFile = 'report-configuration-plan.json';
 
 % --------------------------------------------------------------
+%OPTIONAL: replace qualificationRunnerPath and qualificationPlan with your paths and call the qualification runner first
+qualificationRunnerPath = 'C:\QualificationRunner';
+qualificationPlan = 'C:\input\qualification_plan.json';
+
+startQualificationRunner(qualificationRunnerPath, qualificationPlan, REInput_path);
+
+% --------------------------------------------------------------
 % Get the Configuration Plan Settings
 [WSettings, ConfigurationPlan, TaskList, ObservedDataSets] = initializeQualificationWorkflow(jsonFile, REInput_path, REOutput_path);
 
@@ -48,9 +55,13 @@ ReportOutput_path='C:\report';
 MarkdownJoiner_path='C:\MD\markdown-joiner.exe';
 
 % alternative #1: ReportOutput_path must be empty. If not, report generation will fail
-system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path]);
+status = system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path]);
 
 % alternative #2: (CAUTION) ReportOutput_path will be cleared first
-%system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path ' -f']);
+%status = system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path ' -f']);
+
+if status~=0
+    error('MarkdownJoiner failed');
+end
 
 mergeQualificationMarkdown([ReportOutput_path filesep 'markdown_for_pdf'], [ReportOutput_path filesep 'report_merged.md']);
