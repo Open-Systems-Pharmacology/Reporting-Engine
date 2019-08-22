@@ -341,8 +341,8 @@ for i=1:length(DDIRatioGroups)
     RatioPK = [RatioPK Result(i).RatioPK];
 end
 RatioPK = reshape(RatioPK, [], length(PKParameter));
-GMFE = 10.^(sum(abs(log10(RatioPK)))./length(RatioPK));
 for k=1:length(PKParameter)
+    GMFE(k) = 10.^(sum(abs(log10(RatioPK(:,k))))./length(RatioPK(:,k)));
     fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
 end
 
