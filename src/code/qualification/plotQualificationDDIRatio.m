@@ -338,13 +338,13 @@ end
 % Calculation of GMFE
 RatioPK=[];
 for i=1:length(DDIRatioGroups)
-    RatioPK = [RatioPK Result(i).RatioPK];
+    RatioPK = [RatioPK Result(i).RatioPK./Observations(i).RatioPK];
 end
-RatioPK = reshape(RatioPK, [], length(PKParameter));
-GMFE = 10.^(sum(abs(log10(RatioPK)))./length(RatioPK));
+RatioPK = reshape(RatioPK', [], length(PKParameter));
 for k=1:length(PKParameter)
+    GMFE(k) = 10.^(sum(abs(log10(RatioPK(~isnan(RatioPK(:,k)),k))))./length(RatioPK(~isnan(RatioPK(:,k)),k)));
     fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
-end
+end 
 
 %-------------------------------------------------------------
 % Tables Section
