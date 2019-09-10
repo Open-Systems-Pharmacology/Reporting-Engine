@@ -261,76 +261,98 @@ for i=1:length(DDIRatioGroups)
 end
 
 %-------------------------------------------------------------
-% Plot Section
+% Plot Section by PK parameter to be plotted
 
-% Initialize Quaklification Measure and
-% Guest equation for each PK Parameter
-
-for k=1:length(PKParameter)
-    
-    % GuestRatio vectors for plotting Guest et al. equation
-    GuestRatio(k).x=10.^(log10(0.8*axisObsVsPred(k).min):0.01:log10(1.2*axisObsVsPred(k).max));
-    [GuestRatio(k).yup, GuestRatio(k).ylo] = DDIRatioGuestEquation(GuestRatio(k).x);
+for ParameterIndex=1:length(PKParameter)
     
     % Initialize the Qualification Measures
-    QualiMeasure(k).PointsTotal = 0;
-    QualiMeasure(k).PointsGuest= 0;
-    QualiMeasure(k).Points2fold= 0;
-end
-
-for k=1:length(PKParameter)
+    QualiMeasure(ParameterIndex).PointsTotal = 0;
+    QualiMeasure(ParameterIndex).PointsGuest= 0;
+    QualiMeasure(ParameterIndex).Points2fold= 0;
+    
     % Initialize legend labels
     leg_labels={};
     
-    % create figure for Obs vs Pred
-    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
-    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-    plot(GuestRatio(k).x, GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio', PKParameter{k}));
-    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max]);
+    % Get default axis limits for DDI Ratio plot and Guest equation
+    if axisObsVsPred(ParameterIndex).min >= 1
+        minAxisObsVsPred(ParameterIndex) = min([0.8*axisObsVsPred(ParameterIndex).min, 0.8]);
+    else
+        minAxisObsVsPred(ParameterIndex) = min([0.8*axisObsVsPred(ParameterIndex).min, 0.25]);
+    end
+    if axisObsVsPred(ParameterIndex).max >= 1
+        maxAxisObsVsPred(ParameterIndex) = max([1.25*axisObsVsPred(ParameterIndex).max, 4]);
+    else
+        maxAxisObsVsPred(ParameterIndex) = max([1.25*axisObsVsPred(ParameterIndex).max, 1.25]);
+    end
     
-    % create figure for Residuals
-    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
+    if  axisResVsObs(ParameterIndex).min >= 1
+        minAxisResVsObs(ParameterIndex) = 0.25;
+    else
+        minAxisResVsObs(ParameterIndex) = min([0.8*axisResVsObs(ParameterIndex).min, 0.25]);
+    end
+    if axisResVsObs(ParameterIndex).max >= 1
+        maxAxisResVsObs(ParameterIndex) = max([1.25*axisResVsObs(ParameterIndex).max, 4]);
+    else
+        maxAxisResVsObs(ParameterIndex) = 4;
+    end
+    
+    % GuestRatio vectors for plotting Guest et al. equation
+    GuestRatio(ParameterIndex).x=10.^(log10(minAxisObsVsPred):0.001:log10(maxAxisObsVsPred));
+    
+    GuestRatio(ParameterIndex).x = 10.^(log10(minAxisObsVsPred(ParameterIndex)):0.001:log10(maxAxisObsVsPred(ParameterIndex)));
+    [GuestRatio(ParameterIndex).yup, GuestRatio(ParameterIndex).ylo] = DDIRatioGuestEquation(GuestRatio(ParameterIndex).x);
+    
+    % Create figure for Obs vs Pred with lines from Guest equation
+    [ax, fig_handle(ParameterIndex).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    
+    xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio', PKParameter{ParameterIndex}));
+    axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex)]);
+    
+    % Create figure for Residuals vs Obs with lines from Guest equation
+    [ax, fig_handle(ParameterIndex).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).yup./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).ylo./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{k}, PKParameter{k}));
-    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisResVsObs(k).min 1.2*axisResVsObs(k).max]);
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    
+    xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{ParameterIndex}, PKParameter{ParameterIndex}));
+    axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisResVsObs(ParameterIndex) maxAxisResVsObs(ParameterIndex)]);
     
     for i=1:length(DDIRatioGroups)
         % Update the number of points for each group
-        conditionPoints = ~isnan(Observations(i).RatioPK(k,:));
-        QualiMeasure(k).PointsTotal = QualiMeasure(k).PointsTotal + length(Observations(i).RatioPK(k,conditionPoints));
-        [UpperBound, LowerBound] = DDIRatioGuestEquation(Observations(i).RatioPK(k,:));
-        conditionGuest = (Result(i).RatioPK(k,:) >= LowerBound & Result(i).RatioPK(k,:) <= UpperBound);
-        QualiMeasure(k).PointsGuest= QualiMeasure(k).PointsGuest + length(Result(i).RatioPK(k,conditionGuest));
-        condition2fold = (Result(i).RatioPK(k,:) >= Observations(i).RatioPK(k,:)/2 & Result(i).RatioPK(k,:) <= Observations(i).RatioPK(k,:)*2);
-        QualiMeasure(k).Points2fold= QualiMeasure(k).Points2fold+ length(Result(i).RatioPK(k,condition2fold));
+        conditionPoints = ~isnan(Observations(i).RatioPK(ParameterIndex,:));
+        QualiMeasure(ParameterIndex).PointsTotal = QualiMeasure(ParameterIndex).PointsTotal + length(Observations(i).RatioPK(ParameterIndex,conditionPoints));
+        [UpperBound, LowerBound] = DDIRatioGuestEquation(Observations(i).RatioPK(ParameterIndex,:));
+        conditionGuest = (Result(i).RatioPK(ParameterIndex,:) >= LowerBound & Result(i).RatioPK(ParameterIndex,:) <= UpperBound);
+        QualiMeasure(ParameterIndex).PointsGuest= QualiMeasure(ParameterIndex).PointsGuest + length(Result(i).RatioPK(ParameterIndex,conditionGuest));
+        condition2fold = (Result(i).RatioPK(ParameterIndex,:) >= Observations(i).RatioPK(ParameterIndex,:)/2 & Result(i).RatioPK(ParameterIndex,:) <= Observations(i).RatioPK(ParameterIndex,:)*2);
+        QualiMeasure(ParameterIndex).Points2fold= QualiMeasure(ParameterIndex).Points2fold+ length(Result(i).RatioPK(ParameterIndex,condition2fold));
         
         % Plot part
-        set(0, 'CurrentFigure', fig_handle(k).predictedVsObserved);
-        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
+        pp=plot(Observations(i).RatioPK(ParameterIndex,:), Result(i).RatioPK(ParameterIndex,:), 'o', 'Linewidth',1);
         setCurveOptions(pp, DDIRatioGroups(i));
         
-        set(0, 'CurrentFigure', fig_handle(k).residualsVsObserved);
-        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:)./Observations(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
+        pp=plot(Observations(i).RatioPK(ParameterIndex,:), Result(i).RatioPK(ParameterIndex,:)./Observations(i).RatioPK(ParameterIndex,:), 'o', 'Linewidth',1);
         setCurveOptions(pp, DDIRatioGroups(i));
         
         if isfield(DDIRatioGroups(i), 'Caption')
             leg_labels=[leg_labels DDIRatioGroups(i).Caption];
         end
     end
-    set(0, 'CurrentFigure', fig_handle(k).predictedVsObserved);
+    set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
     legend(leg_labels, 'Location', 'northoutside');
         
-    set(0, 'CurrentFigure', fig_handle(k).residualsVsObserved);
+    set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
     legend(leg_labels, 'Location', 'northoutside');
     
 end
