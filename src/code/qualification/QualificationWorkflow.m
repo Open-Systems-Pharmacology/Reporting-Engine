@@ -60,8 +60,4 @@ status = system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_pa
 % alternative #2: (CAUTION) ReportOutput_path will be cleared first
 %status = system([MarkdownJoiner_path ' -i ' REOutput_path ' -o ' ReportOutput_path ' -f']);
 
-if status~=0
-    error('MarkdownJoiner failed');
-end
-
-mergeQualificationMarkdown([ReportOutput_path filesep 'markdown_for_pdf'], [ReportOutput_path filesep 'report_merged.md']);
+if status~=0 error('MarkdownJoiner failed'); end
