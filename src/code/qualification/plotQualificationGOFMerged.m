@@ -85,11 +85,17 @@ for i=1:length(Groups)
         Group(i).dataTP(j).yobs = reshape(Obs, [], 1);
         Group(i).dataTP(j).ypred = reshape(predicted(comparable_index), [], 1);
         Yres = predicted(comparable_index)-Obs;
-        if strcmp(ResAxesOptions.Dimension,'Fraction')
+        logRes = false;
+        if strcmp(ResAxesOptions.Dimension,'Fraction') && strcmp(yAxesOptions.Dimension,'Fraction')
             Yres=Yres./Obs;
         else
-            Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResAxesOptions.Dimension, 'MW',MW);
-            Yres=Yres.*Resfactor;
+            if strcmp(yAxesOptions.Dimension,'Concentration')
+               Yres = log(predicted(comparable_index))-log(Obs); 
+               logRes = true;
+            else
+                Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResAxesOptions.Dimension, 'MW',MW);
+                Yres=Yres.*Resfactor;
+            end
         end
         Group(i).dataTP(j).yres= reshape(Yres, [], 1);
         Group(i).dataTP(j).time = reshape(ObsTime, [], 1);
@@ -177,7 +183,11 @@ for i=1:length(Groups)
     legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
-yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
+resLabel = 'Residuals';
+if logRes
+   resLabel = [resLabel, '_{log(sim)-log(obs)}'];
+end
+yLabelFinal = getLabelWithUnit(resLabel,ResAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 if ~isempty(legendLabels)
