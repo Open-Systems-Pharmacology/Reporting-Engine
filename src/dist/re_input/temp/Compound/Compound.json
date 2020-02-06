@@ -1,0 +1,1160 @@
+{
+  "Version": 76,
+  "Individuals": [
+    {
+      "Name": "European (P-gp modified, CYP3A4 36 h)",
+      "Seed": 17189110,
+      "OriginData": {
+        "CalculationMethods": [
+          "SurfaceAreaPlsInt_VAR1",
+          "Body surface area - Mosteller"
+        ],
+        "Species": "Human",
+        "Population": "European_ICRP_2002",
+        "Gender": "MALE",
+        "Age": {
+          "Value": 30.0,
+          "Unit": "year(s)"
+        }
+      },
+      "Parameters": [
+        {
+          "Path": "Organism|Liver|EHC continuous fraction",
+          "Value": 1.0,
+          "ValueOrigin": {
+            "Source": "Unknown"
+          }
+        }
+      ],
+      "Molecules": [
+        {
+          "Name": "CYP3A4",
+          "Type": "Enzyme",
+          "MembraneLocation": "Apical",
+          "TissueLocation": "Intracellular",
+          "IntracellularVascularEndoLocation": "Endosomal",
+          "Expression": [
+            {
+              "Name": "Brain",
+              "Value": 0.0041682898325
+            },
+            {
+              "Name": "Gonads",
+              "Value": 0.00078691079081
+            },
+            {
+              "Name": "Kidney",
+              "Value": 0.0053603428126
+            },
+            {
+              "Name": "Periportal",
+              "Value": 1.0
+            },
+            {
+              "Name": "Pericentral",
+              "Value": 1.0
+            },
+            {
+              "Name": "Lung",
+              "Value": 0.00042695753798
+            },
+            {
+              "Name": "SmallIntestine",
+              "Value": 0.0727697702
+            },
+            {
+              "Name": "Duodenum",
+              "Value": 0.0727697702
+            },
+            {
+              "Name": "UpperJejunum",
+              "Value": 0.0727697702
+            },
+            {
+              "Name": "LowerJejunum",
+              "Value": 0.0727697702
+            },
+            {
+              "Name": "UpperIleum",
+              "Value": 0.0727697702
+            },
+            {
+              "Name": "LowerIleum",
+              "Value": 0.0727697702
+            }
+          ],
+          "Ontogeny": {
+            "Name": "CYP3A4"
+          },
+          "Parameters": [
+            {
+              "Name": "t1/2 (liver)",
+              "Value": 36.0,
+              "Unit": "h",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "AADAC",
+          "Type": "Enzyme",
+          "MembraneLocation": "Apical",
+          "TissueLocation": "Intracellular",
+          "IntracellularVascularEndoLocation": "Endosomal",
+          "Expression": [
+            {
+              "Name": "BloodCells",
+              "Value": 3.9102564103E-05
+            },
+            {
+              "Name": "Plasma",
+              "Value": 3.9102564103E-05
+            },
+            {
+              "Name": "Bone",
+              "Value": 4.8717948718E-05
+            },
+            {
+              "Name": "Brain",
+              "Value": 3.9743589744E-05
+            },
+            {
+              "Name": "Gonads",
+              "Value": 0.0011923076923
+            },
+            {
+              "Name": "Heart",
+              "Value": 0.0026602564103
+            },
+            {
+              "Name": "Kidney",
+              "Value": 5.7051282051E-05
+            },
+            {
+              "Name": "Periportal",
+              "Value": 1.0
+            },
+            {
+              "Name": "Pericentral",
+              "Value": 1.0
+            },
+            {
+              "Name": "Lung",
+              "Value": 0.0269230769
+            },
+            {
+              "Name": "Muscle",
+              "Value": 0.00020833333333
+            },
+            {
+              "Name": "Pancreas",
+              "Value": 0.1474358974
+            },
+            {
+              "Name": "Spleen",
+              "Value": 0.00037115384615
+            },
+            {
+              "Name": "Stomach",
+              "Value": 0.0775641026
+            },
+            {
+              "Name": "SmallIntestine",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "LargeIntestine",
+              "Value": 0.00010384615385
+            },
+            {
+              "Name": "Duodenum",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "UpperJejunum",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "LowerJejunum",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "UpperIleum",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "LowerIleum",
+              "Value": 0.2544871795
+            },
+            {
+              "Name": "ColonAscendens",
+              "Value": 0.00010384615385
+            },
+            {
+              "Name": "ColonTransversum",
+              "Value": 0.00010384615385
+            },
+            {
+              "Name": "ColonDescendens",
+              "Value": 0.00010384615385
+            },
+            {
+              "Name": "ColonSigmoid",
+              "Value": 0.00010384615385
+            }
+          ]
+        },
+        {
+          "Name": "ABCB1",
+          "Type": "Transporter",
+          "TransportType": "Efflux",
+          "Expression": [
+            {
+              "Name": "Bone",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0341950646
+            },
+            {
+              "Name": "Brain",
+              "MembraneLocation": "BloodBrainBarrier",
+              "Value": 0.1072855464
+            },
+            {
+              "Name": "Gonads",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.024559342
+            },
+            {
+              "Name": "Heart",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.059106933
+            },
+            {
+              "Name": "Kidney",
+              "MembraneLocation": "Apical",
+              "Value": 1.0
+            },
+            {
+              "Name": "Periportal",
+              "MembraneLocation": "Apical",
+              "Value": 0.2702702703
+            },
+            {
+              "Name": "Pericentral",
+              "MembraneLocation": "Apical",
+              "Value": 0.2702702703
+            },
+            {
+              "Name": "Lung",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0927144536
+            },
+            {
+              "Name": "Muscle",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0180963572
+            },
+            {
+              "Name": "Pancreas",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0200940071
+            },
+            {
+              "Name": "Spleen",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.1047003525
+            },
+            {
+              "Name": "Stomach",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0367802585
+            },
+            {
+              "Name": "SmallIntestine",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.3960047004
+            },
+            {
+              "Name": "LargeIntestine",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.1562867215
+            },
+            {
+              "Name": "Duodenum",
+              "MembraneLocation": "Apical",
+              "Value": 1.41
+            },
+            {
+              "Name": "UpperJejunum",
+              "MembraneLocation": "Apical",
+              "Value": 1.41
+            },
+            {
+              "Name": "LowerJejunum",
+              "MembraneLocation": "Apical",
+              "Value": 1.41
+            },
+            {
+              "Name": "UpperIleum",
+              "MembraneLocation": "Apical",
+              "Value": 1.41
+            },
+            {
+              "Name": "LowerIleum",
+              "MembraneLocation": "Apical",
+              "Value": 1.41
+            },
+            {
+              "Name": "ColonAscendens",
+              "MembraneLocation": "Apical",
+              "Value": 0.56
+            },
+            {
+              "Name": "ColonTransversum",
+              "MembraneLocation": "Apical",
+              "Value": 0.56
+            },
+            {
+              "Name": "ColonDescendens",
+              "MembraneLocation": "Apical",
+              "Value": 0.56
+            },
+            {
+              "Name": "ColonSigmoid",
+              "MembraneLocation": "Apical",
+              "Value": 0.56
+            }
+          ],
+          "Parameters": [
+            {
+              "Name": "Reference concentration",
+              "Value": 1.41,
+              "Unit": "µmol/l",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "OATP1B1",
+          "Type": "Transporter",
+          "TransportType": "Influx",
+          "Expression": [
+            {
+              "Name": "Brain",
+              "MembraneLocation": "BloodBrainBarrier",
+              "Value": 0.00014166666667
+            },
+            {
+              "Name": "Gonads",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0141666667
+            },
+            {
+              "Name": "Heart",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.0008253968254
+            },
+            {
+              "Name": "Periportal",
+              "MembraneLocation": "Basolateral",
+              "Value": 1.0
+            },
+            {
+              "Name": "Pericentral",
+              "MembraneLocation": "Basolateral",
+              "Value": 1.0
+            },
+            {
+              "Name": "Lung",
+              "MembraneLocation": "Basolateral",
+              "Value": 4.0079365079E-05
+            },
+            {
+              "Name": "Muscle",
+              "MembraneLocation": "Basolateral",
+              "Value": 0.00064682539683
+            }
+          ]
+        },
+        {
+          "Name": "ATP1A2",
+          "Type": "OtherProtein",
+          "MembraneLocation": "Apical",
+          "TissueLocation": "ExtracellularMembrane",
+          "IntracellularVascularEndoLocation": "Endosomal",
+          "Expression": [
+            {
+              "Name": "Bone",
+              "Value": 0.0062154033171
+            },
+            {
+              "Name": "Brain",
+              "Value": 1.0
+            },
+            {
+              "Name": "Gonads",
+              "Value": 0.0508741242
+            },
+            {
+              "Name": "Heart",
+              "Value": 0.3179118843
+            },
+            {
+              "Name": "Kidney",
+              "Value": 0.0158938619
+            },
+            {
+              "Name": "Periportal",
+              "Value": 0.0223784807
+            },
+            {
+              "Name": "Pericentral",
+              "Value": 0.0223784807
+            },
+            {
+              "Name": "Lung",
+              "Value": 0.0272345453
+            },
+            {
+              "Name": "Muscle",
+              "Value": 0.7034193524
+            },
+            {
+              "Name": "Pancreas",
+              "Value": 0.0073903254795
+            },
+            {
+              "Name": "Skin",
+              "Value": 0.0389467988
+            },
+            {
+              "Name": "Spleen",
+              "Value": 0.0103243118
+            },
+            {
+              "Name": "Stomach",
+              "Value": 0.0309435884
+            },
+            {
+              "Name": "SmallIntestine",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "LargeIntestine",
+              "Value": 0.0786998764
+            },
+            {
+              "Name": "Duodenum",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "UpperJejunum",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "LowerJejunum",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "UpperIleum",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "LowerIleum",
+              "Value": 0.0501579923
+            },
+            {
+              "Name": "ColonAscendens",
+              "Value": 0.0786998764
+            },
+            {
+              "Name": "ColonTransversum",
+              "Value": 0.0786998764
+            },
+            {
+              "Name": "ColonDescendens",
+              "Value": 0.0786998764
+            },
+            {
+              "Name": "ColonSigmoid",
+              "Value": 0.0786998764
+            }
+          ],
+          "Parameters": [
+            {
+              "Name": "Reference concentration",
+              "Value": 0.47661714,
+              "Unit": "µmol/l",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "UGT1A4",
+          "Type": "Enzyme",
+          "MembraneLocation": "Apical",
+          "TissueLocation": "Intracellular",
+          "IntracellularVascularEndoLocation": "Endosomal",
+          "Expression": [
+            {
+              "Name": "Periportal",
+              "Value": 1.0
+            },
+            {
+              "Name": "Pericentral",
+              "Value": 1.0
+            }
+          ],
+          "Ontogeny": {
+            "Name": "UGT1A4"
+          },
+          "Parameters": [
+            {
+              "Name": "Reference concentration",
+              "Value": 2.32,
+              "Unit": "µmol/l",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "GABRG2",
+          "Type": "OtherProtein",
+          "MembraneLocation": "Apical",
+          "TissueLocation": "ExtracellularMembrane",
+          "IntracellularVascularEndoLocation": "Endosomal",
+          "Expression": [
+            {
+              "Name": "Brain",
+              "Value": 1.0
+            }
+          ],
+          "Parameters": [
+            {
+              "Name": "Reference concentration",
+              "Value": 1.0877710492,
+              "Unit": "µmol/l",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Compounds": [
+    {
+      "Name": "COMPOUND",
+      "IsSmallMolecule": true,
+      "Lipophilicity": [
+        {
+          "Name": "Measurement",
+          "Parameters": [
+            {
+              "Name": "Lipophilicity",
+              "Value": 0.0,
+              "Unit": "Log Units"
+            }
+          ]
+        }
+      ],
+      "FractionUnbound": [
+        {
+          "Name": "Measurement",
+          "Species": "Human",
+          "Parameters": [
+            {
+              "Name": "Fraction unbound (plasma, reference value)",
+              "Value": 1.0
+            }
+          ]
+        }
+      ],
+      "Solubility": [
+        {
+          "Name": "Measurement",
+          "Parameters": [
+            {
+              "Name": "Solubility at reference pH",
+              "Value": 1.0,
+              "Unit": "mg/l"
+            },
+            {
+              "Name": "Reference pH",
+              "Value": 7.0
+            }
+          ]
+        }
+      ],
+      "PkaTypes": [
+        {
+          "Type": "Acid",
+          "Pka": 7.0,
+          "ValueOrigin": {
+            "Source": "Unknown"
+          }
+        }
+      ],
+      "Processes": [
+        {
+          "InternalName": "GlomerularFiltration",
+          "DataSource": "source_data",
+          "Species": "Human",
+          "Parameters": [
+            {
+              "Name": "GFR fraction",
+              "Value": 1.0
+            }
+          ]
+        }
+      ],
+      "CalculationMethods": [
+        "Cellular partition coefficient method - PK-Sim Standard",
+        "Cellular permeability - PK-Sim Standard"
+      ],
+      "Parameters": [
+        {
+          "Name": "Molecular weight",
+          "Value": 300.0,
+          "Unit": "g/mol"
+        }
+      ]
+    }
+  ],
+  "Formulations": [
+    {
+      "Name": "Tablet",
+      "FormulationType": "Formulation_Tablet_Weibull",
+      "Parameters": [
+        {
+          "Name": "Dissolution time (50% dissolved)",
+          "Value": 240.0,
+          "Unit": "min"
+        },
+        {
+          "Name": "Lag time",
+          "Value": 0.0,
+          "Unit": "min"
+        },
+        {
+          "Name": "Dissolution shape",
+          "Value": 0.92
+        },
+        {
+          "Name": "Use as suspension",
+          "Value": 1.0
+        }
+      ]
+    }
+  ],
+  "Protocols": [
+    {
+      "Name": "IV",
+      "ApplicationType": "IntravenousBolus",
+      "DosingInterval": "Single",
+      "Parameters": [
+        {
+          "Name": "Start time",
+          "Value": 0.0,
+          "Unit": "h"
+        },
+        {
+          "Name": "InputDose",
+          "Value": 1.0,
+          "Unit": "mg/kg"
+        }
+      ]
+    },
+    {
+      "Name": "PO",
+      "ApplicationType": "Oral",
+      "DosingInterval": "Single",
+      "Parameters": [
+        {
+          "Name": "Start time",
+          "Value": 0.0,
+          "Unit": "h"
+        },
+        {
+          "Name": "InputDose",
+          "Value": 100.0,
+          "Unit": "mg"
+        },
+        {
+          "Name": "Volume of water/body weight",
+          "Value": 3.5,
+          "Unit": "ml/kg"
+        }
+      ]
+    }
+  ],
+  "Simulations": [
+    {
+      "Name": "Sim 1 - intravenous",
+      "Model": "4Comp",
+      "ObservedData": [
+        "Observed data iv"
+      ],
+      "Solver": {},
+      "OutputSchema": [
+        {
+          "Parameters": [
+            {
+              "Name": "Start time",
+              "Value": 0.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "End time",
+              "Value": 2.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "Resolution",
+              "Value": 20.0,
+              "Unit": "pts/h"
+            }
+          ]
+        },
+        {
+          "Parameters": [
+            {
+              "Name": "Start time",
+              "Value": 2.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "End time",
+              "Value": 24.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "Resolution",
+              "Value": 4.0,
+              "Unit": "pts/h"
+            }
+          ]
+        }
+      ],
+      "OutputSelections": [
+        "Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)"
+      ],
+      "Individual": "European (P-gp modified, CYP3A4 36 h)",
+      "Compounds": [
+        {
+          "Name": "COMPOUND",
+          "CalculationMethods": [
+            "Cellular partition coefficient method - Rodgers and Rowland",
+            "Cellular permeability - PK-Sim Standard"
+          ],
+          "Processes": [
+            {
+              "Name": "Glomerular Filtration-source_data"
+            }
+          ],
+          "Protocol": {
+            "Name": "IV"
+          }
+        }
+      ],
+      "HasResults": true,
+      "IndividualAnalyses": [
+        {
+          "Axes": [
+            {
+              "Unit": "h",
+              "Dimension": "Time",
+              "Type": "X",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "None",
+              "Scaling": "Linear",
+              "NumberMode": "Normal"
+            },
+            {
+              "Unit": "µg/l",
+              "Dimension": "Concentration (molar)",
+              "Type": "Y",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "Solid",
+              "Scaling": "Log",
+              "NumberMode": "Normal"
+            }
+          ],
+          "Curves": [
+            {
+              "Name": "Sim 1 - intravenous-Compound-Peripheral Venous Blood-Plasma-Concentration",
+              "X": "Time",
+              "Y": "Sim 1 - intravenous|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+              "CurveOptions": {
+                "Color": "#FF0000",
+                "LegendIndex": 1
+              }
+            },
+            {
+              "Name": "Observed data iv-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+              "X": "Observed data iv|Time ",
+              "Y": "Observed data iv|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+              "CurveOptions": {
+                "Color": "#0000FF",
+                "LegendIndex": 2,
+                "LineStyle": "None",
+                "Symbol": "Circle"
+              }
+            }
+          ],
+          "Name": "Sim 1 - intravenous",
+          "OriginText": "Compound\nSim 1 - intravenous\n2019-08-22 16:57"
+        }
+      ]
+    },
+    {
+      "Name": "Sim 2 - peroral",
+      "Model": "4Comp",
+      "ObservedData": [
+        "Observed data po"
+      ],
+      "Solver": {},
+      "OutputSchema": [
+        {
+          "Parameters": [
+            {
+              "Name": "Start time",
+              "Value": 0.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "End time",
+              "Value": 2.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "Resolution",
+              "Value": 20.0,
+              "Unit": "pts/h"
+            }
+          ]
+        },
+        {
+          "Parameters": [
+            {
+              "Name": "Start time",
+              "Value": 2.0,
+              "Unit": "h"
+            },
+            {
+              "Name": "End time",
+              "Value": 72.0,
+              "Unit": "h",
+              "ValueOrigin": {
+                "Source": "Unknown"
+              }
+            },
+            {
+              "Name": "Resolution",
+              "Value": 4.0,
+              "Unit": "pts/h"
+            }
+          ]
+        }
+      ],
+      "Parameters": [
+        {
+          "Path": "Applications|PO|Tablet|Application_1|ProtocolSchemaItem|Volume of water/body weight",
+          "Value": 3.5,
+          "Unit": "ml/kg"
+        }
+      ],
+      "OutputSelections": [
+        "Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)"
+      ],
+      "Individual": "European (P-gp modified, CYP3A4 36 h)",
+      "Compounds": [
+        {
+          "Name": "COMPOUND",
+          "CalculationMethods": [
+            "Cellular partition coefficient method - Rodgers and Rowland",
+            "Cellular permeability - PK-Sim Standard"
+          ],
+          "Processes": [
+            {
+              "Name": "Glomerular Filtration-source_data"
+            }
+          ],
+          "Protocol": {
+            "Name": "PO",
+            "Formulations": [
+              {
+                "Name": "Tablet",
+                "Key": "Formulation"
+              }
+            ]
+          }
+        }
+      ],
+      "HasResults": true,
+      "IndividualAnalyses": [
+        {
+          "Axes": [
+            {
+              "Unit": "h",
+              "Dimension": "Time",
+              "Type": "X",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "None",
+              "Scaling": "Linear",
+              "NumberMode": "Normal"
+            },
+            {
+              "Unit": "µg/l",
+              "Dimension": "Concentration (molar)",
+              "Type": "Y",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "Solid",
+              "Scaling": "Log",
+              "NumberMode": "Normal"
+            }
+          ],
+          "Curves": [
+            {
+              "Name": "Sim 2 - peroral-Compound-Peripheral Venous Blood-Plasma-Concentration",
+              "X": "Time",
+              "Y": "Sim 2 - peroral|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+              "CurveOptions": {
+                "Color": "#FF0000",
+                "LegendIndex": 1
+              }
+            },
+            {
+              "Name": "Observed data po-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+              "X": "Observed data po|Time ",
+              "Y": "Observed data po|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+              "CurveOptions": {
+                "Color": "#0000FF",
+                "LegendIndex": 2,
+                "LineStyle": "None",
+                "Symbol": "Circle"
+              }
+            }
+          ],
+          "Name": "Sim 2 - peroral",
+          "OriginText": "Compound\nSim 2 - peroral\n2019-08-22 16:57"
+        }
+      ]
+    }
+  ],
+  "ObservedData": [
+    {
+      "Name": "Observed data iv",
+      "ExtendedProperties": [
+        {
+          "Name": "Source",
+          "Value": "Study 1"
+        },
+        {
+          "Name": "File",
+          "Value": "ObsData"
+        },
+        {
+          "Name": "Sheet",
+          "Value": "iv"
+        },
+        {
+          "Name": "Molecule",
+          "Value": "COMPOUND"
+        },
+        {
+          "Name": "Species",
+          "Value": "Human"
+        },
+        {
+          "Name": "Organ",
+          "Value": "Peripheral Venous Blood"
+        },
+        {
+          "Name": "Compartment",
+          "Value": "Plasma"
+        }
+      ],
+      "Columns": [
+        {
+          "Name": "Concentration ",
+          "QuantityInfo": {
+            "Name": "Concentration ",
+            "Path": "Observed data iv|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration "
+          },
+          "DataInfo": {
+            "Origin": "Observation",
+            "AuxiliaryType": "Undefined",
+            "Date": "2019-08-22T15:43:48.4889982+02:00",
+            "Source": "Time Profile Analysis.iv.Concentration [µmol/l]",
+            "MolWeight": 300.0
+          },
+          "Values": [
+            9.570109,
+            7.726334,
+            6.305042,
+            8.190331,
+            2.8897934,
+            3.7055707,
+            2.48318744,
+            3.59879255,
+            2.20420885,
+            1.11660433,
+            1.11751032,
+            0.717411,
+            0.221141458
+          ],
+          "Dimension": "Concentration (molar)",
+          "Unit": "µmol/l"
+        }
+      ],
+      "BaseGrid": {
+        "Name": "Time ",
+        "QuantityInfo": {
+          "Name": "Time ",
+          "Path": "Observed data iv|Time ",
+          "Type": "Time"
+        },
+        "DataInfo": {
+          "Origin": "BaseGrid",
+          "AuxiliaryType": "Undefined",
+          "Date": "2019-08-22T15:43:48.4889982+02:00",
+          "Source": "Time Profile Analysis.iv.Time [h]"
+        },
+        "Values": [
+          0.05,
+          0.25,
+          0.5,
+          0.75,
+          1.0,
+          2.0,
+          3.0,
+          4.0,
+          5.0,
+          6.0,
+          8.0,
+          12.0,
+          24.0
+        ],
+        "Dimension": "Time",
+        "Unit": "h"
+      }
+    },
+    {
+      "Name": "Observed data po",
+      "ExtendedProperties": [
+        {
+          "Name": "Source",
+          "Value": "Study 1"
+        },
+        {
+          "Name": "File",
+          "Value": "ObsData"
+        },
+        {
+          "Name": "Sheet",
+          "Value": "po"
+        },
+        {
+          "Name": "Molecule",
+          "Value": "COMPOUND"
+        },
+        {
+          "Name": "Species",
+          "Value": "Human"
+        },
+        {
+          "Name": "Organ",
+          "Value": "Peripheral Venous Blood"
+        },
+        {
+          "Name": "Compartment",
+          "Value": "Plasma"
+        }
+      ],
+      "Columns": [
+        {
+          "Name": "Concentration ",
+          "QuantityInfo": {
+            "Name": "Concentration ",
+            "Path": "Observed data po|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration "
+          },
+          "DataInfo": {
+            "Origin": "Observation",
+            "AuxiliaryType": "Undefined",
+            "Date": "2019-08-22T15:43:48.4889982+02:00",
+            "Source": "Time Profile Analysis.po.Concentration [µmol/l]",
+            "MolWeight": 300.0
+          },
+          "Values": [
+            0.000182412667,
+            0.0003662253,
+            0.000343692664,
+            0.0005900944,
+            0.0007129909,
+            0.000663702842,
+            0.0013669621,
+            0.00177483342,
+            0.001986408,
+            0.0016872678,
+            0.0007093352,
+            0.000457733928,
+            7.025244E-05,
+            1.4612604E-05
+          ],
+          "Dimension": "Concentration (molar)",
+          "Unit": "µmol/l"
+        }
+      ],
+      "BaseGrid": {
+        "Name": "Time ",
+        "QuantityInfo": {
+          "Name": "Time ",
+          "Path": "Observed data po|Time ",
+          "Type": "Time"
+        },
+        "DataInfo": {
+          "Origin": "BaseGrid",
+          "AuxiliaryType": "Undefined",
+          "Date": "2019-08-22T15:43:48.4889982+02:00",
+          "Source": "Time Profile Analysis.po.Time [h]"
+        },
+        "Values": [
+          1.0,
+          1.25,
+          1.5,
+          1.75,
+          2.0,
+          3.0,
+          4.0,
+          6.0,
+          8.0,
+          12.0,
+          16.0,
+          24.0,
+          48.0,
+          72.0
+        ],
+        "Dimension": "Time",
+        "Unit": "h"
+      }
+    }
+  ]
+}
