@@ -1,0 +1,20 @@
+Percentile of C_{max} (last dosing interval) of Raltegravir.;;;;;;;;;
+;;;;;;;;;
+C_{max} (last dosing interval) [µg/l];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Raltegravir 10 mg   (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 25 mg  (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 50 mg  (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 100 mg  (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 200 mg   (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 400mg (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 800 mg  (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 1200 mg   (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 1600 mg  (lactose formulation);0;0;0;0;0;0;0;0;NaN
+Raltegravir 100 mg filmcoated tablet md;611.416297204352;819.052968577592;970.456293965179;1155.37089254841;1378.37701250844;985.347261248455;228.873250857936;958.06107772562;0.245777605486123
+Raltegravir 200 mg filmcoated tablet md;1250.74266605002;1658.09941123151;1991.93418177094;2358.23535031003;2777.02006771535;2003.8744108306;461.102056505367;1949.44463882465;0.243244373039323
+Filmcoated_tablet_400mg_sd;0;0;0;0;0;0;0;0;NaN
+Raltegravir 400 mg filmcoated tablet md;2574.38184875278;3411.36618610157;4143.7839839267;4865.66714177897;5609.04674700774;4107.6124838615;930.188805988928;3999.53957264086;0.239178386318177
+Raltegravir 400mg chewable fasted;0;0;0;0;0;0;0;0;NaN
+Raltegravir 400mg chewable fed;0;0;0;0;0;0;0;0;NaN
+Raltegravir 400mg (granules in suspension);0;0;0;0;0;0;0;0;NaN

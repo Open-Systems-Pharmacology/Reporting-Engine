@@ -1,0 +1,6 @@
+Percentile of t_{max} of Raltegravir.;;;;;;;;;
+;;;;;;;;;
+T_{max} [h];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Larson 2013 8y-18y 400mg FCT meal;0.975;2;2.5;3;4;2.5164;0.87888903273606;2.34570716754389;0.414049181301392
+Filmcoated_tablet_400mg_sd;0.5;0.6;0.7;0.825;1;0.729;0.151620872207255;0.713540193421443;0.21131982667189

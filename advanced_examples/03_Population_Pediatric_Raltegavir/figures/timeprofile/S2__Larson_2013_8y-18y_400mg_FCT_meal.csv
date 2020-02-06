@@ -1,0 +1,10 @@
+Time profiles for Larson 2013 8y-18y 400mg FCT meal;;;1
+Time profiles of Raltegravir;;;2
+S2.1_TP_Larson_2013_8y-18y_400mg_FCT_meal_O1_lin;Time profiles of Raltegravir for Larson 2013 8y-18y 400mg FCT meal compared to simulated Raltegravir for Filmcoated_tablet_400mg_sd. Data source: Observed_Raltegravir 10 mg   (lactose formulation). Time profiles are plotted in a linear scale.;;
+S2.1_TP_Larson_2013_8y-18y_400mg_FCT_meal_O1_log;Time profiles of Raltegravir for Larson 2013 8y-18y 400mg FCT meal compared to simulated Raltegravir for Filmcoated_tablet_400mg_sd. Data source: Observed_Raltegravir 10 mg   (lactose formulation). Time profiles are plotted in a logarithmic scale.;;
+S2.1_PvO_Larson_2013_8y-18y_400mg_FCT_meal_O1_log;Predicted vs observed of Raltegravir for Larson 2013 8y-18y 400mg FCT meal. Data source: Observed_Raltegravir 10 mg   (lactose formulation). Prediction and observations are plotted in a logarithmic scale.;;
+S2.1_RvT_Larson_2013_8y-18y_400mg_FCT_meal_O1_log;Logarithmic residuals vs time of Raltegravir for Larson 2013 8y-18y 400mg FCT meal. Data source: Observed_Raltegravir 10 mg   (lactose formulation).;;
+S2.1_RvY_Larson_2013_8y-18y_400mg_FCT_meal_O1_log;Logarithmic residuals vs predicted values of Raltegravir for Larson 2013 8y-18y 400mg FCT meal. Data source: Observed_Raltegravir 10 mg   (lactose formulation).;;
+Overview on all residuals;;;2
+S2.2_ResidualHist;Distribution of residuals for Larson 2013 8y-18y 400mg FCT meal;;
+S2.2_ResidualQQplot;Residuals for Larson 2013 8y-18y 400mg FCT meal as quantile-quantile plot.;;
