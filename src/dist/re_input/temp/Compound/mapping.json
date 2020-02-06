@@ -1,0 +1,148 @@
+{
+  "SimulationMappings": [
+    {
+      "Project": "Compound",
+      "Simulation": "Sim 1 - intravenous",
+      "Path": "Compound/Sim 1 - intravenous/"
+    },
+    {
+      "Project": "Compound",
+      "Simulation": "Sim 2 - peroral",
+      "Path": "Compound/Sim 2 - peroral/"
+    }
+  ],
+  "ObservedDataMappings": [
+    {
+      "Id": "Observed data iv",
+      "Path": "ObservedData/Observed data iv.csv"
+    },
+    {
+      "Id": "Observed data po",
+      "Path": "ObservedData/Observed data po.csv"
+    }
+  ],
+  "Plots": [
+    {
+      "SectionId": 33,
+      "Project": "Compound",
+      "Simulation": "Sim 1 - intravenous",
+      "Plot": {
+        "$type": "PKSim.Core.Snapshots.CurveChart, PKSim.Core",
+        "Axes": [
+          {
+            "Unit": "h",
+            "Dimension": "Time",
+            "Type": "X",
+            "GridLines": false,
+            "Visible": true,
+            "DefaultColor": "#FFFFFF",
+            "DefaultLineStyle": "None",
+            "Scaling": "Linear",
+            "NumberMode": "Normal"
+          },
+          {
+            "Unit": "µg/l",
+            "Dimension": "Concentration (molar)",
+            "Type": "Y",
+            "GridLines": false,
+            "Visible": true,
+            "DefaultColor": "#FFFFFF",
+            "DefaultLineStyle": "Solid",
+            "Scaling": "Log",
+            "NumberMode": "Normal"
+          }
+        ],
+        "Curves": [
+          {
+            "Name": "Sim 1 - intravenous-Compound-Peripheral Venous Blood-Plasma-Concentration",
+            "X": "Time",
+            "Y": "Sim 1 - intravenous|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+            "CurveOptions": {
+              "Color": "#FF0000",
+              "LegendIndex": 1
+            }
+          },
+          {
+            "Name": "Observed data iv-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+            "X": "Observed data iv|Time ",
+            "Y": "Observed data iv|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+            "CurveOptions": {
+              "Color": "#0000FF",
+              "LegendIndex": 2,
+              "LineStyle": "None",
+              "Symbol": "Circle"
+            }
+          }
+        ],
+        "Name": "Sim 1 - intravenous",
+        "OriginText": "Compound\nSim 1 - intravenous\n2019-08-22 16:57"
+      }
+    },
+    {
+      "SectionId": 33,
+      "Project": "Compound",
+      "Simulation": "Sim 2 - peroral",
+      "Plot": {
+        "$type": "PKSim.Core.Snapshots.CurveChart, PKSim.Core",
+        "Axes": [
+          {
+            "Unit": "h",
+            "Dimension": "Time",
+            "Type": "X",
+            "GridLines": false,
+            "Visible": true,
+            "DefaultColor": "#FFFFFF",
+            "DefaultLineStyle": "None",
+            "Scaling": "Linear",
+            "NumberMode": "Normal"
+          },
+          {
+            "Unit": "µg/l",
+            "Dimension": "Concentration (molar)",
+            "Type": "Y",
+            "GridLines": false,
+            "Visible": true,
+            "DefaultColor": "#FFFFFF",
+            "DefaultLineStyle": "Solid",
+            "Scaling": "Log",
+            "NumberMode": "Normal"
+          }
+        ],
+        "Curves": [
+          {
+            "Name": "Sim 2 - peroral-Compound-Peripheral Venous Blood-Plasma-Concentration",
+            "X": "Time",
+            "Y": "Sim 2 - peroral|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+            "CurveOptions": {
+              "Color": "#FF0000",
+              "LegendIndex": 1
+            }
+          },
+          {
+            "Name": "Observed data po-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+            "X": "Observed data po|Time ",
+            "Y": "Observed data po|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+            "CurveOptions": {
+              "Color": "#0000FF",
+              "LegendIndex": 2,
+              "LineStyle": "None",
+              "Symbol": "Circle"
+            }
+          }
+        ],
+        "Name": "Sim 2 - peroral",
+        "OriginText": "Compound\nSim 2 - peroral\n2019-08-22 16:57"
+      }
+    }
+  ],
+  "Inputs": [
+    {
+      "SectionId": 31,
+      "Path": "Inputs/Compound/Compound/COMPOUND.md"
+    },
+    {
+      "SectionId": 31,
+      "Path": "Inputs/Compound/Formulation/Tablet.md"
+    }
+  ]
+}

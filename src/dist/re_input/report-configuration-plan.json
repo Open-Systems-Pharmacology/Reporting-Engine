@@ -1,0 +1,388 @@
+{
+  "SimulationMappings": [
+    {
+      "Project": "Compound",
+      "Simulation": "Sim 1 - intravenous",
+      "Path": "Compound/Sim 1 - intravenous/"
+    },
+    {
+      "Project": "Compound",
+      "Simulation": "Sim 2 - peroral",
+      "Path": "Compound/Sim 2 - peroral/"
+    }
+  ],
+  "ObservedDataSets": [
+    {
+      "Id": "Observed data iv",
+      "Path": "ObservedData/Observed data iv.csv"
+    },
+    {
+      "Id": "Observed data po",
+      "Path": "ObservedData/Observed data po.csv"
+    }
+  ],
+  "Plots": {
+    "AxesSettings": {
+      "GOFMergedPlotsPredictedVsObserved": [
+        {
+          "Type": "X",
+          "Dimension": "Concentration (mass)",
+          "Unit": "µg/l",
+          "GridLines": false,
+          "Scaling": "Log"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Concentration (mass)",
+          "Unit": "µg/l",
+          "GridLines": false,
+          "Scaling": "Log"
+        }
+      ],
+      "GOFMergedPlotsResidualsOverTime": [
+        {
+          "Type": "X",
+          "Dimension": "Time",
+          "Unit": "h",
+          "GridLines": false,
+          "Scaling": "Linear"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Linear"
+        }
+      ],
+      "ComparisonTimeProfile": [
+        {
+          "Type": "X",
+          "Dimension": "Time",
+          "Unit": "h",
+          "GridLines": false,
+          "Scaling": "Linear"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Concentration (mass)",
+          "Unit": "µg/l",
+          "GridLines": false,
+          "Scaling": "Log"
+        }
+      ],
+      "DDIRatioPlotsPredictedVsObserved": [
+        {
+          "Type": "X",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Log"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Log"
+        }
+      ],
+      "DDIRatioPlotsResidualsVsObserved": [
+        {
+          "Type": "X",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Log"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Log"
+        }
+      ],
+      "PKRatioPlots": [
+        {
+          "Type": "X",
+          "Dimension": "Age",
+          "Unit": "year(s)",
+          "GridLines": false,
+          "Scaling": "Linear"
+        },
+        {
+          "Type": "Y",
+          "Dimension": "Dimensionless",
+          "Unit": "",
+          "GridLines": false,
+          "Scaling": "Log"
+        }
+      ]
+    },
+    "PlotSettings": {
+      "ChartWidth": 500,
+      "ChartHeight": 400,
+      "Fonts": {
+        "AxisSize": 11,
+        "LegendSize": 9,
+        "OriginSize": 9,
+        "FontFamilyName": "Arial",
+        "WatermarkSize": 40
+      }
+    },
+    "GOFMergedPlots": [
+      {
+        "Title": "Goodness of fit plor for concentration in plasma",
+        "SectionId": 32,
+        "Artifacts": [
+          "Plot",
+          "GMFE",
+          "Measure"
+        ],
+        "PlotType": "predictedVsObserved|residualsOverTime",
+        "Groups": [
+          {
+            "Caption": "Intravenous administration",
+            "Symbol": "Circle",
+            "OutputMappings": [
+              {
+                "Project": "Compound",
+                "Simulation": "Sim 1 - intravenous",
+                "Output": "Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+                "ObservedData": "Observed data iv",
+                "Color": "#FF0000"
+              }
+            ]
+          },
+          {
+            "Caption": "Oral administration",
+            "Symbol": "Square",
+            "OutputMappings": [
+              {
+                "Project": "Compound",
+                "Simulation": "Sim 2 - peroral",
+                "Output": "Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+                "ObservedData": "Observed data po",
+                "Color": "#FF0000"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "ComparisonTimeProfilePlots": [],
+    "DDIRatioPlots": [],
+    "PKRatioPlots": [],
+    "TimeProfile": [
+      {
+        "SectionId": 33,
+        "Project": "Compound",
+        "Simulation": "Sim 1 - intravenous",
+        "Plot": {
+          "Axes": [
+            {
+              "Unit": "h",
+              "Dimension": "Time",
+              "Type": "X",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "None",
+              "Scaling": "Linear",
+              "NumberMode": "Normal"
+            },
+            {
+              "Unit": "µg/l",
+              "Dimension": "Concentration (molar)",
+              "Type": "Y",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "Solid",
+              "Scaling": "Log",
+              "NumberMode": "Normal"
+            }
+          ],
+          "Curves": [
+            {
+              "Name": "Sim 1 - intravenous-Compound-Peripheral Venous Blood-Plasma-Concentration",
+              "X": "Time",
+              "Y": "Sim 1 - intravenous|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+              "CurveOptions": {
+                "Color": "#FF0000",
+                "LegendIndex": 1
+              }
+            },
+            {
+              "Name": "Observed data iv-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+              "X": "Observed data iv|Time ",
+              "Y": "Observed data iv|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+              "CurveOptions": {
+                "Color": "#0000FF",
+                "LegendIndex": 2,
+                "LineStyle": "None",
+                "Symbol": "Circle"
+              }
+            }
+          ],
+          "Name": "Sim 1 - intravenous",
+          "OriginText": "Compound\nSim 1 - intravenous\n2019-08-22 16:57"
+        }
+      },
+      {
+        "SectionId": 33,
+        "Project": "Compound",
+        "Simulation": "Sim 2 - peroral",
+        "Plot": {
+          "Axes": [
+            {
+              "Unit": "h",
+              "Dimension": "Time",
+              "Type": "X",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "None",
+              "Scaling": "Linear",
+              "NumberMode": "Normal"
+            },
+            {
+              "Unit": "µg/l",
+              "Dimension": "Concentration (molar)",
+              "Type": "Y",
+              "GridLines": false,
+              "Visible": true,
+              "DefaultColor": "#FFFFFF",
+              "DefaultLineStyle": "Solid",
+              "Scaling": "Log",
+              "NumberMode": "Normal"
+            }
+          ],
+          "Curves": [
+            {
+              "Name": "Sim 2 - peroral-Compound-Peripheral Venous Blood-Plasma-Concentration",
+              "X": "Time",
+              "Y": "Sim 2 - peroral|Organism|PeripheralVenousBlood|COMPOUND|Plasma (Peripheral Venous Blood)",
+              "CurveOptions": {
+                "Color": "#FF0000",
+                "LegendIndex": 1
+              }
+            },
+            {
+              "Name": "Observed data po-COMPOUND-Peripheral Venous Blood-Plasma-Concentration ",
+              "X": "Observed data po|Time ",
+              "Y": "Observed data po|ObservedData|Peripheral Venous Blood|Plasma|COMPOUND|Concentration ",
+              "CurveOptions": {
+                "Color": "#0000FF",
+                "LegendIndex": 2,
+                "LineStyle": "None",
+                "Symbol": "Circle"
+              }
+            }
+          ],
+          "Name": "Sim 2 - peroral",
+          "OriginText": "Compound\nSim 2 - peroral\n2019-08-22 16:57"
+        }
+      }
+    ]
+  },
+  "Inputs": [
+    {
+      "SectionId": 31,
+      "Path": "Inputs/Compound/Compound/COMPOUND.md"
+    },
+    {
+      "SectionId": 31,
+      "Path": "Inputs/Compound/Formulation/Tablet.md"
+    }
+  ],
+  "Sections": [
+    {
+      "Id": 1,
+      "Title": "1 Introduction",
+      "Content": "Content/Section1_Introduction.md",
+      "Sections": []
+    },
+    {
+      "Id": 2,
+      "Title": "2 Methods",
+      "Content": "Content/Section2_Methods.md",
+      "Sections": [
+        {
+          "Id": 21,
+          "Title": "2.1 Modeling Strategy",
+          "Content": "Content/Section2.1_Modeling_Strategy.md",
+          "Sections": []
+        },
+        {
+          "Id": 22,
+          "Title": "2.2 Data",
+          "Content": "Content/Section2.2_Data.md",
+          "Sections": []
+        },
+        {
+          "Id": 23,
+          "Title": "2.3 Model Parameters and Assumptions",
+          "Content": "Content/Section2.3_Model_Parameters_and_Assumptions.md",
+          "Sections": []
+        }
+      ]
+    },
+    {
+      "Id": 3,
+      "Title": "3 Results and Discussion",
+      "Content": "Content/Section3_Results_and_Discussion.md",
+      "Sections": [
+        {
+          "Id": 31,
+          "Title": "3.1 Final input parameters",
+          "Content": "Content/Input_table.md",
+          "Sections": []
+        },
+        {
+          "Id": 32,
+          "Title": "3.2 Diagnostics Plots",
+          "Content": "Content/GOF_diagnostics.md",
+          "Sections": []
+        },
+        {
+          "Id": 33,
+          "Title": "3.3: Concentration-Time Profiles",
+          "Content": "Content/Concentration_time_profiles.md",
+          "Sections": [
+            {
+              "Id": 331,
+              "Title": "3.3.1 Model Building",
+              "Content": "Content/Concentration_time_profiles_building.md",
+              "Sections": []
+            },
+            {
+              "Id": 332,
+              "Title": "3.3.2 Model Verification",
+              "Content": "Content/Concentration_time_profiles_verification.md",
+              "Sections": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Id": 4,
+      "Title": "4 Conclusion",
+      "Content": "Content/Section4_Conclusion.md",
+      "Sections": []
+    },
+    {
+      "Id": 5,
+      "Title": "5 References",
+      "Content": "Content/References.md",
+      "Sections": []
+    }
+  ],
+  "Intro": [
+    {
+      "Path": "Intro/titlepage.md"
+    }
+  ]
+}

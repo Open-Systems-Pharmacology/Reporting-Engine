@@ -1,0 +1,115 @@
+06-Feb-2020 11:08:09 Start Workflow:  MeanModel workflow, mode default 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+06-Feb-2020 11:08:09 Start input checks
+06-Feb-2020 11:08:20 Applicationprotocol
+06-Feb-2020 11:08:20   Iwamoto 2008 10mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 10 mg; infusion time 0 min
+06-Feb-2020 11:08:31 Applicationprotocol
+06-Feb-2020 11:08:31   Iwamoto 2008 25mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 25 mg; infusion time 0 min
+06-Feb-2020 11:08:42 Applicationprotocol
+06-Feb-2020 11:08:42   Iwamoto 2008 50mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 50 mg; infusion time 0 min
+06-Feb-2020 11:08:52 Applicationprotocol
+06-Feb-2020 11:08:52   Iwamoto 2008 100mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:01 Applicationprotocol
+06-Feb-2020 11:09:01   Iwamoto 2008 200mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:09:11 Applicationprotocol
+06-Feb-2020 11:09:11   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:09:22 Applicationprotocol
+06-Feb-2020 11:09:22   Iwamoto 2008 800mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 800 mg; infusion time 0 min
+06-Feb-2020 11:09:32 Applicationprotocol
+06-Feb-2020 11:09:32   Iwamoto 2008 1200mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 1200 mg; infusion time 0 min
+06-Feb-2020 11:09:42 Applicationprotocol
+06-Feb-2020 11:09:42   Iwamoto 2008 1600mg PO (Figure 2) Safety-Tolerability-PK study|Weibull (lactose formulation)|Application_1: start time 0 min; dose 1600 mg; infusion time 0 min
+06-Feb-2020 11:09:55 Applicationprotocol
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_2: start time 720 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_3: start time 1440 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_4: start time 2160 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_5: start time 2880 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_6: start time 3600 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_7: start time 4320 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_8: start time 5040 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_9: start time 5760 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_10: start time 6480 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_11: start time 7200 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_12: start time 7920 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_13: start time 8640 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_14: start time 9360 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_15: start time 10080 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_16: start time 10800 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_17: start time 11520 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_18: start time 12240 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_19: start time 12960 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:09:55   Markowitz 2006 100mg bid 10d|filmcoated tablet (original Merck formulation)|Application_20: start time 13680 min; dose 100 mg; infusion time 0 min
+06-Feb-2020 11:10:16 Applicationprotocol
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_2: start time 720 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_3: start time 1440 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_4: start time 2160 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_5: start time 2880 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_6: start time 3600 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_7: start time 4320 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_8: start time 5040 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_9: start time 5760 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_10: start time 6480 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_11: start time 7200 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_12: start time 7920 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_13: start time 8640 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_14: start time 9360 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_15: start time 10080 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_16: start time 10800 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_17: start time 11520 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_18: start time 12240 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_19: start time 12960 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:16   Markowitz 2006 200mg bid 10d|filmcoated tablet (original Merck formulation)|Application_20: start time 13680 min; dose 200 mg; infusion time 0 min
+06-Feb-2020 11:10:35 Applicationprotocol
+06-Feb-2020 11:10:35   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46 Applicationprotocol
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_2: start time 720 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_3: start time 1440 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_4: start time 2160 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_5: start time 2880 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_6: start time 3600 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_7: start time 4320 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_8: start time 5040 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_9: start time 5760 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_10: start time 6480 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_11: start time 7200 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_12: start time 7920 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_13: start time 8640 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_14: start time 9360 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_15: start time 10080 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_16: start time 10800 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:46   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_17: start time 11520 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:47   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_18: start time 12240 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:47   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_19: start time 12960 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:10:47   Markowitz 2006 400mg bid 10d|filmcoated tablet (original Merck formulation)|Application_20: start time 13680 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:11:07 Applicationprotocol
+06-Feb-2020 11:11:07   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|chewable tablet|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:11:17 Applicationprotocol
+06-Feb-2020 11:11:17   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|chewable tablet|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:11:28 Applicationprotocol
+06-Feb-2020 11:11:28   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|Weibull (granules)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+06-Feb-2020 11:11:31 Input checks were successfully executed. 
+
+06-Feb-2020 11:11:31 Start Mean Model VPC
+06-Feb-2020 11:13:42 Finalized Mean Model VPC 
+
+06-Feb-2020 11:13:42 start sensitivity analysis
+06-Feb-2020 11:31:19 finalize sensitivity analysis
+06-Feb-2020 11:31:19 Start generate absorption plots
+06-Feb-2020 11:34:34 Finalized Absorption plots 
+
+06-Feb-2020 11:34:34 Start generate Massbalance plots
+06-Feb-2020 11:40:27 Finalized Massbalance plots 
+
+06-Feb-2020 11:40:27 Mean model workflow finalized 
+
