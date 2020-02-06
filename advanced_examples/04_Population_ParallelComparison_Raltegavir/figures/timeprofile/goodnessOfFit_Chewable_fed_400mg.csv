@@ -1,0 +1,4 @@
+output;plotType;messsage;success
+Raltegravir;timeprofile with population range;12 of 13 datapoints within 90% range of simulation, expected are values between 10 13;1
+Raltegravir;residuals vs time;residuals fit a line with intercept 0.246 [-0.216-0.0139] and slope 0.246 [-0.0811-0.0139];1
+Raltegravir;residuals vs Y;residuals fit a line with intercept -0.0787 [-2-0.3] and slope -0.0787 [-0.275-0.3];1
