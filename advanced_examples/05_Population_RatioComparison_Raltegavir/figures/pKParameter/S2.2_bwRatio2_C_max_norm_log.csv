@@ -1,0 +1,5 @@
+Percentile of C_{max} norm of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+C_{max} norm [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.533790892274494;0.763801869108786;0.961800448351473;1.26826524719359;1.84135145858979;1.0424648382097;0.390904053256791;0.97522058593867;0.38227236082849

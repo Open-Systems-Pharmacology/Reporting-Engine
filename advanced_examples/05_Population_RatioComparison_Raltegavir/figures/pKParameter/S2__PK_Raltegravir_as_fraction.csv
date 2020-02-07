@@ -1,0 +1,40 @@
+PK parameter of Raltegravir as fraction of healthy adults 400mg sd;;;1
+C_{max};;;2
+S2.1_bwRatio1_C_max_lin;C_{max} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.1_bwRatio1_C_max_log;C_{max} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+C_{max} norm;;;2
+S2.2_bwRatio2_C_max_norm_lin;C_{max} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.2_bwRatio2_C_max_norm_log;C_{max} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+t_{max};;;2
+S2.3_bwRatio3_t_max_lin;t_{max} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.3_bwRatio3_t_max_log;t_{max} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+C_{tEnd};;;2
+S2.4_bwRatio4_C_tEnd_lin;C_{tEnd} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.4_bwRatio4_C_tEnd_log;C_{tEnd} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+AUC_{last};;;2
+S2.5_bwRatio5_AUC_lin;AUC_{last} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.5_bwRatio5_AUC_log;AUC_{last} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+AUC_{last} norm;;;2
+S2.6_bwRatio6_AUC_norm_lin;AUC_{last} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.6_bwRatio6_AUC_norm_log;AUC_{last} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+AUC_{inf};;;2
+S2.7_bwRatio7_AUC_inf_lin;AUC_{inf} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.7_bwRatio7_AUC_inf_log;AUC_{inf} of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+AUC_{inf} norm;;;2
+S2.8_bwRatio8_AUC_inf_norm_lin;AUC_{inf} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.8_bwRatio8_AUC_inf_norm_log;AUC_{inf} norm of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+MRT;;;2
+S2.9_bwRatio9_MRT_lin;MRT of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.9_bwRatio9_MRT_log;MRT of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+Thalf;;;2
+S2.10_bwRatio10_Thalf_lin;Thalf of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.10_bwRatio10_Thalf_log;Thalf of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+CL;;;2
+S2.11_bwRatio11_CL_lin;CL of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.11_bwRatio11_CL_log;CL of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+Vss;;;2
+S2.12_bwRatio12_Vss_lin;Vss of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.12_bwRatio12_Vss_log;Vss of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;
+Vd;;;2
+S2.13_bwRatio13_Vd_lin;Vd of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a linear scale.;;
+S2.13_bwRatio13_Vd_log;Vd of Raltegravir shown as box whisker plot, which indicate the 5, 25, 50, 75, and 95 percentiles in a logarithmic scale.;;

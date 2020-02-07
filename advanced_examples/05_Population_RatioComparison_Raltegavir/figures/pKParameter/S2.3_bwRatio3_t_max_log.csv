@@ -1,0 +1,5 @@
+Percentile of t_{max} of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+T_{max} [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.618055555555556;0.823529411764706;1.06111111111111;1.26969696969697;1.83333333333333;1.10001552419814;0.373934911732453;1.04043628853754;0.3465519734085

@@ -1,0 +1,46 @@
+07-Feb-2020 13:24:17 Start Workflow:  Population workflow, mode ratioComparison 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+07-Feb-2020 13:24:17 Start input checks
+07-Feb-2020 13:24:17 Prepare population: Sick_adults_400mg_sd! 
+
+07-Feb-2020 13:24:26 Organism|BSA was added to population
+07-Feb-2020 13:24:27 GFR parameter were added to population
+07-Feb-2020 13:24:27 GFR norm parameter was added to population
+07-Feb-2020 13:24:27 fraction unbound was added to population
+07-Feb-2020 13:24:27 Applicationprotocol
+07-Feb-2020 13:24:27   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+07-Feb-2020 13:24:31 Prepare population: Healthy_adults_400mg_sd! 
+
+07-Feb-2020 13:24:40 Organism|BSA was added to population
+07-Feb-2020 13:24:40 GFR parameter were added to population
+07-Feb-2020 13:24:40 GFR norm parameter was added to population
+07-Feb-2020 13:24:40 fraction unbound was added to population
+07-Feb-2020 13:24:40 Applicationprotocol
+07-Feb-2020 13:24:40   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+07-Feb-2020 13:24:44 Input checks were successfully executed. 
+)
+07-Feb-2020 13:24:44 Start Simulation of Sick_adults_400mg_sd
+07-Feb-2020 13:25:59 Simulation finished 
+
+07-Feb-2020 13:25:59 Start Simulation of Healthy_adults_400mg_sd
+07-Feb-2020 13:27:14 Simulation finished 
+
+07-Feb-2020 13:27:14 Calculate PK Parameter of Sick_adults_400mg_sd
+07-Feb-2020 13:27:15 Calculation finished 
+
+07-Feb-2020 13:27:15 Calculate PK Parameter of Healthy_adults_400mg_sd
+07-Feb-2020 13:27:15 Calculation finished 
+
+07-Feb-2020 13:27:15 Start Population VPC
+07-Feb-2020 13:28:10 Finalized Population VPC 
+
+07-Feb-2020 13:28:10 Population workflow finalized 
+

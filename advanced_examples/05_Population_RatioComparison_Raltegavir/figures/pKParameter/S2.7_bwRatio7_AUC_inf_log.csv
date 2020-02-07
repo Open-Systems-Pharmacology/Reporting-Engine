@@ -1,0 +1,5 @@
+Percentile of AUC_{inf} of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+AUC_{inf} [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.553292509718298;0.738473353638464;1.00550462308981;1.21776060220117;1.7540834373755;1.03779267521726;0.371632631375686;0.976441099662129;0.362426329934376
