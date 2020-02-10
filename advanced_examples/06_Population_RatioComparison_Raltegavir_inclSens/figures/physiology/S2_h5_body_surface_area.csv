@@ -1,0 +1,25 @@
+Distribution of body surface area for simulated Healthy Adult Population.;
+;
+Body surface area [m²];simulated Healthy Adult Population (n=100)
+;
+0.0133 <= body surface area < 0.0135;1
+0.0135 <= body surface area < 0.0139;2
+0.0139 <= body surface area < 0.0144;2
+0.0144 <= body surface area < 0.0148;2
+0.0148 <= body surface area < 0.0152;6
+0.0152 <= body surface area < 0.0157;9
+0.0157 <= body surface area < 0.0161;8
+0.0161 <= body surface area < 0.0165;5
+0.0165 <= body surface area < 0.017;8
+0.017 <= body surface area < 0.0174;5
+0.0174 <= body surface area < 0.0178;6
+0.0178 <= body surface area < 0.0183;9
+0.0183 <= body surface area < 0.0187;9
+0.0187 <= body surface area < 0.0191;5
+0.0191 <= body surface area < 0.0196;5
+0.0196 <= body surface area < 0.02;4
+0.02 <= body surface area < 0.0204;4
+0.0204 <= body surface area < 0.0208;5
+0.0208 <= body surface area < 0.0213;2
+0.0213 <= body surface area < 0.0217;2
+0.0217 <= body surface area < 0.0219;1

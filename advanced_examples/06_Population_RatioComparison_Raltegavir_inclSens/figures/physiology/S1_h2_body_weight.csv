@@ -1,0 +1,25 @@
+Distribution of body weight for simulated Sick Adult Population.;
+;
+Body weight [kg];simulated Sick Adult Population (n=100)
+;
+46.3 <= body weight < 48.3;1
+48.3 <= body weight < 52.1;5
+52.1 <= body weight < 55.9;9
+55.9 <= body weight < 59.7;13
+59.7 <= body weight < 63.5;9
+63.5 <= body weight < 67.4;9
+67.4 <= body weight < 71.2;18
+71.2 <= body weight < 75;10
+75 <= body weight < 78.8;8
+78.8 <= body weight < 82.6;2
+82.6 <= body weight < 86.4;4
+86.4 <= body weight < 90.3;5
+90.3 <= body weight < 94.1;3
+94.1 <= body weight < 97.9;1
+97.9 <= body weight < 102;1
+102 <= body weight < 106;0
+106 <= body weight < 109;1
+109 <= body weight < 113;0
+113 <= body weight < 117;0
+117 <= body weight < 121;0
+121 <= body weight < 123;1

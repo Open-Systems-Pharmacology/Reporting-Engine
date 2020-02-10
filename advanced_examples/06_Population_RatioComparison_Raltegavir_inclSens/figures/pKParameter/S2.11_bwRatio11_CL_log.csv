@@ -1,0 +1,5 @@
+Percentile of CL of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+CL [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.54024341159727;0.763580309752235;0.962141481294482;1.32012525427451;1.7196910668015;1.05559548049582;0.411445292007591;0.98235028747503;0.395364845170901

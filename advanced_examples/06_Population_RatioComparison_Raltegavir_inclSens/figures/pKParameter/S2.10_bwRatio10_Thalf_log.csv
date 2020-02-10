@@ -1,0 +1,5 @@
+Percentile of Thalf of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+Thalf [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.502274307019298;0.774585453169156;0.923506530450426;1.13779340208977;2.21935467876822;1.02881514112409;0.448683897547689;0.95048672021283;0.405430303798895

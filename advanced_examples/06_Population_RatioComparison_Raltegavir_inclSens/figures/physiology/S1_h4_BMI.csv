@@ -1,0 +1,25 @@
+Distribution of BMI for simulated Sick Adult Population.;
+;
+BMI [kg/m²];simulated Sick Adult Population (n=100)
+;
+18.2 <= BMI < 18.6;1
+18.6 <= BMI < 19.6;4
+19.6 <= BMI < 20.6;6
+20.6 <= BMI < 21.6;11
+21.6 <= BMI < 22.5;19
+22.5 <= BMI < 23.5;10
+23.5 <= BMI < 24.5;15
+24.5 <= BMI < 25.5;9
+25.5 <= BMI < 26.4;7
+26.4 <= BMI < 27.4;2
+27.4 <= BMI < 28.4;4
+28.4 <= BMI < 29.3;3
+29.3 <= BMI < 30.3;2
+30.3 <= BMI < 31.3;1
+31.3 <= BMI < 32.3;2
+32.3 <= BMI < 33.2;1
+33.2 <= BMI < 34.2;0
+34.2 <= BMI < 35.2;1
+35.2 <= BMI < 36.2;1
+36.2 <= BMI < 37.1;0
+37.1 <= BMI < 37.6;1

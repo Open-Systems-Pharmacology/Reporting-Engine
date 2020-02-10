@@ -1,0 +1,5 @@
+Percentile of Vss of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+Vss [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.379244562386505;0.71413064297023;1.00789960116845;1.35943965223236;2.42086287752432;1.19155980037111;0.984227664437976;1.00950271539362;0.589514266597912

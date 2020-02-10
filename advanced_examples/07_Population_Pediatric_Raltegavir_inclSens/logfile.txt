@@ -1,0 +1,263 @@
+07-Feb-2020 17:11:13 Start Workflow:  Population workflow, mode pediatric 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+07-Feb-2020 17:11:13 Start input checks
+07-Feb-2020 17:11:13 Prepare population: Larson_2013_8y-18y_400mg_FCT_meal! 
+
+07-Feb-2020 17:11:23 Organism|BSA was added to population
+07-Feb-2020 17:11:23 GFR parameter were added to population
+07-Feb-2020 17:11:23 GFR norm parameter was added to population
+07-Feb-2020 17:11:23 fraction unbound was added to population
+07-Feb-2020 17:11:23 Applicationprotocol
+07-Feb-2020 17:11:23   Larson 100mg|chewable tablet|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+07-Feb-2020 17:11:29 Prepare population: Filmcoated_tablet_400mg_sd! 
+
+07-Feb-2020 17:11:38 Organism|BSA was added to population
+07-Feb-2020 17:11:38 GFR parameter were added to population
+07-Feb-2020 17:11:38 GFR norm parameter was added to population
+07-Feb-2020 17:11:38 fraction unbound was added to population
+07-Feb-2020 17:11:38 Applicationprotocol
+07-Feb-2020 17:11:38   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+07-Feb-2020 17:11:44 Input checks were successfully executed. 
+)
+07-Feb-2020 17:11:44 Start Simulation of Larson_2013_8y-18y_400mg_FCT_meal
+07-Feb-2020 17:17:06 Simulation finished 
+
+07-Feb-2020 17:17:06 Start Simulation of Filmcoated_tablet_400mg_sd
+07-Feb-2020 17:18:30 Simulation finished 
+
+07-Feb-2020 17:18:30 Calculate PK Parameter of Larson_2013_8y-18y_400mg_FCT_meal
+07-Feb-2020 17:18:31 Calculation finished 
+
+07-Feb-2020 17:18:31 Calculate PK Parameter of Filmcoated_tablet_400mg_sd
+07-Feb-2020 17:18:31 Calculation finished 
+
+07-Feb-2020 17:18:31 Start Population VPC
+07-Feb-2020 17:21:41 Finalized Population VPC 
+
+07-Feb-2020 17:21:41 start sensitivity analysis
+07-Feb-2020 17:21:41 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_max
+07-Feb-2020 17:21:41 start simulations for percentile 5 individual ID 356 with 20 simulations
+07-Feb-2020 17:22:04 sensitivity analysis finished with error 
+
+07-Feb-2020 17:22:04 Population workflow finalized 
+
+07-Feb-2020 17:27:16 Restart:
+07-Feb-2020 17:27:16 Start Workflow:  Population workflow, mode pediatric 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+07-Feb-2020 17:27:16 Start input checks
+07-Feb-2020 17:27:16 Prepare population: Larson_2013_8y-18y_400mg_FCT_meal! 
+
+07-Feb-2020 17:27:25 Organism|BSA was added to population
+07-Feb-2020 17:27:25 GFR parameter were added to population
+07-Feb-2020 17:27:25 GFR norm parameter was added to population
+07-Feb-2020 17:27:25 fraction unbound was added to population
+07-Feb-2020 17:27:26 Applicationprotocol
+07-Feb-2020 17:27:26   Larson 100mg|chewable tablet|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+07-Feb-2020 17:27:32 Prepare population: Filmcoated_tablet_400mg_sd! 
+
+07-Feb-2020 17:27:40 Organism|BSA was added to population
+07-Feb-2020 17:27:41 GFR parameter were added to population
+07-Feb-2020 17:27:41 GFR norm parameter was added to population
+07-Feb-2020 17:27:41 fraction unbound was added to population
+07-Feb-2020 17:27:41 Applicationprotocol
+07-Feb-2020 17:27:41   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+07-Feb-2020 17:27:47 Input checks were successfully executed. 
+)
+07-Feb-2020 17:27:47 start sensitivity analysis
+07-Feb-2020 17:27:47 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_max
+07-Feb-2020 17:27:47 start simulations for percentile 5 individual ID 356 with 20 simulations
+07-Feb-2020 17:28:12 sensitivity analysis finished with error 
+
+07-Feb-2020 17:28:12 Population workflow finalized 
+
+10-Feb-2020 11:03:38 Restart:
+10-Feb-2020 11:03:38 Start Workflow:  Population workflow, mode pediatric 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+10-Feb-2020 11:03:38 Start input checks
+10-Feb-2020 11:03:38 Prepare population: Larson_2013_8y-18y_400mg_FCT_meal! 
+
+10-Feb-2020 11:03:46 Organism|BSA was added to population
+10-Feb-2020 11:03:46 GFR parameter were added to population
+10-Feb-2020 11:03:46 GFR norm parameter was added to population
+10-Feb-2020 11:03:46 fraction unbound was added to population
+10-Feb-2020 11:03:46 Applicationprotocol
+10-Feb-2020 11:03:46   Larson 100mg|chewable tablet|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+10-Feb-2020 11:03:51 Prepare population: Filmcoated_tablet_400mg_sd! 
+
+10-Feb-2020 11:03:59 Organism|BSA was added to population
+10-Feb-2020 11:03:59 GFR parameter were added to population
+10-Feb-2020 11:03:59 GFR norm parameter was added to population
+10-Feb-2020 11:03:59 fraction unbound was added to population
+10-Feb-2020 11:03:59 Applicationprotocol
+10-Feb-2020 11:03:59   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+10-Feb-2020 11:04:03 Input checks were successfully executed. 
+)
+10-Feb-2020 11:04:03 start sensitivity analysis
+10-Feb-2020 11:04:03 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_max
+10-Feb-2020 11:04:03 start simulations for percentile 5 individual ID 356 with 20 simulations
+10-Feb-2020 11:04:24 sensitivity analysis finished with error 
+
+10-Feb-2020 11:04:24 Population workflow finalized 
+
+10-Feb-2020 11:05:48 Restart:
+10-Feb-2020 11:05:48 Start Workflow:  Population workflow, mode pediatric 
+ System is validated 
+ Computer XXXXX (PCWIN64) 
+ Reporting Engine version: 2.1 
+ Open Systems Pharmacology Suite version: 7.2 
+ Version of SimModel: 2.2 
+ SimModelCompName: OSPSuite_SimModelComp.xml 
+ Matlab version: 9.3.0.713579 (R2017b) 
+ Started by: XXXXX 
+
+10-Feb-2020 11:05:48 Start input checks
+10-Feb-2020 11:05:48 Prepare population: Larson_2013_8y-18y_400mg_FCT_meal! 
+
+10-Feb-2020 11:05:56 Organism|BSA was added to population
+10-Feb-2020 11:05:57 GFR parameter were added to population
+10-Feb-2020 11:05:57 GFR norm parameter was added to population
+10-Feb-2020 11:05:57 fraction unbound was added to population
+10-Feb-2020 11:05:57 Applicationprotocol
+10-Feb-2020 11:05:57   Larson 100mg|chewable tablet|Application_1: start time 0 min; dose 100 mg; infusion time 0 min
+10-Feb-2020 11:06:01 Prepare population: Filmcoated_tablet_400mg_sd! 
+
+10-Feb-2020 11:06:09 Organism|BSA was added to population
+10-Feb-2020 11:06:09 GFR parameter were added to population
+10-Feb-2020 11:06:09 GFR norm parameter was added to population
+10-Feb-2020 11:06:09 fraction unbound was added to population
+10-Feb-2020 11:06:09 Applicationprotocol
+10-Feb-2020 11:06:09   Iwamoto 2008 400mg PO (Figure 1) omeprazole study|filmcoated tablet (original Merck formulation)|Application_1: start time 0 min; dose 400 mg; infusion time 0 min
+10-Feb-2020 11:06:13 Input checks were successfully executed. 
+)
+10-Feb-2020 11:06:13 start sensitivity analysis
+10-Feb-2020 11:06:13 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_max
+10-Feb-2020 11:06:13 start simulations for percentile 5 individual ID 356 with 20 simulations
+10-Feb-2020 11:06:34 start simulations for percentile 50 individual ID 280 with 20 simulations
+10-Feb-2020 11:06:53 start simulations for percentile 95 individual ID 214 with 20 simulations
+10-Feb-2020 11:07:14 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir C_max
+10-Feb-2020 11:07:14 start simulations for percentile 5 individual ID 5 with 20 simulations
+10-Feb-2020 11:07:34 start simulations for percentile 50 individual ID 2 with 20 simulations
+10-Feb-2020 11:07:55 start simulations for percentile 95 individual ID 16 with 20 simulations
+10-Feb-2020 11:08:19 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_max_norm
+10-Feb-2020 11:08:19 start simulations for percentile 5 individual ID 221 with 20 simulations
+10-Feb-2020 11:08:40 start simulations for percentile 50 individual ID 224 with 20 simulations
+10-Feb-2020 11:08:59 start simulations for percentile 95 individual ID 111 with 20 simulations
+10-Feb-2020 11:09:20 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir C_max_norm
+10-Feb-2020 11:09:20 start simulations for percentile 5 individual ID 58 with 20 simulations
+10-Feb-2020 11:09:40 start simulations for percentile 50 individual ID 23 with 20 simulations
+10-Feb-2020 11:10:00 start simulations for percentile 95 individual ID 16 with 20 simulations
+10-Feb-2020 11:10:24 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir t_max
+10-Feb-2020 11:10:24 start simulations for percentile 5 individual ID 85 with 20 simulations
+10-Feb-2020 11:10:45 start simulations for percentile 50 individual ID 38 with 20 simulations
+10-Feb-2020 11:11:05 start simulations for percentile 95 individual ID 97 with 20 simulations
+10-Feb-2020 11:11:25 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir t_max
+10-Feb-2020 11:11:25 start simulations for percentile 5 individual ID 17 with 20 simulations
+10-Feb-2020 11:11:45 start simulations for percentile 50 individual ID 1 with 20 simulations
+10-Feb-2020 11:12:05 start simulations for percentile 95 individual ID 13 with 20 simulations
+10-Feb-2020 11:12:31 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir C_tEnd
+10-Feb-2020 11:12:31 start simulations for percentile 5 individual ID 15 with 20 simulations
+10-Feb-2020 11:12:51 start simulations for percentile 50 individual ID 500 with 20 simulations
+10-Feb-2020 11:13:11 start simulations for percentile 95 individual ID 73 with 20 simulations
+10-Feb-2020 11:13:30 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir C_tEnd
+10-Feb-2020 11:13:30 start simulations for percentile 5 individual ID 45 with 20 simulations
+10-Feb-2020 11:13:51 start simulations for percentile 50 individual ID 36 with 20 simulations
+10-Feb-2020 11:14:11 start simulations for percentile 95 individual ID 24 with 20 simulations
+10-Feb-2020 11:14:36 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir AUC
+10-Feb-2020 11:14:36 start simulations for percentile 5 individual ID 81 with 20 simulations
+10-Feb-2020 11:14:56 start simulations for percentile 50 individual ID 6 with 20 simulations
+10-Feb-2020 11:15:16 start simulations for percentile 95 individual ID 190 with 20 simulations
+10-Feb-2020 11:15:36 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir AUC
+10-Feb-2020 11:15:36 start simulations for percentile 5 individual ID 67 with 20 simulations
+10-Feb-2020 11:15:55 start simulations for percentile 50 individual ID 32 with 20 simulations
+10-Feb-2020 11:16:15 start simulations for percentile 95 individual ID 70 with 20 simulations
+10-Feb-2020 11:16:40 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir AUC_norm
+10-Feb-2020 11:16:40 start simulations for percentile 5 individual ID 262 with 20 simulations
+10-Feb-2020 11:16:59 start simulations for percentile 50 individual ID 170 with 20 simulations
+10-Feb-2020 11:17:19 start simulations for percentile 95 individual ID 34 with 20 simulations
+10-Feb-2020 11:17:39 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir AUC_norm
+10-Feb-2020 11:17:39 start simulations for percentile 5 individual ID 67 with 20 simulations
+10-Feb-2020 11:17:59 start simulations for percentile 50 individual ID 50 with 20 simulations
+10-Feb-2020 11:18:19 start simulations for percentile 95 individual ID 71 with 20 simulations
+10-Feb-2020 11:18:43 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir AUC_inf
+10-Feb-2020 11:18:43 start simulations for percentile 5 individual ID 341 with 20 simulations
+10-Feb-2020 11:19:04 start simulations for percentile 50 individual ID 403 with 20 simulations
+10-Feb-2020 11:19:24 start simulations for percentile 95 individual ID 304 with 20 simulations
+10-Feb-2020 11:19:44 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir AUC_inf
+10-Feb-2020 11:19:44 start simulations for percentile 5 individual ID 5 with 20 simulations
+10-Feb-2020 11:20:04 start simulations for percentile 50 individual ID 39 with 20 simulations
+10-Feb-2020 11:20:24 start simulations for percentile 95 individual ID 83 with 20 simulations
+10-Feb-2020 11:20:49 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir AUC_inf_norm
+10-Feb-2020 11:20:49 start simulations for percentile 5 individual ID 335 with 20 simulations
+10-Feb-2020 11:21:09 start simulations for percentile 50 individual ID 448 with 20 simulations
+10-Feb-2020 11:21:29 start simulations for percentile 95 individual ID 53 with 20 simulations
+10-Feb-2020 11:21:48 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir AUC_inf_norm
+10-Feb-2020 11:21:48 start simulations for percentile 5 individual ID 67 with 20 simulations
+10-Feb-2020 11:22:08 start simulations for percentile 50 individual ID 50 with 20 simulations
+10-Feb-2020 11:22:28 start simulations for percentile 95 individual ID 15 with 20 simulations
+10-Feb-2020 11:22:53 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir MRT
+10-Feb-2020 11:22:53 start simulations for percentile 5 individual ID 193 with 20 simulations
+10-Feb-2020 11:23:12 start simulations for percentile 50 individual ID 328 with 20 simulations
+10-Feb-2020 11:23:32 start simulations for percentile 95 individual ID 16 with 20 simulations
+10-Feb-2020 11:23:54 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir MRT
+10-Feb-2020 11:23:54 start simulations for percentile 5 individual ID 73 with 20 simulations
+10-Feb-2020 11:24:14 start simulations for percentile 50 individual ID 61 with 20 simulations
+10-Feb-2020 11:24:34 start simulations for percentile 95 individual ID 77 with 20 simulations
+10-Feb-2020 11:24:58 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir Thalf
+10-Feb-2020 11:24:58 start simulations for percentile 5 individual ID 262 with 20 simulations
+10-Feb-2020 11:25:18 start simulations for percentile 50 individual ID 10 with 20 simulations
+10-Feb-2020 11:25:38 start simulations for percentile 95 individual ID 496 with 20 simulations
+10-Feb-2020 11:25:59 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir Thalf
+10-Feb-2020 11:25:59 start simulations for percentile 5 individual ID 12 with 20 simulations
+10-Feb-2020 11:26:21 start simulations for percentile 50 individual ID 70 with 20 simulations
+10-Feb-2020 11:26:41 start simulations for percentile 95 individual ID 8 with 20 simulations
+10-Feb-2020 11:27:05 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir CL
+10-Feb-2020 11:27:05 start simulations for percentile 5 individual ID 53 with 20 simulations
+10-Feb-2020 11:27:24 start simulations for percentile 50 individual ID 36 with 20 simulations
+10-Feb-2020 11:27:44 start simulations for percentile 95 individual ID 335 with 20 simulations
+10-Feb-2020 11:28:05 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir CL
+10-Feb-2020 11:28:05 start simulations for percentile 5 individual ID 40 with 20 simulations
+10-Feb-2020 11:28:24 start simulations for percentile 50 individual ID 50 with 20 simulations
+10-Feb-2020 11:28:44 start simulations for percentile 95 individual ID 7 with 20 simulations
+10-Feb-2020 11:29:08 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir Vss
+10-Feb-2020 11:29:08 start simulations for percentile 5 individual ID 153 with 20 simulations
+10-Feb-2020 11:29:28 start simulations for percentile 50 individual ID 358 with 20 simulations
+10-Feb-2020 11:29:48 start simulations for percentile 95 individual ID 375 with 20 simulations
+10-Feb-2020 11:30:08 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir Vss
+10-Feb-2020 11:30:08 start simulations for percentile 5 individual ID 38 with 20 simulations
+10-Feb-2020 11:30:28 start simulations for percentile 50 individual ID 14 with 20 simulations
+10-Feb-2020 11:30:49 start simulations for percentile 95 individual ID 51 with 20 simulations
+10-Feb-2020 11:31:15 start sensitivity simulation for Larson_2013_8y-18y_400mg_FCT_meal, Raltegravir Vd
+10-Feb-2020 11:31:15 start simulations for percentile 5 individual ID 99 with 20 simulations
+10-Feb-2020 11:31:34 start simulations for percentile 50 individual ID 124 with 20 simulations
+10-Feb-2020 11:31:53 start simulations for percentile 95 individual ID 469 with 20 simulations
+10-Feb-2020 11:32:14 start sensitivity simulation for Filmcoated_tablet_400mg_sd, Raltegravir Vd
+10-Feb-2020 11:32:14 start simulations for percentile 5 individual ID 15 with 20 simulations
+10-Feb-2020 11:32:34 start simulations for percentile 50 individual ID 76 with 20 simulations
+10-Feb-2020 11:32:54 start simulations for percentile 95 individual ID 22 with 20 simulations
+10-Feb-2020 11:33:18 finalize sensitivity analysis
+10-Feb-2020 11:33:18 Population workflow finalized 
+
