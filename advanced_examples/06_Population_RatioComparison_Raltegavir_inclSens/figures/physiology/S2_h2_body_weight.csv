@@ -1,0 +1,25 @@
+Distribution of body weight for simulated Healthy Adult Population.;
+;
+Body weight [kg];simulated Healthy Adult Population (n=100)
+;
+44.6 <= body weight < 45.9;3
+45.9 <= body weight < 48.5;1
+48.5 <= body weight < 51;6
+51 <= body weight < 53.6;5
+53.6 <= body weight < 56.2;9
+56.2 <= body weight < 58.8;2
+58.8 <= body weight < 61.3;14
+61.3 <= body weight < 63.9;6
+63.9 <= body weight < 66.5;6
+66.5 <= body weight < 69.1;9
+69.1 <= body weight < 71.6;8
+71.6 <= body weight < 74.2;6
+74.2 <= body weight < 76.8;5
+76.8 <= body weight < 79.4;4
+79.4 <= body weight < 82;4
+82 <= body weight < 84.5;5
+84.5 <= body weight < 87.1;2
+87.1 <= body weight < 89.7;1
+89.7 <= body weight < 92.3;2
+92.3 <= body weight < 94.8;1
+94.8 <= body weight < 96.1;1

@@ -1,0 +1,40 @@
+PK parameter of Raltegravir;;;1
+C_{max};;;2
+S1.1_bw1_C_max_lin;C_{max} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.1_bw1_C_max_log;C_{max} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+C_{max} norm;;;2
+S1.2_bw2_C_max_norm_lin;C_{max} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.2_bw2_C_max_norm_log;C_{max} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+t_{max};;;2
+S1.3_bw3_t_max_lin;t_{max} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.3_bw3_t_max_log;t_{max} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+C_{tEnd};;;2
+S1.4_bw4_C_tEnd_lin;C_{tEnd} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.4_bw4_C_tEnd_log;C_{tEnd} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+AUC_{last};;;2
+S1.5_bw5_AUC_lin;AUC_{last} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.5_bw5_AUC_log;AUC_{last} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+AUC_{last} norm;;;2
+S1.6_bw6_AUC_norm_lin;AUC_{last} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.6_bw6_AUC_norm_log;AUC_{last} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+AUC_{inf};;;2
+S1.7_bw7_AUC_inf_lin;AUC_{inf} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.7_bw7_AUC_inf_log;AUC_{inf} of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+AUC_{inf} norm;;;2
+S1.8_bw8_AUC_inf_norm_lin;AUC_{inf} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.8_bw8_AUC_inf_norm_log;AUC_{inf} norm of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+MRT;;;2
+S1.9_bw9_MRT_lin;MRT of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.9_bw9_MRT_log;MRT of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+Thalf;;;2
+S1.10_bw10_Thalf_lin;Thalf of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.10_bw10_Thalf_log;Thalf of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+CL;;;2
+S1.11_bw11_CL_lin;CL of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.11_bw11_CL_log;CL of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+Vss;;;2
+S1.12_bw12_Vss_lin;Vss of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.12_bw12_Vss_log;Vss of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;
+Vd;;;2
+S1.13_bw13_Vd_lin;Vd of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a linear scale.;;
+S1.13_bw13_Vd_log;Vd of Raltegravir shown as box whisker plot, which indicate the 5^{th}, 25^{th}, 50^{th}, 75^{th}, and 95^{th} percentiles in a logarithmic scale.;;

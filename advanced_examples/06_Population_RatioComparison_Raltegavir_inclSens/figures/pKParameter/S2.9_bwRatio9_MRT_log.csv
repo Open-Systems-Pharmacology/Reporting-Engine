@@ -1,0 +1,5 @@
+Percentile of MRT of Raltegravir normalized to individuals of Healthy adults 400mg sd.;;;;;;;;;
+;;;;;;;;;
+MRT [fraction of healthy adults 400mg sd];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.442521723143606;0.863109288820992;1.01488610547373;1.2015092788228;1.88911643617542;1.13773554848143;0.605000054783651;1.02764027075146;0.476062107082881
