@@ -202,12 +202,20 @@ for i=1:length(DDIRatioGroups)
                 if isinf(DDIRatios(j).SimulationDDI.EndTime)
                     PKpredField(k).DDI = 'AUC_inf';
                 else
-                    PKpredField(k).DDI = 'AUC_last';
+                    if DDIRatios(j).SimulationDDI.EndTime > DDITime(end)
+                        PKpredField(k).DDI = 'AUC_inf';
+                    else
+                        PKpredField(k).DDI = 'AUC_last';
+                    end
                 end
                 if isinf(DDIRatios(j).SimulationControl.EndTime)
                     PKpredField(k).Control = 'AUC_inf';
                 else
-                    PKpredField(k).Control = 'AUC_last';
+                    if DDIRatios(j).SimulationControl.EndTime > ControlTime(end)
+                        PKpredField(k).Control = 'AUC_inf';
+                    else
+                        PKpredField(k).Control = 'AUC_last';
+                    end
                 end
             elseif strcmpi(PKParameter{k}, 'CMAX')
                 PKpredField(k).DDI = 'cMax';
