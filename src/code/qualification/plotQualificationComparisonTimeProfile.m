@@ -58,11 +58,15 @@ for i=1:length(Curves)
             'In Comparison Time Profile Plot %d, Mapping %d, Ouptut %s was not found', plotIndex, i, Curves{i}.Output);
         throw(ME);
     end
-    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
-    if isempty(p_handle_obs)
-        ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Comparison Time Profile Plot %d, Mapping %d, ObservedData %s was not found', plotIndex, i, Curves{i}.ObservedData);
-        throw(ME);
+    if ~isempty(Curves{i}.ObservedData)
+        [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+        if isempty(p_handle_obs)
+            ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
+                'In Comparison Time Profile Plot %d, Mapping %d, ObservedData %s was not found', plotIndex, i, Curves{i}.ObservedData);
+            throw(ME);
+        end
+    else
+       legLabel_obs = {}; 
     end
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
 end
