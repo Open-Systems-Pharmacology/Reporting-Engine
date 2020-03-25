@@ -358,10 +358,12 @@ for ParameterIndex=1:length(PKParameter)
         end
     end
     set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
-        
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
+    
     set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
     
 end
 
