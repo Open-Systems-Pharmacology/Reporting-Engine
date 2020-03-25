@@ -386,7 +386,8 @@ if strcmpi(get(figureHandle,'PaperUnits'),'centimeters')
 end
 
 % Remove Legend and Save Figure
-saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
+%saveas(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType)), 'png');
+printFigureHighResPng(figureHandle,fullfile(SectionPath, sprintf('%0.3d_plot%s', indexed_item+1, PlotType),'.png'))
 close(figureHandle);
 
 function saveQualificationTable(QualificationTable, Sections, SectionId, Type)
