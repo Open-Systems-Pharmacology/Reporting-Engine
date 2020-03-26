@@ -313,11 +313,11 @@ for ParameterIndex=1:length(PKParameter)
     % Create figure for Obs vs Pred with lines from Guest equation
     [ax, fig_handle(ParameterIndex).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 2, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '-k', 'Linewidth', 1, 'HandleVisibility','off');
     
     xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio', PKParameter{ParameterIndex}));
     axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex)]);
@@ -325,11 +325,11 @@ for ParameterIndex=1:length(PKParameter)
     % Create figure for Residuals vs Obs with lines from Guest equation
     [ax, fig_handle(ParameterIndex).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '-k', 'Linewidth', 2, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
     
     xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{ParameterIndex}, PKParameter{ParameterIndex}));
     axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisResVsObs(ParameterIndex) maxAxisResVsObs(ParameterIndex)]);
