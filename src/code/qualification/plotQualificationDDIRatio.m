@@ -251,7 +251,7 @@ for i=1:length(DDIRatioGroups)
         end
         % Build the DDI Ratio Table:
         DataID = table2cell(ObservedData(ID, {'ID'}));
-        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator', 'CommentRegimen'}));
+        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator', 'Description'}));
         Victim = table2cell(ObservedData(ID, {'Victim', 'RouteVictim'}));
         Reference = table2cell(ObservedData(ID, {'StudyID'}));
         
