@@ -250,7 +250,8 @@ for i=1:length(DDIRatioGroups)
             end
         end
         % Build the DDI Ratio Table:
-        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
+        DataID = table2cell(ObservedData(ID, {'ID'}));
+        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator', 'CommentRegimen'}));
         Victim = table2cell(ObservedData(ID, {'Victim', 'RouteVictim'}));
         Reference = table2cell(ObservedData(ID, {'StudyID'}));
         
@@ -260,7 +261,7 @@ for i=1:length(DDIRatioGroups)
             DDIRatioLinePK = [DDIRatioLinePK Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j), Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j)];
         end
         
-        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
+        DDIRatioLine = [{sprintf('%i', DataID{:})}, {sprintf('%s, %s %s, %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
             num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
         
         DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
@@ -387,7 +388,7 @@ for k=1:length(PKParameter)
     DDIRatioHeaderPK = [DDIRatioHeaderPK {sprintf('Predicted %s Ratio', PKParameter{k}), ...
         sprintf('Observed %s Ratio', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
 end
-DDIRatioHeader = [{'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
+DDIRatioHeader = [{'DataID', 'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
 
 DDIRatioTable = [DDIRatioHeader;
     DDIRatioTableContent];
