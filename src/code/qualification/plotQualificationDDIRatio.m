@@ -250,7 +250,8 @@ for i=1:length(DDIRatioGroups)
             end
         end
         % Build the DDI Ratio Table:
-        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
+        DataID = table2cell(ObservedData(ID, {'ID'}));
+        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator', 'Description'}));
         Victim = table2cell(ObservedData(ID, {'Victim', 'RouteVictim'}));
         Reference = table2cell(ObservedData(ID, {'StudyID'}));
         
@@ -260,7 +261,7 @@ for i=1:length(DDIRatioGroups)
             DDIRatioLinePK = [DDIRatioLinePK Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j), Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j)];
         end
         
-        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
+        DDIRatioLine = [{sprintf('%i', DataID{:})}, {sprintf('%s, %s %s, %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
             num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
         
         DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
@@ -313,11 +314,11 @@ for ParameterIndex=1:length(PKParameter)
     % Create figure for Obs vs Pred with lines from Guest equation
     [ax, fig_handle(ParameterIndex).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1.5, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '-k', 'Linewidth', 1, 'HandleVisibility','off');
     
     xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio', PKParameter{ParameterIndex}));
     axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex)]);
@@ -325,11 +326,11 @@ for ParameterIndex=1:length(PKParameter)
     % Create figure for Residuals vs Obs with lines from Guest equation
     [ax, fig_handle(ParameterIndex).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '-k', 'Linewidth', 1.5, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
     
     xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{ParameterIndex}, PKParameter{ParameterIndex}));
     axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisResVsObs(ParameterIndex) maxAxisResVsObs(ParameterIndex)]);
@@ -358,10 +359,12 @@ for ParameterIndex=1:length(PKParameter)
         end
     end
     set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
-        
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
+    
     set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
     
 end
 
@@ -385,7 +388,7 @@ for k=1:length(PKParameter)
     DDIRatioHeaderPK = [DDIRatioHeaderPK {sprintf('Predicted %s Ratio', PKParameter{k}), ...
         sprintf('Observed %s Ratio', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
 end
-DDIRatioHeader = [{'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
+DDIRatioHeader = [{'DataID', 'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
 
 DDIRatioTable = [DDIRatioHeader;
     DDIRatioTableContent];
