@@ -417,14 +417,20 @@ else
     nPlotSettings.title = [];
 end
 
-function saveGMFE(GMFE, Sections, SectionId, PlotTitle)
+function saveGMFE(GMFE, Sections, SectionId, PlotTitle, PKParameter)
 
 [SectionPath, indexed_item] = getSection(Sections, SectionId);
+
+if exist('PKParameter','var')
+    description = [' (' PKParameter ')'];
+else
+    description = '';
+end
 
 % Create GMFE markdown
 GMFEfile = fullfile(SectionPath, sprintf('%0.3d_%sGMFE%s', indexed_item+1, PlotTitle, '.md'));
 fileID = fopen(GMFEfile,'wt');
-fprintf(fileID,'GMFE = %f \n', GMFE);
+fprintf(fileID,'GMFE%s = %f \n', description, GMFE);
 fclose(fileID);
 
 function saveArtifacts(Artifacts, PlotConfiguration, ConfigurationPlan, PlotType)
@@ -466,7 +472,7 @@ for indexArtifacts=1:length(PlotConfiguration.Artifacts)
             end
             if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'GMFE')
                 UpdatedPlotType = sprintf('%s%s', PlotType, PlotConfiguration.PKParameter{savedPKparameters});
-                saveGMFE(Artifacts.GMFE(savedPKparameters), ConfigurationPlan.Sections, PlotConfiguration.SectionId, UpdatedPlotType);
+                saveGMFE(Artifacts.GMFE(savedPKparameters), ConfigurationPlan.Sections, PlotConfiguration.SectionId, UpdatedPlotType, PlotConfiguration.PKParameter{savedPKparameters});
             end
             if strcmp(PlotConfiguration.Artifacts{indexArtifacts}, 'Measure')
                 saveQualificationTable(Artifacts.Measure(savedPKparameters).Output, ConfigurationPlan.Sections, PlotConfiguration.SectionId, ...
