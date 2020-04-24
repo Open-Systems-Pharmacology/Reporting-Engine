@@ -528,7 +528,7 @@ for eachSubType = 1:length(subTypes)
     
     subPath_level1 = fullfile(SectionPath,[num2str(eachSubType,'%03d') '_' curSubType]);
     mkdir(subPath_level1)
-    if isnumeric(ConfigurationPlan.Sections.Title(1))
+    if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1))
         title_level1 = sprintf('%i.%i %s',SectionId,eachSubType,strrep(subTypes{eachSubType},'_',' '));
     else
         title_level1 = sprintf('%s',strrep(subTypes{eachSubType},'_',' '));
@@ -557,7 +557,7 @@ for eachSubType = 1:length(subTypes)
 
         subPath_level2 = fullfile(subPath_level1,[num2str(eachSubunit,'%03d') '_' curSubUnit]);
         mkdir(subPath_level2)
-        if isnumeric(ConfigurationPlan.Sections.Title(1))
+        if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1))
             title_level2 = sprintf('%i.%i.%i %s',SectionId,eachSubType,eachSubunit,strrep(subUnits{eachSubunit},'_',' '));
         else
             title_level2 = sprintf('%s',strrep(subUnits{eachSubunit},'_',' '));
