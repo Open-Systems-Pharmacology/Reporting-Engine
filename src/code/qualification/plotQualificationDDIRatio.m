@@ -1,4 +1,4 @@
-function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE] = plotQualificationDDIRatio(WSettings,plotIndex,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE, sub] = plotQualificationDDIRatio(WSettings,plotIndex,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath, Subunits)
 %PLOTQUALIFICATIONDDIRATIO Plots DDI Ratios from Configuration Plan
 %
 % [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,plotIndex,
@@ -416,6 +416,13 @@ for k=1:length(PKParameter)
     
 end
 
+if ~isempty(Subunits)
+    for ss =1:length(Subunits)
+        [sub.(Subunits{ss}).fig_handle, sub.(Subunits{ss}).DDIRatioQuali, sub.(Subunits{ss}).GMFE] = plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
+    end
+else
+    sub = struct();
+end
 
 function [AGE, BW, MW, drugmass] = getInfofromSimulation(xmlfile, Output)
 

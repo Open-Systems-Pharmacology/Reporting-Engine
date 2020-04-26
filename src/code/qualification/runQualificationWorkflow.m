@@ -334,9 +334,10 @@ for TaskListIndex=1:length(TaskList)
             
             try
                 % Plot the results
-                [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE] = plotQualificationDDIRatio(WSettings,DDIRatioPlotIndex,DDIRatioPlots.PKParameter, ...
+                Subunits = {'Mechanism','Perpetrator','Victim'};
+                [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE, sub] = plotQualificationDDIRatio(WSettings,DDIRatioPlotIndex,DDIRatioPlots.PKParameter, ...
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
-                    AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path);
+                    AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path, Subunits);
                 
                 % Save the results into a structure that can be called and
                 % saved using saveArtifacts
@@ -349,6 +350,10 @@ for TaskListIndex=1:length(TaskList)
                 DDIRatioPlots.PlotType=getElementsfromPath(DDIRatioPlots.PlotType);
                 
                 saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioPlotIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
+                
+                if ~isempty(fieldnames(sub))
+                    saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan);
+                end
                 
                 clear AxesOptions nPlotSettings
                 
@@ -433,6 +438,7 @@ fileID = fopen(GMFEfile,'wt');
 fprintf(fileID,'GMFE%s = %f \n', description, GMFE);
 fclose(fileID);
 
+
 function saveArtifacts(Artifacts, PlotConfiguration, ConfigurationPlan, PlotType)
 
 % Check Configuration of Artifacts
@@ -503,4 +509,79 @@ for indexArtifacts=1:length(PlotConfiguration.Artifacts)
         end
     end
 end
+
+function saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan)
+
+DDIRatioPlotsSub = DDIRatioPlots;
+if isfield(DDIRatioPlots,'Artifacts')
+    DDIRatioPlotsSub.Artifacts = DDIRatioPlots.Artifacts(ismember({'Plot','GMFE','Measure'},DDIRatioPlots.Artifacts));
+else
+    DDIRatioPlotsSub.Artifacts = {'Plot','GMFE','Measure'};
+end
+[SectionPath, ~] = getSection(ConfigurationPlan.Sections, DDIRatioPlots.SectionId);
+SectionId = DDIRatioPlots.SectionId;
+SectionNumber = strsplit(SectionPath,filesep);
+SectionNumber = strsplit(SectionNumber{end},'_');
+SectionNumber = str2num(SectionNumber{1});
+
+subTypes = fieldnames(sub);
+for eachSubType = 1:length(subTypes)
+    curSubType = subTypes{eachSubType};
+    subUnits = fieldnames(sub.(curSubType).fig_handle);
+    
+    subPath_level1 = fullfile(SectionPath,[num2str(eachSubType,'%03d') '_' curSubType]);
+    mkdir(subPath_level1)
+    if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1)) &&...
+            SectionNumber == SectionId
+        title_level1 = sprintf('%i.%i %s',SectionId,eachSubType,strrep(subTypes{eachSubType},'_',' '));
+    else
+        title_level1 = sprintf('%s',strrep(subTypes{eachSubType},'_',' '));
+    end
+    sectionId_level1 = str2num(sprintf('%i%i',SectionId,eachSubType));
+    fileID = fopen(fullfile(subPath_level1,'_content.md'),'w');
+    fclose(fileID);
+    fileID = fopen(fullfile(subPath_level1,'_title.md'),'w');
+    fprintf(fileID,'%s',title_level1);
+    fclose(fileID);
+    ConfigurationPlan.Sections(length(ConfigurationPlan.Sections)+1) = ...
+        struct('Id',sectionId_level1,...
+        'Title',title_level1,...
+        'Path',subPath_level1,...
+        'Content','');
+            
+    for eachSubunit = 1:length(subUnits)
+        curSubUnit = subUnits{eachSubunit};
+        DDIRatioPlotsArtifacts = struct();
+        
+        % Save the results into a structure that can be called and
+        % saved using saveArtifacts
+        DDIRatioPlotsArtifacts.Plot = sub.(curSubType).fig_handle.(curSubUnit);
+        DDIRatioPlotsArtifacts.Measure = sub.(curSubType).DDIRatioQuali.(curSubUnit);
+        DDIRatioPlotsArtifacts.GMFE = sub.(curSubType).GMFE.(curSubUnit);
+
+        subPath_level2 = fullfile(subPath_level1,[num2str(eachSubunit,'%03d') '_' curSubUnit]);
+        mkdir(subPath_level2)
+        if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1)) &&...
+            SectionNumber == SectionId
+            title_level2 = sprintf('%i.%i.%i %s',SectionId,eachSubType,eachSubunit,strrep(subUnits{eachSubunit},'_',' '));
+        else
+            title_level2 = sprintf('%s',strrep(subUnits{eachSubunit},'_',' '));
+        end
+        sectionId_level2 = str2num(sprintf('%i%i%i',SectionId,eachSubType,eachSubunit));
+        fileID = fopen(fullfile(subPath_level2,'_content.md'),'w');
+        fclose(fileID);
+        fileID = fopen(fullfile(subPath_level2,'_title.md'),'w');
+        fprintf(fileID,'%s',title_level2);
+        fclose(fileID);
+        ConfigurationPlan.Sections(length(ConfigurationPlan.Sections)+1) = ...
+                struct('Id',sectionId_level2,...
+                'Title',title_level2,...
+                'Path',subPath_level2,...
+                'Content','');
+        DDIRatioPlotsSub.SectionId = sectionId_level2;
+        saveArtifacts(DDIRatioPlotsArtifacts, DDIRatioPlotsSub, ConfigurationPlan, 'DDIRatio');
+    end
+end
+
+
 
