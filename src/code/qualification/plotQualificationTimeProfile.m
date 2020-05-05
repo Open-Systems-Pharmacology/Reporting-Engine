@@ -83,7 +83,7 @@ for i=1:length(Curves)
     curvesLegend=[curvesLegend legLabel];
     curvesHandle=[curvesHandle p_handle];
 end
-legend(curvesHandle, curvesLegend);
+addLegendWithLineBreaks(gcf,curvesHandle,curvesLegend);
 
 % Scale X-Axis according to data if xlim is not provided
 PlottedData = get(gca, 'children');
