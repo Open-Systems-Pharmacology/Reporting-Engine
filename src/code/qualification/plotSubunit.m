@@ -22,16 +22,16 @@ listSubunit = unique(DDISubunit(:,1));
 % Set the axis window
 for k=1:length(PKParameter)
     for pp = 1:length(listSubunit)
-        curSubunit = listSubunit{pp};
-        idPerp = strcmp(DDISubunit(:,1),curSubunit);
-        subsetPerp = DDISubunit(idPerp,:);
+        curSubunit = matlab.lang.makeValidName(listSubunit{pp});
+        idSubunit = strcmp(DDISubunit(:,1),listSubunit{pp});
+        subsetSubunit = DDISubunit(idSubunit,:);
         axisObsVsPred.(curSubunit)(k).min=NaN;
         axisObsVsPred.(curSubunit)(k).max=NaN;
         axisResVsObs.(curSubunit)(k).min=NaN;
         axisResVsObs.(curSubunit)(k).max=NaN;
-        for jj = 1:size(subsetPerp,1)
-            i = cell2mat(subsetPerp(jj,2));
-            j = cell2mat(subsetPerp(jj,3));
+        for jj = 1:size(subsetSubunit,1)
+            i = cell2mat(subsetSubunit(jj,2));
+            j = cell2mat(subsetSubunit(jj,3));
             axisObsVsPred.(curSubunit)(k).min=nanmin(nanmin(Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j)),axisObsVsPred.(curSubunit)(k).min);
             axisObsVsPred.(curSubunit)(k).max=nanmax(nanmax(Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j)),axisObsVsPred.(curSubunit)(k).max);
             axisResVsObs.(curSubunit)(k).min=nanmin(Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j),axisResVsObs.(curSubunit)(k).min);
@@ -42,10 +42,10 @@ end
 
 originalTitle = PlotSettings.title;
 for idxSub = 1:length(listSubunit)
-    curSubunit = listSubunit{idxSub};
-    idPerp = strcmp(DDISubunit(:,1),curSubunit);
-    subsetPerp = DDISubunit(idPerp,:);
-    PlotSettings.title = [originalTitle ' ' strrep(curSubunit,'_',' ')];
+    curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
+    idSubunit = strcmp(DDISubunit(:,1),listSubunit{idxSub});
+    subsetSubunit = DDISubunit(idSubunit,:);
+    PlotSettings.title = [originalTitle ' ' strrep(listSubunit{idxSub},'_',' ')];
     for ParameterIndex=1:length(PKParameter)
         % Initialize the Qualification Measures
         QualiMeasure.(curSubunit)(ParameterIndex).PointsTotal = 0;
@@ -108,10 +108,10 @@ for idxSub = 1:length(listSubunit)
         xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{ParameterIndex}, PKParameter{ParameterIndex}));
         axis([minAxisObsVsPred.(curSubunit)(ParameterIndex) maxAxisObsVsPred.(curSubunit)(ParameterIndex) minAxisResVsObs.(curSubunit)(ParameterIndex) maxAxisResVsObs.(curSubunit)(ParameterIndex)]);
         
-        listGroups = unique([subsetPerp{:,2}]);
+        listGroups = unique([subsetSubunit{:,2}]);
         for ii = 1:length(listGroups)
             i = listGroups(ii);
-            jj = [subsetPerp{[subsetPerp{:,2}]==i,3}];
+            jj = [subsetSubunit{[subsetSubunit{:,2}]==i,3}];
             
             % Update the number of points for each group
             conditionPoints = ~isnan(Observations(i).RatioPK(ParameterIndex,jj));
@@ -148,14 +148,14 @@ end
 
 % Calculation of GMFE
 for idxSub = 1:length(listSubunit)
-    curSubunit = listSubunit{idxSub};
-    idPerp = strcmp(DDISubunit(:,1),curSubunit);
-    subsetPerp = DDISubunit(idPerp,:);
+    curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
+    idSubunit = strcmp(DDISubunit(:,1),listSubunit{idxSub});
+    subsetSubunit = DDISubunit(idSubunit,:);
     RatioPK.(curSubunit)=[];
-    listGroups = unique([subsetPerp{:,2}]);
+    listGroups = unique([subsetSubunit{:,2}]);
     for ii = 1:length(listGroups)
         i = listGroups(ii);
-        jj = [subsetPerp{[subsetPerp{:,2}]==i,3}];
+        jj = [subsetSubunit{[subsetSubunit{:,2}]==i,3}];
         RatioPK.(curSubunit) = [RatioPK.(curSubunit) Result(i).RatioPK(:,jj)./Observations(i).RatioPK(:,jj)];
         
     end
@@ -168,7 +168,7 @@ end
 
 % Get the DDI Ratio Qualification
 for idxSub = 1:length(listSubunit)
-    curSubunit = listSubunit{idxSub};
+    curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
     for k=1:length(PKParameter)
         DDIRatioQualiHeader = {PKParameter{k}, 'Number', 'Ratio [%]'};
         DDIRatioQuali_1st_Column = {'Points total'; 'Points within Guest et al.'; 'Points within 2-fold'};

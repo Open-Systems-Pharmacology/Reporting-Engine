@@ -418,7 +418,8 @@ end
 
 if ~isempty(Subunits)
     for ss =1:length(Subunits)
-        [sub.(Subunits{ss}).fig_handle, sub.(Subunits{ss}).DDIRatioQuali, sub.(Subunits{ss}).GMFE] = plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
+        curSubUnit = matlab.lang.makeValidName(Subunits{ss});
+        [sub.(curSubUnit).fig_handle, sub.(curSubUnit).DDIRatioQuali, sub.(curSubUnit).GMFE] = plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
     end
 else
     sub = struct();
