@@ -1,4 +1,4 @@
-function [fig_handle, DDIRatioQuali, GMFE] = plotSubunit(Subunit,DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions)
+function [fig_handle, DDIRatioQuali, GMFE, names] = plotSubunit(Subunit,DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions)
 
 DDISubunit ={};
 for i=1:length(DDIRatioGroups)
@@ -19,11 +19,16 @@ for i=1:length(DDIRatioGroups)
 end
 listSubunit = unique(DDISubunit(:,1));
 
+for idxSub = 1:length(listSubunit)
+    curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
+    names.(curSubunit) = strrep(listSubunit{idxSub},'_',' ');
+end
+
 % Set the axis window
 for k=1:length(PKParameter)
-    for pp = 1:length(listSubunit)
-        curSubunit = matlab.lang.makeValidName(listSubunit{pp});
-        idSubunit = strcmp(DDISubunit(:,1),listSubunit{pp});
+    for idxSub = 1:length(listSubunit)
+        curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
+        idSubunit = strcmp(DDISubunit(:,1),listSubunit{idxSub});
         subsetSubunit = DDISubunit(idSubunit,:);
         axisObsVsPred.(curSubunit)(k).min=NaN;
         axisObsVsPred.(curSubunit)(k).max=NaN;
@@ -45,7 +50,7 @@ for idxSub = 1:length(listSubunit)
     curSubunit = matlab.lang.makeValidName(listSubunit{idxSub});
     idSubunit = strcmp(DDISubunit(:,1),listSubunit{idxSub});
     subsetSubunit = DDISubunit(idSubunit,:);
-    PlotSettings.title = [originalTitle ' ' strrep(listSubunit{idxSub},'_',' ')];
+    PlotSettings.title = [originalTitle ' ' names.(curSubunit)];
     for ParameterIndex=1:length(PKParameter)
         % Initialize the Qualification Measures
         QualiMeasure.(curSubunit)(ParameterIndex).PointsTotal = 0;
