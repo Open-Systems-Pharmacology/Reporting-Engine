@@ -419,7 +419,9 @@ end
 if ~isempty(Subunits)
     for ss =1:length(Subunits)
         curSubUnit = matlab.lang.makeValidName(Subunits{ss});
-        [sub.(curSubUnit).fig_handle, sub.(curSubUnit).DDIRatioQuali, sub.(curSubUnit).GMFE] = plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
+        sub.names.(curSubUnit) = Subunits{ss};
+        [sub.(curSubUnit).fig_handle, sub.(curSubUnit).DDIRatioQuali, sub.(curSubUnit).GMFE, sub.(curSubUnit).names] =...
+            plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
     end
 else
     sub = struct();

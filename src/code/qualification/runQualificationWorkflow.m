@@ -1,4 +1,4 @@
-function runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, ObservedDataSets)
+function runQualificationWorkflow(WSettings, ConfigurationPlan, TaskList, ObservedDataSets, varargin)
 %RUNQUALIFICATIONWORKFLOW run the Worklfow tasklist of ConfigurationPlan
 %
 %   runQualifiactionWorkflow(WSettings, ConfigurationPlan, TaskList, ObservedDataSets)
@@ -334,7 +334,11 @@ for TaskListIndex=1:length(TaskList)
             
             try
                 % Plot the results
-                Subunits = {'Mechanism','Perpetrator','Victim'};
+                if nargin == 4
+                    Subunits = {};
+                else
+                    Subunits = varargin{1};
+                end
                 [fig_handle, DDIRatioTable, DDIRatioQuali, DDIRatioGMFE, sub] = plotQualificationDDIRatio(WSettings,DDIRatioPlotIndex,DDIRatioPlots.PKParameter, ...
                     DDIRatioPlots.Groups, ObservedDataSets, ConfigurationPlan.SimulationMappings, ...
                     AxesOptions, nPlotSettings, ConfigurationPlan.REInput_path, Subunits);
@@ -352,7 +356,7 @@ for TaskListIndex=1:length(TaskList)
                 saveArtifacts(DDIRatioPlotsArtifacts(DDIRatioPlotIndex), DDIRatioPlots, ConfigurationPlan, 'DDIRatio');
                 
                 if ~isempty(fieldnames(sub))
-                    saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan);
+                    saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan,Subunits);
                 end
                 
                 clear AxesOptions nPlotSettings
@@ -510,7 +514,7 @@ for indexArtifacts=1:length(PlotConfiguration.Artifacts)
     end
 end
 
-function saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan)
+function saveSubArtifacts(sub,DDIRatioPlots,ConfigurationPlan,subTypes)
 
 DDIRatioPlotsSub = DDIRatioPlots;
 if isfield(DDIRatioPlots,'Artifacts')
@@ -524,7 +528,6 @@ SectionNumber = strsplit(SectionPath,filesep);
 SectionNumber = strsplit(SectionNumber{end},'_');
 SectionNumber = str2num(SectionNumber{1});
 
-subTypes = fieldnames(sub);
 for eachSubType = 1:length(subTypes)
     curSubType = subTypes{eachSubType};
     subUnits = fieldnames(sub.(curSubType).fig_handle);
@@ -533,9 +536,9 @@ for eachSubType = 1:length(subTypes)
     mkdir(subPath_level1)
     if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1)) &&...
             SectionNumber == SectionId
-        title_level1 = sprintf('%i.%i %s',SectionId,eachSubType,strrep(subTypes{eachSubType},'_',' '));
+        title_level1 = sprintf('%i.%i %s',SectionId,eachSubType,strrep(sub.names.(curSubType),'_',' '));
     else
-        title_level1 = sprintf('%s',strrep(subTypes{eachSubType},'_',' '));
+        title_level1 = sprintf('%s',strrep(sub.names.(curSubType),'_',' '));
     end
     sectionId_level1 = str2num(sprintf('%i%i',SectionId,eachSubType));
     fileID = fopen(fullfile(subPath_level1,'_content.md'),'w');
@@ -563,9 +566,9 @@ for eachSubType = 1:length(subTypes)
         mkdir(subPath_level2)
         if isnumeric(ConfigurationPlan.Sections([ConfigurationPlan.Sections.Id]==SectionId).Title(1)) &&...
             SectionNumber == SectionId
-            title_level2 = sprintf('%i.%i.%i %s',SectionId,eachSubType,eachSubunit,strrep(subUnits{eachSubunit},'_',' '));
+            title_level2 = sprintf('%i.%i.%i %s',SectionId,eachSubType,eachSubunit,strrep(sub.(curSubType).names.(curSubUnit),'_',' '));
         else
-            title_level2 = sprintf('%s',strrep(subUnits{eachSubunit},'_',' '));
+            title_level2 = sprintf('%s',strrep(sub.(curSubType).names.(curSubUnit),'_',' '));
         end
         sectionId_level2 = str2num(sprintf('%i%i%i',SectionId,eachSubType,eachSubunit));
         fileID = fopen(fullfile(subPath_level2,'_content.md'),'w');
