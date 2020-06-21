@@ -1,13 +1,13 @@
-function [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+function [fig_handle, DDIRatioTable, DDIRatioQuali, GMFE, sub] = plotQualificationDDIRatio(WSettings,plotIndex,PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath, Subunits)
 %PLOTQUALIFICATIONDDIRATIO Plots DDI Ratios from Configuration Plan
 %
-% [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,figureHandle,
+% [fig_handle, DDIRatioTable, DDIRatioQuali] = plotQualificationDDIRatio(WSettings,plotIndex,
 %   PKParameter,DDIRatioGroups,ObservedDataSets, SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   PKParameter (cells) name of the PK parameter to be evaluated
 %   DDIRatioGroups (structure) DDI Ratio plot information
 %   ObservedDataSets (structure) Observed data
@@ -37,7 +37,7 @@ for k=1:length(PKParameter)
     axisResVsObs(k).max=NaN;
 end
 
-% Loop on the Ratios to be plotted by PK Ratio plot
+% Loop on the Ratio Groups to be plotted by DDI Ratio plot
 for i=1:length(DDIRatioGroups)
     
     DDIRatios=DDIRatioGroups(i).DDIRatios;
@@ -57,7 +57,7 @@ for i=1:length(DDIRatioGroups)
         
         if max(ID)==0
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', figureHandle, i, j, DDIRatios(j).ObservedDataRecordId);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Study ID "%d" was not found in Observed Dataset', plotIndex, i, j, DDIRatios(j).ObservedDataRecordId);
             throw(ME);
         end
         
@@ -68,14 +68,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileControl, xmlfileControl] = getSimFile(DDIRatios(j).SimulationControl, SimulationMappings, REInputPath);
         if isempty(csvSimFileControl)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for Control was not found in SimulationMappings', plotIndex, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         SimResultControl = loadSimResultcsv(csvSimFileControl, DDIRatios(j).SimulationControl.Simulation);
         
         if isempty(SimResultControl.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', figureHandle, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for Control', plotIndex, i, j, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
             throw(ME);
         end
         
@@ -90,14 +90,14 @@ for i=1:length(DDIRatioGroups)
         [csvSimFileDDI, xmlfileDDI] = getSimFile(DDIRatios(j).SimulationDDI, SimulationMappings, REInputPath);
         if isempty(csvSimFileDDI)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Project "%s" or Simulation "%s" for DDI was not found in SimulationMappings', plotIndex, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         SimResultDDI = loadSimResultcsv(csvSimFileDDI, DDIRatios(j).SimulationDDI.Simulation);
         
         if isempty(SimResultDDI.outputPathList)
             ME = MException('plotQualificationDDIRatio:emptyOutputPathInSimulation', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', figureHandle, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, OutputPath is empty in Project "%s" Simulation "%s" for DDI Treatment', plotIndex, i, j, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -119,6 +119,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(ControlTimeUnit,DDIRatios(j).SimulationControl.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationControl.StartTime(isempty(DDIRatios(j).SimulationControl.StartTime)) = min(ControlTime.*Xfactor);
+                DDIRatios(j).SimulationControl.EndTime(isempty(DDIRatios(j).SimulationControl.EndTime)) = max(ControlTime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationControl.EndTime, 'Inf')
+                    DDIRatios(j).SimulationControl.EndTime = Inf;
+                end
+                
                 SimTime = (ControlTime.*Xfactor >= DDIRatios(j).SimulationControl.StartTime &  ControlTime.*Xfactor <= DDIRatios(j).SimulationControl.EndTime);
                 ControlTime = ControlTime(SimTime).*Xfactor;
                 Controlpred = Controlpred(SimTime);
@@ -126,8 +135,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(ControlTime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
+                        ['In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" from Control Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationControl.Project, DDIRatios(j).SimulationControl.Simulation);
                     throw(ME);
                 end
                 
@@ -136,7 +145,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -151,6 +160,15 @@ for i=1:length(DDIRatioGroups)
                 % Only get output in a time range defined by user
                 Xfactor=getUnitFactor(DDITimeUnit,DDIRatios(j).SimulationDDI.TimeUnit,'time');
                 
+                % If Start Time and End Time are empty, use min and max values of simulation
+                DDIRatios(j).SimulationDDI.StartTime(isempty(DDIRatios(j).SimulationDDI.StartTime)) = min(DDITime.*Xfactor);
+                DDIRatios(j).SimulationDDI.EndTime(isempty(DDIRatios(j).SimulationDDI.EndTime)) = max(DDITime.*Xfactor);
+                
+                % Check if end time was read as a string for Inf value
+                if strcmpi(DDIRatios(j).SimulationDDI.EndTime, 'Inf')
+                    DDIRatios(j).SimulationDDI.EndTime = Inf;
+                end
+                
                 SimTime = (DDITime.*Xfactor >= DDIRatios(j).SimulationDDI.StartTime &  DDITime.*Xfactor <= DDIRatios(j).SimulationDDI.EndTime);
                 DDITime = DDITime(SimTime).*Xfactor;
                 DDIpred = DDIpred(SimTime);
@@ -158,8 +176,8 @@ for i=1:length(DDIRatioGroups)
                 % Check that start and end time lead to a non-empty simulation time range
                 if isempty(DDITime)
                     ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                        ['In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
-                        'Requested time range leads to empty simulation'], figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                        ['In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" from DDI Project "%s" and Simulation "%s" \n',...
+                        'Requested time range leads to empty simulation'], plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
                     throw(ME);
                 end
                 
@@ -168,7 +186,7 @@ for i=1:length(DDIRatioGroups)
         end
         if isempty(findPathOutput)
             ME = MException('plotQualificationDDIRatio:notFoundInPath', ...
-                'In DDI Ratio plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', figureHandle, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
+                'In DDI Ratio Plot %d, Group %d, Ratio %d, Output "%s" for Control was not found in Project "%s" or Simulation "%s"', plotIndex, i, j, DDIRatios(j).Output, DDIRatios(j).SimulationDDI.Project, DDIRatios(j).SimulationDDI.Simulation);
             throw(ME);
         end
         
@@ -181,21 +199,40 @@ for i=1:length(DDIRatioGroups)
         for k=1:length(PKParameter)
             % Get the PK parameters requested in PKParameter
             if strcmpi(PKParameter{k}, 'AUC')
-                PKpredField{k}= 'AUC_last';
+                if isinf(DDIRatios(j).SimulationDDI.EndTime)
+                    PKpredField(k).DDI = 'AUC_inf';
+                else
+                    if DDIRatios(j).SimulationDDI.EndTime > DDITime(end)
+                        PKpredField(k).DDI = 'AUC_inf';
+                    else
+                        PKpredField(k).DDI = 'AUC_last';
+                    end
+                end
+                if isinf(DDIRatios(j).SimulationControl.EndTime)
+                    PKpredField(k).Control = 'AUC_inf';
+                else
+                    if DDIRatios(j).SimulationControl.EndTime > ControlTime(end)
+                        PKpredField(k).Control = 'AUC_inf';
+                    else
+                        PKpredField(k).Control = 'AUC_last';
+                    end
+                end
             elseif strcmpi(PKParameter{k}, 'CMAX')
-                PKpredField{k}= 'cMax';
+                PKpredField(k).DDI = 'cMax';
+                PKpredField(k).Control = 'cMax';
             else
-                PKpredField{k}=PKParameter{k};
+                PKpredField(k).DDI = PKParameter{k};
+                PKpredField(k).Control = PKParameter{k};
             end
-            if isfield(allPKpredControl, PKpredField{k}) && isfield(allPKpredDDI, PKpredField{k})
+            if isfield(allPKpredControl, PKpredField(k).Control) && isfield(allPKpredDDI, PKpredField(k).DDI)
                 
                 % Get the observation Ratios
                 Observations(i).RatioPK(k,j) = table2array(ObservedData(ObservedData.ID==DDIRatios(j).ObservedDataRecordId,...
                     (strcmpi(ObservedData.Properties.VariableNames, [PKParameter{k} 'RAvg']))));
                 
-                Result(i).DDIPK(k,j)=getfield(allPKpredDDI, PKpredField{k});
+                Result(i).DDIPK(k,j)=getfield(allPKpredDDI, PKpredField(k).DDI);
                 
-                Result(i).ControlPK(k,j)=getfield(allPKpredControl, PKpredField{k});
+                Result(i).ControlPK(k,j)=getfield(allPKpredControl, PKpredField(k).Control);
                 
                 % Assumes currently that the output from PKSim has same unit for Control and DDI
                 Result(i).RatioPK(k,j)=Result(i).DDIPK(k,j)./Result(i).ControlPK(k,j);
@@ -208,12 +245,13 @@ for i=1:length(DDIRatioGroups)
                 
             else
                 ME = MException('DDIRatio:notFoundInField', ...
-                    'Requested PK Parameter %s not found in parameters extracted using getPKParametersForConcentration', PKParameter{k});
+                    'In DDI Ratio Plot %d, Requested PK Parameter %s not found in parameters extracted using getPKParametersForConcentration', plotIndex, PKParameter{k});
                 throw(ME);
             end
         end
         % Build the DDI Ratio Table:
-        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator'}));
+        DataID = table2cell(ObservedData(ID, {'ID'}));
+        Perpetrator = table2cell(ObservedData(ID,{'Perpetrator', 'Dose', 'DoseUnit', 'RoutePerpetrator', 'Description'}));
         Victim = table2cell(ObservedData(ID, {'Victim', 'RouteVictim'}));
         Reference = table2cell(ObservedData(ID, {'StudyID'}));
         
@@ -223,7 +261,7 @@ for i=1:length(DDIRatioGroups)
             DDIRatioLinePK = [DDIRatioLinePK Result(i).RatioPK(k,j), Observations(i).RatioPK(k,j), Result(i).RatioPK(k,j)./Observations(i).RatioPK(k,j)];
         end
         
-        DDIRatioLine = [{sprintf('%s, %s %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
+        DDIRatioLine = [{sprintf('%i', DataID{:})}, {sprintf('%s, %s %s, %s, %s', Perpetrator{:}), sprintf('%s, %s', Victim{:})},...
             num2cell(DDIRatioLinePK), {sprintf('%s', Reference{:})}];
         
         DDIRatioTableContent = [DDIRatioTableContent; DDIRatioLine];
@@ -232,77 +270,114 @@ for i=1:length(DDIRatioGroups)
 end
 
 %-------------------------------------------------------------
-% Plot Section
+% Plot Section by PK parameter to be plotted
 
-% Initialize Quaklification Measure and
-% Guest equation for each PK Parameter
-
-for k=1:length(PKParameter)
-    
-    % GuestRatio vectors for plotting Guest et al. equation
-    GuestRatio(k).x=10.^(log10(0.8*axisObsVsPred(k).min):0.01:log10(1.2*axisObsVsPred(k).max));
-    [GuestRatio(k).yup, GuestRatio(k).ylo] = DDIRatioGuestEquation(GuestRatio(k).x);
+for ParameterIndex=1:length(PKParameter)
     
     % Initialize the Qualification Measures
-    QualiMeasure(k).PointsTotal = 0;
-    QualiMeasure(k).PointsGuest= 0;
-    QualiMeasure(k).Points2fold= 0;
-end
-
-for k=1:length(PKParameter)
+    QualiMeasure(ParameterIndex).PointsTotal = 0;
+    QualiMeasure(ParameterIndex).PointsGuest= 0;
+    QualiMeasure(ParameterIndex).Points2fold= 0;
+    
     % Initialize legend labels
     leg_labels={};
     
-    % create figure for Obs vs Pred
-    [ax, fig_handle(k).predictedVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle,PlotSettings);
-    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
-    plot(GuestRatio(k).x, GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).x/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).x*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).yup, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).ylo, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio', PKParameter{k}));
-    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max]);
+    % Get default axis limits for DDI Ratio plot and Guest equation
+    if axisObsVsPred(ParameterIndex).min >= 1
+        minAxisObsVsPred(ParameterIndex) = min([0.8*axisObsVsPred(ParameterIndex).min, 0.8]);
+    else
+        minAxisObsVsPred(ParameterIndex) = min([0.8*axisObsVsPred(ParameterIndex).min, 0.25]);
+    end
+    if axisObsVsPred(ParameterIndex).max >= 1
+        maxAxisObsVsPred(ParameterIndex) = max([1.25*axisObsVsPred(ParameterIndex).max, 4]);
+    else
+        maxAxisObsVsPred(ParameterIndex) = max([1.25*axisObsVsPred(ParameterIndex).max, 1.25]);
+    end
     
-    % create figure for Residuals
-    [ax, fig_handle(k).residualsVsObserved] = getReportFigureQP(WSettings,1,1,2*k+figureHandle+1,PlotSettings);
+    if  axisResVsObs(ParameterIndex).min >= 1
+        minAxisResVsObs(ParameterIndex) = 0.25;
+    else
+        minAxisResVsObs(ParameterIndex) = min([0.8*axisResVsObs(ParameterIndex).min, 0.25]);
+    end
+    if axisResVsObs(ParameterIndex).max >= 1
+        maxAxisResVsObs(ParameterIndex) = max([1.25*axisResVsObs(ParameterIndex).max, 4]);
+    else
+        maxAxisResVsObs(ParameterIndex) = 4;
+    end
+    
+    % GuestRatio vectors for plotting Guest et al. equation
+    GuestRatio(ParameterIndex).x=10.^(log10(minAxisObsVsPred):0.001:log10(maxAxisObsVsPred));
+    
+    GuestRatio(ParameterIndex).x = 10.^(log10(minAxisObsVsPred(ParameterIndex)):0.001:log10(maxAxisObsVsPred(ParameterIndex)));
+    [GuestRatio(ParameterIndex).yup, GuestRatio(ParameterIndex).ylo] = DDIRatioGuestEquation(GuestRatio(ParameterIndex).x);
+    
+    % Create figure for Obs vs Pred with lines from Guest equation
+    [ax, fig_handle(ParameterIndex).predictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
+    setFigureOptions(AxesOptions.DDIRatioPlotsPredictedVsObserved);
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1.5, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).x*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    
+    xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio', PKParameter{ParameterIndex}));
+    axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex)]);
+    
+    % Create figure for Residuals vs Obs with lines from Guest equation
+    [ax, fig_handle(ParameterIndex).residualsVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
     setFigureOptions(AxesOptions.DDIRatioPlotsResidualsVsObserved);
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x)), '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))/2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, ones(size(GuestRatio(k).x))*2, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).yup./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    plot(GuestRatio(k).x, GuestRatio(k).ylo./GuestRatio(k).x, '--k', 'Linewidth', 1, 'HandleVisibility','off');
-    xlabel(sprintf('Observed %s Ratio', PKParameter{k})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{k}, PKParameter{k}));
-    axis([0.8*axisObsVsPred(k).min 1.2*axisObsVsPred(k).max 0.8*axisResVsObs(k).min 1.2*axisResVsObs(k).max]);
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x)), '-k', 'Linewidth', 1.5, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))/2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, ones(size(GuestRatio(ParameterIndex).x))*2, ':k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).yup./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    plot(GuestRatio(ParameterIndex).x, GuestRatio(ParameterIndex).ylo./GuestRatio(ParameterIndex).x, '-k', 'Linewidth', 1, 'HandleVisibility','off');
+    
+    xlabel(sprintf('Observed %s Ratio', PKParameter{ParameterIndex})); ylabel(sprintf('Predicted %s Ratio / Observed %s Ratio', PKParameter{ParameterIndex}, PKParameter{ParameterIndex}));
+    axis([minAxisObsVsPred(ParameterIndex) maxAxisObsVsPred(ParameterIndex) minAxisResVsObs(ParameterIndex) maxAxisResVsObs(ParameterIndex)]);
     
     for i=1:length(DDIRatioGroups)
         % Update the number of points for each group
-        conditionPoints = ~isnan(Observations(i).RatioPK(k,:));
-        QualiMeasure(k).PointsTotal = QualiMeasure(k).PointsTotal + length(Observations(i).RatioPK(k,conditionPoints));
-        [UpperBound, LowerBound] = DDIRatioGuestEquation(Observations(i).RatioPK(k,:));
-        conditionGuest = (Result(i).RatioPK(k,:) >= LowerBound & Result(i).RatioPK(k,:) <= UpperBound);
-        QualiMeasure(k).PointsGuest= QualiMeasure(k).PointsGuest + length(Result(i).RatioPK(k,conditionGuest));
-        condition2fold = (Result(i).RatioPK(k,:) >= Observations(i).RatioPK(k,:)/2 & Result(i).RatioPK(k,:) <= Observations(i).RatioPK(k,:)*2);
-        QualiMeasure(k).Points2fold= QualiMeasure(k).Points2fold+ length(Result(i).RatioPK(k,condition2fold));
+        conditionPoints = ~isnan(Observations(i).RatioPK(ParameterIndex,:));
+        QualiMeasure(ParameterIndex).PointsTotal = QualiMeasure(ParameterIndex).PointsTotal + length(Observations(i).RatioPK(ParameterIndex,conditionPoints));
+        [UpperBound, LowerBound] = DDIRatioGuestEquation(Observations(i).RatioPK(ParameterIndex,:));
+        conditionGuest = (Result(i).RatioPK(ParameterIndex,:) >= LowerBound & Result(i).RatioPK(ParameterIndex,:) <= UpperBound);
+        QualiMeasure(ParameterIndex).PointsGuest= QualiMeasure(ParameterIndex).PointsGuest + length(Result(i).RatioPK(ParameterIndex,conditionGuest));
+        condition2fold = (Result(i).RatioPK(ParameterIndex,:) >= Observations(i).RatioPK(ParameterIndex,:)/2 & Result(i).RatioPK(ParameterIndex,:) <= Observations(i).RatioPK(ParameterIndex,:)*2);
+        QualiMeasure(ParameterIndex).Points2fold= QualiMeasure(ParameterIndex).Points2fold+ length(Result(i).RatioPK(ParameterIndex,condition2fold));
         
         % Plot part
-        set(0, 'CurrentFigure', fig_handle(k).predictedVsObserved);
-        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
+        pp=plot(Observations(i).RatioPK(ParameterIndex,:), Result(i).RatioPK(ParameterIndex,:), 'o', 'Linewidth',1);
         setCurveOptions(pp, DDIRatioGroups(i));
         
-        set(0, 'CurrentFigure', fig_handle(k).residualsVsObserved);
-        pp=plot(Observations(i).RatioPK(k,:), Result(i).RatioPK(k,:)./Observations(i).RatioPK(k,:), 'o', 'Linewidth',1);
+        set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
+        pp=plot(Observations(i).RatioPK(ParameterIndex,:), Result(i).RatioPK(ParameterIndex,:)./Observations(i).RatioPK(ParameterIndex,:), 'o', 'Linewidth',1);
         setCurveOptions(pp, DDIRatioGroups(i));
         
         if isfield(DDIRatioGroups(i), 'Caption')
             leg_labels=[leg_labels DDIRatioGroups(i).Caption];
         end
     end
-    set(0, 'CurrentFigure', fig_handle(k).predictedVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
-    set(0, 'CurrentFigure', fig_handle(k).residualsVsObserved);
-    legend(leg_labels, 'Location', 'northoutside');
+    set(0, 'CurrentFigure', fig_handle(ParameterIndex).predictedVsObserved);
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
+    
+    set(0, 'CurrentFigure', fig_handle(ParameterIndex).residualsVsObserved);
+    %legend(leg_labels, 'Location', 'northoutside');
+    addLegendWithConstantPlotArea(gcf,gca,leg_labels);
+    
 end
+
+% Calculation of GMFE
+RatioPK=[];
+for i=1:length(DDIRatioGroups)
+    RatioPK = [RatioPK Result(i).RatioPK./Observations(i).RatioPK];
+end
+RatioPK = reshape(RatioPK', [], length(PKParameter));
+for k=1:length(PKParameter)
+    GMFE(k) = 10.^(sum(abs(log10(RatioPK(~isnan(RatioPK(:,k)),k))))./length(RatioPK(~isnan(RatioPK(:,k)),k)));
+    fprintf('%s: GMFE = %f \n', PKParameter{k}, GMFE(k));
+end 
 
 %-------------------------------------------------------------
 % Tables Section
@@ -313,7 +388,7 @@ for k=1:length(PKParameter)
     DDIRatioHeaderPK = [DDIRatioHeaderPK {sprintf('Predicted %s Ratio', PKParameter{k}), ...
         sprintf('Observed %s Ratio', PKParameter{k}), sprintf('Pred/Obs %s Ratio', PKParameter{k})}];
 end
-DDIRatioHeader = [{'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
+DDIRatioHeader = [{'DataID', 'Perpetrator', 'Victim'}, DDIRatioHeaderPK, {'Reference'}];
 
 DDIRatioTable = [DDIRatioHeader;
     DDIRatioTableContent];
@@ -338,8 +413,19 @@ for k=1:length(PKParameter)
     
     fprintf('Qualification Measures for PK parameter %s \n', PKParameter{k});
     disp(DDIRatioQuali(k).Output);
+    
 end
 
+if ~isempty(Subunits)
+    for ss =1:length(Subunits)
+        curSubUnit = matlab.lang.makeValidName(Subunits{ss});
+        sub.names.(curSubUnit) = Subunits{ss};
+        [sub.(curSubUnit).fig_handle, sub.(curSubUnit).DDIRatioQuali, sub.(curSubUnit).GMFE, sub.(curSubUnit).names] =...
+            plotSubunit(Subunits{ss},DDIRatioGroups,Result,Observations,ObservedDataSets,PKParameter,WSettings,PlotSettings,AxesOptions);
+    end
+else
+    sub = struct();
+end
 
 function [AGE, BW, MW, drugmass] = getInfofromSimulation(xmlfile, Output)
 

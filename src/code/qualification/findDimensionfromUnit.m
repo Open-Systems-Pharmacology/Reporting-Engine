@@ -1,6 +1,9 @@
 function [outputDimension, outputUnit, Flag] = findDimensionfromUnit(inputUnit)
 % Find dimension from unit
 
+%fix the unit in case of wrong read or write encoding in cases where unit comes from file
+inputUnit = adjustUnit(inputUnit);
+
 % Load list of all units and dimensions
 [unitList,unitList_dimensionList]=iniUnitList(-1, 3);
 
@@ -28,4 +31,22 @@ Flag = isempty(MatchedUnit);
 if Flag
     outputUnit=inputUnit;
     outputDimension=[];
+end
+
+function adjustedUnit = adjustUnit(unit)
+
+try
+    adjustedUnit = char(unit);
+    
+    %if the unit was e.g. read from file using wrong encoding, invalid characters are replace with characted code 65533
+    %because in nearly 100% of cases invalid character is 'µ': Replace all occurances of char 65533 with 'µ'
+    %If original character was not 'µ': exception will happen in any case (with or without replacement)
+    adjustedUnit(double(adjustedUnit)==65533)='µ';
+
+    %if the unit was e.g. read from file which was saved using wrong encoding char(194) is added before/after some characters. just remove it
+    adjustedUnit = strrep(adjustedUnit,char(194),'');
+
+catch
+    %if something went wrong - return original unit
+    adjustedUnit = unit;
 end

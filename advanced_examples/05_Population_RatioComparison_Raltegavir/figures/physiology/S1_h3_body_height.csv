@@ -1,0 +1,25 @@
+Distribution of body height for simulated Sick Adult Population.;
+;
+Body height [cm];simulated Sick Adult Population (n=100)
+;
+145 <= body height < 146;1
+146 <= body height < 148;0
+148 <= body height < 151;2
+151 <= body height < 153;4
+153 <= body height < 155;4
+155 <= body height < 158;5
+158 <= body height < 160;7
+160 <= body height < 162;3
+162 <= body height < 165;5
+165 <= body height < 167;9
+167 <= body height < 169;10
+169 <= body height < 172;9
+172 <= body height < 174;8
+174 <= body height < 176;7
+176 <= body height < 179;5
+179 <= body height < 181;6
+181 <= body height < 183;4
+183 <= body height < 186;6
+186 <= body height < 188;1
+188 <= body height < 190;2
+190 <= body height < 191;2

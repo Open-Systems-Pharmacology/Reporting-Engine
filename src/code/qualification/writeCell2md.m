@@ -106,6 +106,7 @@ end
 fid = fopen(outfile, 'w');
 fprintf(fid, '%s', horzcat(mdcell{1, :})); 
 for r = 2:size(mdcell, 1), fprintf(fid, '\n%s', horzcat(mdcell{r, :})); end
+fprintf(fid, '\n');
 fclose(fid);
 fprintf('| OUTPUT: %s\n', outfile); 
 

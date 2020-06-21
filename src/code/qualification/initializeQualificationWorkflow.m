@@ -86,7 +86,7 @@ else
         % ObservedDataSets format to be determined
         % Temporary format: structure where the observed data is a table y
         if isfield(ConfigurationPlan.ObservedDataSets{i}, 'Type')
-            ObsTable = readtable(fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path), 'Encoding', 'UTF-8');
+            ObsTable = readtable(fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path), 'Encoding', 'system');
             ObservedDataSets(i).Id=ConfigurationPlan.ObservedDataSets{i}.Id;
             ObservedDataSets(i).Type=ConfigurationPlan.ObservedDataSets{i}.Type;
             ObservedDataSets(i).name=fullfile(REInput_path, ConfigurationPlan.ObservedDataSets{i}.Path);

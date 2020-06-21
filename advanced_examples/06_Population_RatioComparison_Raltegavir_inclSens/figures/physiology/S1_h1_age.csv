@@ -1,0 +1,25 @@
+Distribution of age for simulated Sick Adult Population.;
+;
+Age [years];simulated Sick Adult Population (n=100)
+;
+20.2 <= age < 20.7;5
+20.7 <= age < 21.7;5
+21.7 <= age < 22.7;3
+22.7 <= age < 23.6;8
+23.6 <= age < 24.6;2
+24.6 <= age < 25.6;4
+25.6 <= age < 26.6;1
+26.6 <= age < 27.6;11
+27.6 <= age < 28.5;9
+28.5 <= age < 29.5;6
+29.5 <= age < 30.5;2
+30.5 <= age < 31.5;4
+31.5 <= age < 32.5;2
+32.5 <= age < 33.4;5
+33.4 <= age < 34.4;2
+34.4 <= age < 35.4;3
+35.4 <= age < 36.4;4
+36.4 <= age < 37.4;8
+37.4 <= age < 38.3;5
+38.3 <= age < 39.3;7
+39.3 <= age < 39.8;4

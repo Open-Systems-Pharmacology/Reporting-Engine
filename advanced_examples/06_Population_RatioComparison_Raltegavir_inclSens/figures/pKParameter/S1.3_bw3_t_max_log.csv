@@ -1,0 +1,6 @@
+Percentile of t_{max} of Raltegravir.;;;;;;;;;
+;;;;;;;;;
+T_{max} [h];;;;;;;;;
+;5^{th} prctl.;25^{th} prctl.;50^{th} prctl.;75^{th} prctl.;95^{th} prctl.;arith. mean;std;geo. mean;geo. CV
+Sick adults 400mg sd;0.5;0.65;0.8;0.95;1.05;0.788;0.178393504433997;0.76768119408592;0.235382509508552
+Healthy adults 400mg sd;0.525;0.6;0.75;0.875;1.075;0.756;0.167615481071855;0.737845462084942;0.225210659338318

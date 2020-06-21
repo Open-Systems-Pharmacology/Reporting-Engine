@@ -1,0 +1,40 @@
+Age-dependence of Raltegravir;;;1
+C_{max};;;2
+S1.1_shA1_1_age_C_max_lin;age dependency of C_{max} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.1_shA1_1_age_C_max_log;age dependency of C_{max} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+C_{max} norm;;;2
+S1.2_shA1_2_age_C_max_norm_lin;age dependency of C_{max} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.2_shA1_2_age_C_max_norm_log;age dependency of C_{max} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+t_{max};;;2
+S1.3_shA1_3_age_t_max_lin;age dependency of t_{max} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.3_shA1_3_age_t_max_log;age dependency of t_{max} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+C_{tEnd};;;2
+S1.4_shA1_4_age_C_tEnd_lin;age dependency of C_{tEnd} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.4_shA1_4_age_C_tEnd_log;age dependency of C_{tEnd} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{last};;;2
+S1.5_shA1_5_age_AUC_lin;age dependency of AUC_{last} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.5_shA1_5_age_AUC_log;age dependency of AUC_{last} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{last} norm;;;2
+S1.6_shA1_6_age_AUC_norm_lin;age dependency of AUC_{last} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.6_shA1_6_age_AUC_norm_log;age dependency of AUC_{last} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{inf};;;2
+S1.7_shA1_7_age_AUC_inf_lin;age dependency of AUC_{inf} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.7_shA1_7_age_AUC_inf_log;age dependency of AUC_{inf} Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{inf} norm;;;2
+S1.8_shA1_8_age_AUC_inf_norm_lin;age dependency of AUC_{inf} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.8_shA1_8_age_AUC_inf_norm_log;age dependency of AUC_{inf} norm Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+MRT;;;2
+S1.9_shA1_9_age_MRT_lin;age dependency of MRT Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.9_shA1_9_age_MRT_log;age dependency of MRT Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Thalf;;;2
+S1.10_shA1_10_age_Thalf_lin;age dependency of Thalf Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.10_shA1_10_age_Thalf_log;age dependency of Thalf Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+CL;;;2
+S1.11_shA1_11_age_CL_lin;age dependency of CL Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.11_shA1_11_age_CL_log;age dependency of CL Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Vss;;;2
+S1.12_shA1_12_age_Vss_lin;age dependency of Vss Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.12_shA1_12_age_Vss_log;age dependency of Vss Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Vd;;;2
+S1.13_shA1_13_age_Vd_lin;age dependency of Vd Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S1.13_shA1_13_age_Vd_log;age dependency of Vd Raltegravir for simulated virtual pediatric population in comparison to simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;

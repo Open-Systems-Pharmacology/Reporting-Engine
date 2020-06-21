@@ -1,0 +1,40 @@
+Body weight-dependence of Raltegravir as fraction of Filmcoated_tablet_400mg_sd;;;1
+C_{max};;;2
+S4.1_shARatio2_1_body_weight_C_max_lin;body weight dependency of C_{max} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.1_shARatio2_1_body_weight_C_max_log;body weight dependency of C_{max} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+C_{max} norm;;;2
+S4.2_shARatio2_2_body_weight_C_max_norm_lin;body weight dependency of C_{max} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.2_shARatio2_2_body_weight_C_max_norm_log;body weight dependency of C_{max} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+t_{max};;;2
+S4.3_shARatio2_3_body_weight_t_max_lin;body weight dependency of t_{max} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.3_shARatio2_3_body_weight_t_max_log;body weight dependency of t_{max} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+C_{tEnd};;;2
+S4.4_shARatio2_4_body_weight_C_tEnd_lin;body weight dependency of C_{tEnd} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.4_shARatio2_4_body_weight_C_tEnd_log;body weight dependency of C_{tEnd} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{last};;;2
+S4.5_shARatio2_5_body_weight_AUC_lin;body weight dependency of AUC_{last} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.5_shARatio2_5_body_weight_AUC_log;body weight dependency of AUC_{last} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{last} norm;;;2
+S4.6_shARatio2_6_body_weight_AUC_norm_lin;body weight dependency of AUC_{last} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.6_shARatio2_6_body_weight_AUC_norm_log;body weight dependency of AUC_{last} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{inf};;;2
+S4.7_shARatio2_7_body_weight_AUC_inf_lin;body weight dependency of AUC_{inf} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.7_shARatio2_7_body_weight_AUC_inf_log;body weight dependency of AUC_{inf} Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+AUC_{inf} norm;;;2
+S4.8_shARatio2_8_body_weight_AUC_inf_norm_lin;body weight dependency of AUC_{inf} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.8_shARatio2_8_body_weight_AUC_inf_norm_log;body weight dependency of AUC_{inf} norm Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+MRT;;;2
+S4.9_shARatio2_9_body_weight_MRT_lin;body weight dependency of MRT Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.9_shARatio2_9_body_weight_MRT_log;body weight dependency of MRT Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Thalf;;;2
+S4.10_shARatio2_10_body_weight_Thalf_lin;body weight dependency of Thalf Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.10_shARatio2_10_body_weight_Thalf_log;body weight dependency of Thalf Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+CL;;;2
+S4.11_shARatio2_11_body_weight_CL_lin;body weight dependency of CL Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.11_shARatio2_11_body_weight_CL_log;body weight dependency of CL Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Vss;;;2
+S4.12_shARatio2_12_body_weight_Vss_lin;body weight dependency of Vss Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.12_shARatio2_12_body_weight_Vss_log;body weight dependency of Vss Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;
+Vd;;;2
+S4.13_shARatio2_13_body_weight_Vd_lin;body weight dependency of Vd Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a linear scale.;;
+S4.13_shARatio2_13_body_weight_Vd_log;body weight dependency of Vd Raltegravir for simulated virtual pediatric population as fraction of median of simulated Filmcoated_tablet_400mg_sd in a logarithmic scale.;;

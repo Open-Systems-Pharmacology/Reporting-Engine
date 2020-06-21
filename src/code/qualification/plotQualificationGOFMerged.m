@@ -1,13 +1,13 @@
-function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
-%PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan 
+function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
+%PLOTQUALIFICATIONGOFMERGED Plots Goodness of fit from Configuration Plan
 %
-% [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,
+% [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,plotIndex,
 %   Groups,ObservedDataSets,SimulationMappings, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   Groups (structure) Goodness of fit plot information
 %   ObservedDataSets (structure) Observed data
 %   SimulationMappings (structure) Map simulation results to project
@@ -27,11 +27,11 @@ function  [fig_handle, GMFE]=plotQualificationGOFMerged(WSettings,figureHandle,G
 minX=NaN; maxX=NaN; minY=NaN; maxY=NaN; maxtime=NaN; maxRes=NaN;
 
 % create figure for Obs vs Pred
-[ax1, fig_handle.PredictedVsObserved] = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+[ax1, fig_handle.PredictedVsObserved] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 [xAxesOptions, yAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsPredictedVsObserved);
 
 % create figure for Residuals vs time
-[ax2, fig_handle.ResidualsOverTime] = getReportFigureQP(WSettings,1,1,figureHandle+1,PlotSettings);
+[ax2, fig_handle.ResidualsOverTime] = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 [TimeAxesOptions, ResAxesOptions] = setFigureOptions(AxesOptions.GOFMergedPlotsResidualsOverTime);
 
 % Map for each group the corresponding observations within a same structure
@@ -44,14 +44,14 @@ for i=1:length(Groups)
         [csvSimFile, xmlfile] = getSimFile(Simulations, SimulationMappings, REInputPath);
         if isempty(csvSimFile)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'In GOF Merged plot %d group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In GOF Merged Plot %d, Group %d, mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', plotIndex, i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         SimResult = loadSimResultcsv(csvSimFile, Simulations);
         
         if isempty(SimResult.outputPathList)
             ME = MException('plotQualificationGOFMerged:emptyOutputPathInSimulation', ...
-                'In GOF Merged plot %d group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', figureHandle, i, j, Simulations.Project, Simulations.Simulation);
+                'In GOF Merged Plot %d, Group %d, mapping %d, OutputPath is empty in Project "%s" Simulation "%s"', plotIndex, i, j, Simulations.Project, Simulations.Simulation);
             throw(ME);
         end
         
@@ -65,7 +65,7 @@ for i=1:length(Groups)
         
         if isempty(predicted)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'Group %d SubGroup %d : %s not found', i, j, Simulations.Output);
+                'In GOF Merged Plot %d, Group %d SubGroup %d : %s not found', plotIndex, i, j, Simulations.Output);
             throw(ME);
         end
         
@@ -74,7 +74,7 @@ for i=1:length(Groups)
         
         if isempty(Obs)
             ME = MException('plotQualificationGOFMerged:notFoundInPath', ...
-                'Group %d SubGroup %d : %s not found', i, j, Simulations.ObservedData);
+                'In GOF Merged Plot %d, Group %d SubGroup %d : %s not found', plotIndex, i, j, Simulations.ObservedData);
             throw(ME);
         end
         
@@ -85,11 +85,17 @@ for i=1:length(Groups)
         Group(i).dataTP(j).yobs = reshape(Obs, [], 1);
         Group(i).dataTP(j).ypred = reshape(predicted(comparable_index), [], 1);
         Yres = predicted(comparable_index)-Obs;
-        if strcmp(ResAxesOptions.Dimension,'Fraction')
+        logRes = false;
+        if strcmp(ResAxesOptions.Dimension,'Fraction') && strcmp(yAxesOptions.Dimension,'Fraction')
             Yres=Yres./Obs;
         else
-            Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResAxesOptions.Dimension, 'MW',MW);
-            Yres=Yres.*Resfactor;
+            if strcmp(yAxesOptions.Dimension,'Concentration')
+               Yres = log(predicted(comparable_index))-log(Obs); 
+               logRes = true;
+            else
+                Resfactor=getUnitFactor(yAxesOptions.Unit,ResAxesOptions.Unit,ResAxesOptions.Dimension, 'MW',MW);
+                Yres=Yres.*Resfactor;
+            end
         end
         Group(i).dataTP(j).yres= reshape(Yres, [], 1);
         Group(i).dataTP(j).time = reshape(ObsTime, [], 1);
@@ -139,13 +145,18 @@ for i=1:length(Groups)
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end
-xLabelFinal = getLabelWithUnit('Observations',xAxesOptions.Unit);
-yLabelFinal = getLabelWithUnit('Predictions',yAxesOptions.Unit);
+
+xLabelFinal = getLabelWithUnit(sprintf('Observed %s', findDimensionfromUnit(xAxesOptions.Unit)),xAxesOptions.Unit);
+yLabelFinal = getLabelWithUnit(sprintf('Simulated %s', findDimensionfromUnit(yAxesOptions.Unit)),yAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
 
 GMFE = 10.^(sum(abs(Error))/length(Error));
-%legend('off')
-legend(legendLabels, 'Location', 'northoutside');
+
+if ~isempty(legendLabels)
+    legend(legendLabels, 'Location', 'northoutside');
+else
+    legend('off');
+end
 
 % Residuals vs Time Figure
 % create figure for Residuals vs time
@@ -167,15 +178,23 @@ for i=1:length(Groups)
         else
             pp=plot(Group(i).dataTP(j).time, Group(i).dataTP(j).yres);
         end
-        setCurveOptions(pp, CurveOptions);        
+        setCurveOptions(pp, CurveOptions);
     end
     legendLabels=[legendLabels Groups(i).Caption];
 end
 xLabelFinal = getLabelWithUnit('Time',TimeAxesOptions.Unit);
-yLabelFinal = getLabelWithUnit('Residuals',ResAxesOptions.Unit);
+resLabel = 'Residuals';
+if logRes
+   resLabel = [resLabel, '_{log(sim)-log(obs)}'];
+end
+yLabelFinal = getLabelWithUnit(resLabel,ResAxesOptions.Unit);
 xlabel(xLabelFinal); ylabel(yLabelFinal);
-%legend('off')
-legend(legendLabels, 'Location', 'northoutside');
+
+if ~isempty(legendLabels)
+    legend(legendLabels, 'Location', 'northoutside');
+else
+    legend('off');
+end
 
 % ---------------- Auxiliary function ------------------------------------
 

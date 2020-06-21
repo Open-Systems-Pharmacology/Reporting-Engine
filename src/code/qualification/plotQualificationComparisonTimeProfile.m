@@ -1,13 +1,13 @@
-function plotQualificationComparisonTimeProfile(WSettings,figureHandle,CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
+function plotQualificationComparisonTimeProfile(WSettings,plotIndex,CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %PLOTCOMPARISONQUALIFICATIONTIMEPROFILE Plots comparison of time profiles from Configuration Plan
 %
-% plotQualificationComparisonTimeProfile(WSettings,figureHandle,
+% plotQualificationComparisonTimeProfile(WSettings,plotIndex,
 %   CompTimeProfile,ObservedDataSets,SimulationMappings, Curves, AxesOptions, PlotSettings, REInputPath)
 %
 % Inputs:
 %   WSettings (structure)    definition of properties used in all
 %                   workflow functions see GETDEFAULTWORKFLOWSETTINGS
-%   figureHandle (integer) number to pass to figure handle
+%   plotIndex (integer) index of plot
 %   CompTimeProfile (structure) TimeProfile Comparison plot information
 %   Curves (structure) Curves information
 %   ObservedDataSets (structure) Observed data
@@ -25,7 +25,7 @@ function plotQualificationComparisonTimeProfile(WSettings,figureHandle,CompTimeP
 % Create figure with first setting from WSettings using getReportFigure
 % To be updated using the Configuration plan Settings as optional arguments
 
-ax = getReportFigureQP(WSettings,1,1,figureHandle,PlotSettings);
+ax = getReportFigureQP(WSettings,1,1,[],PlotSettings);
 
 [xAxesOptions, yAxesOptions, yyAxesOptions] = setFigureOptions(AxesOptions);
 
@@ -38,7 +38,7 @@ for i=1:length(Curves)
     [csvSimFile, xmlfile] = getSimFile(Curves{i}, SimulationMappings, REInputPath);
     if isempty(csvSimFile)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Comparison Time Profile plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', figureHandle, i, Curves{i}.Project, Curves{i}.Simulation);
+            'In Comparison Time Profile Plot %d, Mapping %d, Project "%s" or Simulation "%s" were not found in SimulationMappings', plotIndex, i, Curves{i}.Project, Curves{i}.Simulation);
         throw(ME);
     end
     SimResult = loadSimResultcsv(csvSimFile, Curves{i});
@@ -55,19 +55,26 @@ for i=1:length(Curves)
     [p_handle_sim, legLabel_sim] = testandplotSimResults(Curves{i}, SimResult, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
     if isempty(p_handle_sim)
         ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, Ouptut %s was not found', i, Curves{i}.Output);
+            'In Comparison Time Profile Plot %d, Mapping %d, Ouptut %s was not found', plotIndex, i, Curves{i}.Output);
         throw(ME);
     end
-    [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
-    if isempty(p_handle_obs)
-        ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
-            'In Mapping %d, ObservedData %s was not found', i, Curves{i}.ObservedData);
-        throw(ME);
+    if ~isempty(Curves{i}.ObservedData)
+        [p_handle_obs, legLabel_obs] = testandplotObservations(Curves{i}, ObservedDataSets, MW, xAxesOptions, yAxesOptions, yyAxesOptions);
+        if isempty(p_handle_obs)
+            ME = MException('plotQualificationComparisonTimeProfile:notFoundInPath', ...
+                'In Comparison Time Profile Plot %d, Mapping %d, ObservedData %s was not found', plotIndex, i, Curves{i}.ObservedData);
+            throw(ME);
+        end
+    else
+       legLabel_obs = {}; 
     end
     legendLabels=[legendLabels legLabel_sim legLabel_obs];
 end
-legend(legendLabels, 'Location', 'northoutside');
-%legend('off')
+if ~isempty(legendLabels)
+    legend(legendLabels, 'Location', 'northoutside');
+else
+    legend('off');
+end
 
 % ------------------------- Auxiliary functions -------------------------
 % For simulations: Get the right simulation curve with right unit
