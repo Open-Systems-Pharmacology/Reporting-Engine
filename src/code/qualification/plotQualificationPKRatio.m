@@ -187,7 +187,7 @@ end
 XcellValues = arrayfun(@(x)getfield(x, Xparam), Result, 'UniformOutput', false);
 YcellValues = arrayfun(@(x)getfield(x, 'RatioPK'), Result, 'UniformOutput', false);
 ObscellValues = arrayfun(@(x)getfield(x, 'obsPK'), Result, 'UniformOutput', false);
-PredcellValues = arrayfun(@(x)getfield(x, 'RatioPK'), Result, 'UniformOutput', false);
+PredcellValues = arrayfun(@(x)getfield(x, 'predPK'), Result, 'UniformOutput', false);
 StudycellValues = arrayfun(@(x)getfield(x, 'Study'), Result, 'UniformOutput', false);
 AGEcellValues = arrayfun(@(x)getfield(x, 'AGE'), Result, 'UniformOutput', false);
 BWcellValues = arrayfun(@(x)getfield(x, 'BW'), Result, 'UniformOutput', false);
